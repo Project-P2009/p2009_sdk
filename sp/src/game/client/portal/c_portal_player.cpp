@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose:		Player for .
 //
@@ -14,14 +14,17 @@
 #include "iviewrender_beams.h"
 #include "r_efx.h"
 #include "dlight.h"
-#include "portalrender.h"
+#include "PortalRender.h"
 #include "toolframework/itoolframework.h"
 #include "toolframework_client.h"
-#include "tier1/keyvalues.h"
+#include "tier1/KeyValues.h"
 #include "ScreenSpaceEffects.h"
 #include "portal_shareddefs.h"
 #include "ivieweffects.h"		// for screenshake
 #include "prop_portal_shared.h"
+
+// NVNT for fov updates
+#include "haptics/ihaptics.h"
 
 
 // Don't alias here
@@ -279,6 +282,7 @@ RecvPropEHandle( RECVINFO( m_pHeldObjectPortal ) ),
 RecvPropBool( RECVINFO( m_bPitchReorientation ) ),
 RecvPropEHandle( RECVINFO( m_hPortalEnvironment ) ),
 RecvPropEHandle( RECVINFO( m_hSurroundingLiquidPortal ) ),
+RecvPropBool( RECVINFO( m_bSuppressingCrosshair ) ),
 END_RECV_TABLE()
 
 
@@ -826,7 +830,7 @@ int C_Portal_Player::DrawModel( int flags )
 
 	if( IsLocalPlayer() )
 	{
-		if ( !C_BasePlayer::ShouldDrawLocalPlayer() )
+		if ( !C_BasePlayer::ShouldDrawThisPlayer() )
 		{
 			if ( !g_pPortalRender->IsRenderingPortal() )
 				return 0;
@@ -1179,7 +1183,7 @@ float C_Portal_Player::GetFOV( void )
 	int min_fov = GetMinFOV();
 
 	// Don't let it go too low
-	flFOVOffset = max( min_fov, flFOVOffset );
+	flFOVOffset = MAX( min_fov, flFOVOffset );
 
 	return flFOVOffset;
 }
@@ -1418,7 +1422,7 @@ void C_Portal_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNe
 		{
 			origin = pRagdoll->GetAbsOrigin();
 #if !PORTAL_HIDE_PLAYER_RAGDOLL
-			origin.z += VEC_DEAD_VIEWHEIGHT.z; // look over ragdoll, not through
+			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED( this ).z; // look over ragdoll, not through
 #endif //PORTAL_HIDE_PLAYER_RAGDOLL
 		}
 
@@ -1431,7 +1435,7 @@ void C_Portal_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNe
 
 		VectorNormalize( vForward );
 #if !PORTAL_HIDE_PLAYER_RAGDOLL
-		VectorMA( origin, -CHASE_CAM_DISTANCE, vForward, eyeOrigin );
+		VectorMA( origin, -CHASE_CAM_DISTANCE_MAX, vForward, eyeOrigin );
 #endif //PORTAL_HIDE_PLAYER_RAGDOLL
 
 		Vector WALL_MIN( -WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET );
@@ -1478,6 +1482,12 @@ void C_Portal_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNe
 	m_qEyeAngles_LastCalcView = qEyeAngleBackup;
 	m_ptEyePosition_LastCalcView = ptEyePositionBackup;
 	m_pPortalEnvironment_LastCalcView = pPortalBackup;
+
+#ifdef WIN32
+	// NVNT Inform haptics module of fov
+	if(IsLocalPlayer())
+		haptics->UpdatePlayerFOV(fov);
+#endif
 }
 
 void C_Portal_Player::SetLocalViewAngles( const QAngle &viewAngles )

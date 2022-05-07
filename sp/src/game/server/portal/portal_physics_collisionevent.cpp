@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -73,7 +73,7 @@ int CPortal_CollisionEvent::ShouldCollide( IPhysicsObject *pObj0, IPhysicsObject
 		}
 #endif
 
-		if( (pSimulators[0] == pSimulators[1]) ) //same simulator
+		if( pSimulators[0] == pSimulators[1] ) //same simulator
 		{
 			if( pSimulators[0] != NULL ) //and not main world
 			{

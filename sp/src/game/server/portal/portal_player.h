@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -173,6 +173,8 @@ public:
 
 	// Tracks our ragdoll entity.
 	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle
+
+	void SuppressCrosshair( bool bState ) { m_bSuppressingCrosshair = bState; }
 		
 private:
 
@@ -187,6 +189,7 @@ private:
 	int m_iLastWeaponFireUsercmd;
 	CNetworkVar( int, m_iSpawnInterpCounter );
 	CNetworkVar( int, m_iPlayerSoundType );
+	CNetworkVar( bool, m_bSuppressingCrosshair );
 
 	CNetworkVar( bool, m_bHeldObjectOnOppositeSideOfPortal );
 	CNetworkHandle( CProp_Portal, m_pHeldObjectPortal );	// networked entity handle

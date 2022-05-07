@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -16,7 +16,7 @@
 #include "vgui/ISurface.h"
 #include "c_portal_player.h"
 #include "c_weapon_portalgun.h"
-#include "igameuifuncs.h"
+#include "IGameUIFuncs.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -174,11 +174,14 @@ bool CHUDQuickInfo::ShouldDraw( void )
 	if ( !m_icon_c || !m_icon_rb || !m_icon_rbe || !m_icon_lb || !m_icon_lbe )
 		return false;
 
-	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
+	C_Portal_Player *player = ToPortalPlayer(C_BasePlayer::GetLocalPlayer());
 	if ( player == NULL )
 		return false;
 
 	if ( !crosshair.GetBool() )
+		return false;
+
+	if ( player->IsSuppressingCrosshair() )
 		return false;
 
 	return ( CHudElement::ShouldDraw() && !engine->IsDrawingLoadingImage() );

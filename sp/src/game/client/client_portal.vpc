@@ -13,7 +13,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;.\portal;.\portal\vgui;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\multiplayer;$SRCDIR\game\shared\portal;$BASE"
+		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;.\portal;.\portal\vgui;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\Multiplayer;$SRCDIR\gcsdk\steamextra;$SRCDIR\game\shared\portal;$BASE"
 		$PreprocessorDefinitions		"$BASE;PORTAL;HL2_EPISODIC;HL2_CLIENT_DLL"
 	}
 }
@@ -22,6 +22,7 @@ $Project "Client (Portal)"
 {
 	$Folder	"Source Files"
 	{
+		-$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 		$File	"hud_chat.cpp"
 		$File	"c_team_objectiveresource.cpp"
 		$File	"c_team_objectiveresource.h"
@@ -72,7 +73,9 @@ $Project "Client (Portal)"
 			$File	"episodic\c_vort_charge_token.cpp"
 			$File	"hl2\c_weapon_crossbow.cpp"
 			$File	"episodic\c_weapon_hopwire.cpp"
-			$File	"hl2\c_weapon_stunstick.cpp"
+			$File   "episodic\c_vehicle_jeep_episodic.cpp"
+			$File	"hl2\hud_radar.cpp"
+ 			$File	"hl2\c_weapon_stunstick.cpp" [!$MAPBASE] // See client_mapbase.vpc
 			$File	"$SRCDIR\game\shared\hl2\citadel_effects_shared.h"
 			$File	"hl2\clientmode_hlnormal.h"
 			$File	"death.cpp"
@@ -103,7 +106,7 @@ $Project "Client (Portal)"
 			$File	"hl2\hud_suitpower.h"
 			$File	"hl2\hud_weaponselection.cpp"
 			$File	"hl2\hud_zoom.cpp"
-			$File	"hl2\ShieldProxy.cpp"
+			$File	"hl2\shieldproxy.cpp"
 			$File	"$SRCDIR\game\shared\hl2\survival_gamerules.cpp"
 			$File	"hl2\vgui_rootpanel_hl2.cpp"
 		}
@@ -167,10 +170,12 @@ $Project "Client (Portal)"
 			$File	"$SRCDIR\game\shared\portal\StaticCollisionPolyhedronCache.h"
 			$File	"portal\PortalRender.cpp"
 			$File	"portal\PortalRender.h"
+			$File	"portal\c_portal_radio.cpp"
 			$File	"portal\portalrenderable_flatbasic.cpp"
 			$File	"portal\portalrenderable_flatbasic.h"
 			$File	"portal\vgui_portal_stats_display_screen.cpp"
 			$File	"portal\vgui_neurotoxin_countdown_screen.cpp"
+			$File	"$SRCDIR\game\shared\portal\portal_weapon_parse.cpp"
 
 			$Folder	"Weapons"
 			{
@@ -188,3 +193,4 @@ $Project "Client (Portal)"
 		}
 	}
 }
+

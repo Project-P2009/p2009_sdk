@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -117,6 +117,8 @@ public:
 	Activity TranslateActivity( Activity baseAct, bool *pRequired = NULL );
 	CWeaponPortalBase* GetActivePortalWeapon() const;
 
+	bool IsSuppressingCrosshair( void ) { return m_bSuppressingCrosshair; }
+
 private:
 
 	C_Portal_Player( const C_Portal_Player & );
@@ -137,6 +139,7 @@ private:
 	float m_headYawMax;
 	float m_headPitchMin;
 	float m_headPitchMax;
+	bool m_bSuppressingCrosshair;
 
 	bool m_isInit;
 	Vector m_vLookAtTarget;
