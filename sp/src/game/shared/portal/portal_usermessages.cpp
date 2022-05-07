@@ -42,7 +42,12 @@ void RegisterUserMessages()
 	usermessages->Register( "KeyHintText", -1 );	// Displays hint text display
 	usermessages->Register( "SquadMemberDied", 0 );
 	usermessages->Register( "AmmoDenied", 2 );
+#ifdef MAPBASE
+	// This sends the credits file now
+	usermessages->Register( "CreditsMsg", -1 );
+#else
 	usermessages->Register( "CreditsMsg", 1 );
+#endif
 	usermessages->Register( "CreditsPortalMsg", 1 );
 	usermessages->Register( "LogoTimeMsg", 4 );
 	usermessages->Register( "AchievementEvent", -1 );

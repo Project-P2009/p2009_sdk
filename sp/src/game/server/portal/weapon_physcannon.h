@@ -36,6 +36,13 @@ void GetSavedParamsForCarriedPhysObject( CGrabController *pGrabController, IPhys
 void UpdateGrabControllerTargetPosition( CBasePlayer *pPlayer, Vector *vPosition, QAngle *qAngles );
 bool PhysCannonAccountableForObject( CBaseCombatWeapon *pPhysCannon, CBaseEntity *pObject );
 
+#ifdef MAPBASE // Moved here so point_physics_control can access, datadesc is still in weapon_physcannon.cpp
+struct game_shadowcontrol_params_t : public hlshadowcontrol_params_t
+{
+	DECLARE_SIMPLE_DATADESC();
+};
+#endif
+
 void GrabController_SetPortalPenetratingEntity( CGrabController *pController, CBaseEntity *pPenetrated );
 
 #endif // WEAPON_PHYSCANNON_H
