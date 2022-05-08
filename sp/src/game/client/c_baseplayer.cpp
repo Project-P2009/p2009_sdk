@@ -275,6 +275,11 @@ END_RECV_TABLE()
 		RecvPropInt			( RECVINFO( m_nWaterLevel ) ),
 		RecvPropFloat		( RECVINFO( m_flLaggedMovementValue )),
 
+#ifdef PORTAL
+		RecvPropBool(RECVINFO(m_bCurrentlyLaunchedByCatapult)),
+		RecvPropFloat(RECVINFO(m_fLaunchpadAirAccelerate)),
+#endif
+
 #ifdef MAPBASE
 		// Transmitted from the server for internal player spawnflags.
 		// See baseplayer_shared.h for more details.
@@ -434,6 +439,11 @@ BEGIN_PREDICTION_DATA( C_BasePlayer )
 
 	DEFINE_FIELD( m_surfaceFriction, FIELD_FLOAT ),
 
+#ifdef PORTAL
+	DEFINE_PRED_FIELD(m_bCurrentlyLaunchedByCatapult, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE),
+	DEFINE_PRED_FIELD(m_fLaunchpadAirAccelerate, FIELD_FLOAT, FTYPEDESC_INSENDTABLE),
+#endif
+
 END_PREDICTION_DATA()
 
 // link this in each derived player class, like the server!!
@@ -479,6 +489,11 @@ C_BasePlayer::C_BasePlayer() : m_iv_vecViewOffset( "C_BasePlayer::m_iv_vecViewOf
 	m_bFiredWeapon = false;
 
 	m_nForceVisionFilterFlags = 0;
+
+#ifdef PORTAL
+	m_bCurrentlyLaunchedByCatapult = false;
+	m_fLaunchpadAirAccelerate = 0.0f;
+#endif
 
 	ListenForGameEvent( "base_player_teleported" );
 }
