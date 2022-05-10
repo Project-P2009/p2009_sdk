@@ -780,7 +780,9 @@ void CBeam::BeamDamage( trace_t *ptr )
 			ClearMultiDamage();
 			Vector dir = ptr->endpos - GetAbsOrigin();
 			VectorNormalize( dir );
-			int nDamageType = DMG_ENERGYBEAM;
+			//int nDamageType = DMG_ENERGYBEAM;
+			// maybe burn won't push things -litevex
+			int nDamageType = DMG_BURN;
 
 #ifndef HL1_DLL
 			if (m_nDissolveType == 0)

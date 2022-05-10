@@ -222,7 +222,8 @@ void CEnvLaser::FireAtPoint( trace_t &tr )
 
 		// Add laser impact sprite
 		// Thanks to our method it works through portals as well :P
-		UTIL_DecalTrace(&tr, "FadingScorch");
+		// not in portal we don't -litevex
+		// UTIL_DecalTrace(&tr, "FadingScorch");
 	}
 }
 
