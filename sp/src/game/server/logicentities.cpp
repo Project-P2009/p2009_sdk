@@ -157,6 +157,12 @@ class CLogicCompareInteger : public CLogicalEntity
 public:
 	DECLARE_CLASS( CLogicCompareInteger, CLogicalEntity );
 
+#ifdef MAPBASE
+	CLogicCompareInteger() : m_bStrLenAllowed( true )
+	{
+	}
+#endif
+
 	// outputs
 #ifdef MAPBASE
 	COutputVariant m_OnEqual;
@@ -170,7 +176,7 @@ public:
 #ifdef MAPBASE
 	variant_t m_iValue;
 	bool m_iShouldCompareToValue;
-	bool m_bStrLenAllowed = true;
+	bool m_bStrLenAllowed;
 	int DrawDebugTextOverlays(void);
 #else
 	int m_iIntegerValue;
@@ -2778,6 +2784,12 @@ class CLogicCompare : public CLogicalEntity
 	DECLARE_CLASS( CLogicCompare, CLogicalEntity );
 
 public:
+#ifdef MAPBASE
+	CLogicCompare() : m_bStrLenAllowed( true )
+	{
+	}
+#endif
+
 	int DrawDebugTextOverlays(void);
 
 #ifdef MAPBASE
@@ -2801,7 +2813,7 @@ private:
 #endif
 
 #ifdef MAPBASE
-	bool m_bStrLenAllowed = true;
+	bool m_bStrLenAllowed;
 	bool m_bGreaterThanOrEqual;
 	variant_t m_InValue;					// Place to hold the last input value for a recomparison.
 	variant_t m_CompareValue;				// The value to compare the input value against.
@@ -3786,11 +3798,19 @@ public:
 
 	DECLARE_CLASS( CLogicConsole, CLogicalEntity );
 
+	CLogicConsole() :
+		m_iDevLevel( 1 ),
+		m_MsgColor( Color(210, 250, 255, 255) ),
+		m_WarningColor( Color(255, 210, 210, 255) ),
+		m_bNewLineNotAuto( false )
+	{
+	}
+
 	// Keys
-	int m_iDevLevel = 1;
-	Color m_MsgColor = Color(210, 250, 255, 255);
-	Color m_WarningColor = Color(255, 210, 210, 255);
-	bool m_bNewLineNotAuto = false;
+	int m_iDevLevel;
+	Color m_MsgColor;
+	Color m_WarningColor;
+	bool m_bNewLineNotAuto;
 
 	// TODO: Replace "append" with variable arguments?
 	inline void LCMsg(const char *msg, const char *append = NULL) { ConColorMsg(m_MsgColor, msg, append); }
@@ -5737,7 +5757,12 @@ void CMathMod::InputModVector( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 class CLogicModelInfo : public CLogicalEntity
 {
+public:
 	DECLARE_CLASS( CLogicModelInfo, CLogicalEntity );
+
+	CLogicModelInfo() : m_iPoseParameterIndex( -1 )
+	{
+	}
 private:
 
 	CBaseAnimating *GetTarget(inputdata_t &inputdata);
@@ -5763,7 +5788,7 @@ private:
 	// KeyValues
 
 	string_t m_iszPoseParameterName;
-	int m_iPoseParameterIndex = -1;
+	int m_iPoseParameterIndex;
 
 	DECLARE_DATADESC();
 };
@@ -6257,7 +6282,14 @@ void CLogicContextAccessor::InputSetValue(inputdata_t &inputdata)
 //-----------------------------------------------------------------------------
 class CMathLightPattern : public CLogicalEntity
 {
+public:
 	DECLARE_CLASS( CMathLightPattern, CLogicalEntity );
+
+	CMathLightPattern() :
+		m_NextLetter( 0 ),
+		m_flPatternSpeed( 0.1f )
+	{
+	}
 private:
 
 
@@ -6272,10 +6304,10 @@ private:
 
 	void StartPatternThink();
 	void PatternThink();
-	unsigned char m_NextLetter = 0;
+	unsigned char m_NextLetter;
 
 	// How fast the pattern should be
-	float m_flPatternSpeed = 0.1f;
+	float m_flPatternSpeed;
 
 	inline bool VerifyPatternValid() { return (m_iszPattern != NULL_STRING && STRING( m_iszPattern )[0] != '\0'); }
 

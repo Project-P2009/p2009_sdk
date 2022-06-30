@@ -1464,6 +1464,10 @@ void CNPC_Stalker::AddZigZagToPath(void)
 // Output  :
 //------------------------------------------------------------------------------
 CNPC_Stalker::CNPC_Stalker(void)
+#ifdef MAPBASE
+	// This is a keyvalue now, so we have to initialize the value through somewhere that isn't Spawn()
+	: m_iPlayerAggression( 0 )
+#endif
 {
 #ifdef _DEBUG
 	m_vLaserDir.Init();

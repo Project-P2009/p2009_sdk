@@ -39,8 +39,8 @@ struct creditname_t
 	Color cColorOverride;
 
 	// Images
-	int iImageID = -1;
-	float flImageScale = 1.0f;
+	int iImageID;
+	float flImageScale;
 #endif
 };
 
@@ -266,6 +266,8 @@ void CHudCredits::ReadNames( KeyValues *pKeyValue )
 		V_strcpy_safe( Credits.szCreditName, pKVNames->GetName() );
 #ifdef MAPBASE
 		V_strcpy_safe( Credits.szFontName, pKVNames->GetString( (const char *)NULL, "Default" ) );
+		Credits.iImageID = -1;
+		Credits.flImageScale = 1.0f;
 #else
 		V_strcpy_safe( Credits.szFontName, pKeyValue->GetString( Credits.szCreditName, "Default" ) );
 #endif

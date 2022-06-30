@@ -12931,9 +12931,12 @@ bool CAI_BaseNPC::LoadedSchedules(void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CAI_BaseNPC::CAI_BaseNPC(void)
- :	m_UnreachableEnts( 0, 4 ),
-    m_bDeferredNavigation( false )
+CAI_BaseNPC::CAI_BaseNPC(void) :
+#ifdef MAPBASE
+	m_FriendlyFireOverride( TRS_NONE ),
+#endif
+	m_UnreachableEnts( 0, 4 ),
+	m_bDeferredNavigation( false )
 {
 	m_pMotor = NULL;
 	m_pMoveProbe = NULL;

@@ -81,6 +81,11 @@ class CNPC_Zombine : public CAI_BlendingHost<CNPC_BaseZombie>, public CDefaultPl
 	DECLARE_CLASS( CNPC_Zombine, CAI_BlendingHost<CNPC_BaseZombie> );
 
 public:
+#ifdef MAPBASE
+	CNPC_Zombine() : m_iGrenadeCount( ZOMBINE_MAX_GRENADES )
+	{
+	}
+#endif
 
 	void Spawn( void );
 	void Precache( void );
@@ -166,12 +171,8 @@ private:
 
 	float	m_flSuperFastAttackTime;
 	float   m_flGrenadePullTime;
-	
-#ifdef MAPBASE
-	int		m_iGrenadeCount = ZOMBINE_MAX_GRENADES;
-#else
+
 	int		m_iGrenadeCount;
-#endif
 
 #ifdef MAPBASE
 	COutputEHANDLE m_OnGrenade;

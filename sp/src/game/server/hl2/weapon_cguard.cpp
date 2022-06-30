@@ -99,13 +99,20 @@ public:
 	int		m_spriteTexture;
 
 #ifdef MAPBASE
-	float	m_flDamage = 200;
-	float	m_flRadius = 256;
-	float	m_flMagnitude = 1.0;
+	float	m_flDamage;
+	float	m_flRadius;
+	float	m_flMagnitude;
 	string_t	m_iszSoundName;
 #endif
 
-	CConcussiveBlast( void ) {}
+	CConcussiveBlast( void )
+#ifdef MAPBASE
+		: m_flDamage( 200 ),
+		  m_flRadius( 256 ),
+		  m_flMagnitude( 1.0 )
+#endif
+	{
+	}
 
 	//-----------------------------------------------------------------------------
 	// Purpose: 

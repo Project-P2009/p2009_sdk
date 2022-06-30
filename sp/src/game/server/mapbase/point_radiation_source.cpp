@@ -19,6 +19,10 @@ public:
 	DECLARE_CLASS( CPointRadiationSource, CPointEntity );
 	DECLARE_DATADESC();
 
+	CPointRadiationSource() : m_flIntensity( 1.0f )
+	{
+	}
+
 	void Spawn();
 
 	void RadiationThink();
@@ -28,7 +32,7 @@ public:
 
 	bool m_bTestPVS;
 	float m_flRadius;
-	float m_flIntensity = 1.0f;
+	float m_flIntensity;
 
 	bool m_bDisabled;
 };

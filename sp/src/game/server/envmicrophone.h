@@ -41,6 +41,9 @@ class CEnvMicrophone : public CPointEntity
 	DECLARE_CLASS( CEnvMicrophone, CPointEntity );
 
 public:
+#ifdef MAPBASE
+	CEnvMicrophone() : m_flPitchScale(1.0f), m_flVolumeScale(1.0f), m_nChannel(CHAN_STATIC) {};
+#endif
 	~CEnvMicrophone();
 
 	void Spawn(void);
@@ -101,9 +104,9 @@ private:
 #ifdef MAPBASE
 	string_t	m_iszLandmarkName;
 	EHANDLE		m_hLandmark;
-	float		m_flPitchScale = 1.0f;
-	float		m_flVolumeScale = 1.0f;
-	int			m_nChannel = CHAN_STATIC;
+	float		m_flPitchScale;
+	float		m_flVolumeScale;
+	int			m_nChannel;
 
 	bool		m_bHearingSentence; // HACKHACK: Allows SoundPlayed() to know when to play a sentence instead
 #endif

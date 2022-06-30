@@ -62,6 +62,9 @@ class CAI_FollowGoal : public CAI_GoalEntity
 	DECLARE_CLASS( CAI_FollowGoal, CAI_GoalEntity );
 
 public:
+#ifdef MAPBASE
+	CAI_FollowGoal() : m_bNormalMemoryDiscard( false ) {};
+#endif
 
 	virtual void EnableGoal( CAI_BaseNPC *pAI );
 	virtual void DisableGoal( CAI_BaseNPC *pAI  );
@@ -72,7 +75,7 @@ public:
 	int m_iFormation;
 
 #ifdef MAPBASE
-	bool m_bNormalMemoryDiscard = false;
+	bool m_bNormalMemoryDiscard;
 #endif
 
 	DECLARE_DATADESC();

@@ -619,7 +619,7 @@ private:
 
 #ifdef MAPBASE
 	// Weapon proficiency can be overridden with this.
-	WeaponProficiency_t m_ProficiencyOverride = WEAPON_PROFICIENCY_INVALID;
+	WeaponProficiency_t m_ProficiencyOverride;
 #endif
 
 	// ---------------

@@ -2656,6 +2656,8 @@ class CInteractableProp : public CDynamicProp
 public:
 	DECLARE_DATADESC();
 
+	CInteractableProp( void ) : m_iCurSequence( INTERACTSEQ_NONE ) {};
+
 	void Spawn();
 	void Precache();
 	//void Activate();
@@ -2707,7 +2709,7 @@ public:
 private:
 	float m_flCooldownTime;
 
-	int m_iCurSequence = INTERACTSEQ_NONE; // Currently in a sequence
+	int m_iCurSequence; // Currently in a sequence
 	enum
 	{
 		INTERACTSEQ_NONE = -1,
@@ -6343,6 +6345,9 @@ class CPropFlare : public CPhysicsProp
 	DECLARE_CLASS( CPropFlare, CPhysicsProp );
 	DECLARE_DATADESC();
 public:
+	CPropFlare() : m_flFlareLifetime( 30.0f )
+	{
+	}
 	
 	void Precache()
 	{
@@ -6434,7 +6439,7 @@ public:
 	}
 
 	COutputEvent m_OnRestored;
-	float m_flFlareLifetime = 30.0f;
+	float m_flFlareLifetime;
 };
 
 LINK_ENTITY_TO_CLASS( prop_flare, CPropFlare );

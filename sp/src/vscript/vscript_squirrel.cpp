@@ -136,142 +136,146 @@ struct ReadStateMap
 class SquirrelVM : public IScriptVM
 {
 public:
-	virtual bool Init() override;
-	virtual void Shutdown() override;
+	SquirrelVM() : vm_(nullptr)
+	{
+	};
 
-	virtual bool ConnectDebugger() override;
-	virtual void DisconnectDebugger() override;
+	virtual bool Init() OVERRIDE;
+	virtual void Shutdown() OVERRIDE;
 
-	virtual ScriptLanguage_t GetLanguage() override;
-	virtual const char* GetLanguageName() override;
+	virtual bool ConnectDebugger() OVERRIDE;
+	virtual void DisconnectDebugger() OVERRIDE;
 
-	virtual void AddSearchPath(const char* pszSearchPath) override;
+	virtual ScriptLanguage_t GetLanguage() OVERRIDE;
+	virtual const char* GetLanguageName() OVERRIDE;
+
+	virtual void AddSearchPath(const char* pszSearchPath) OVERRIDE;
 
 	//--------------------------------------------------------
 
-	virtual bool Frame(float simTime) override;
+	virtual bool Frame(float simTime) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Simple script usage
 	//--------------------------------------------------------
-	virtual ScriptStatus_t Run(const char* pszScript, bool bWait = true) override;
+	virtual ScriptStatus_t Run(const char* pszScript, bool bWait = true) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Compilation
 	//--------------------------------------------------------
-	virtual HSCRIPT CompileScript(const char* pszScript, const char* pszId = NULL) override;
-	virtual void ReleaseScript(HSCRIPT) override;
+	virtual HSCRIPT CompileScript(const char* pszScript, const char* pszId = NULL) OVERRIDE;
+	virtual void ReleaseScript(HSCRIPT) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Execution of compiled
 	//--------------------------------------------------------
-	virtual ScriptStatus_t Run(HSCRIPT hScript, HSCRIPT hScope = NULL, bool bWait = true) override;
-	virtual ScriptStatus_t Run(HSCRIPT hScript, bool bWait) override;
+	virtual ScriptStatus_t Run(HSCRIPT hScript, HSCRIPT hScope = NULL, bool bWait = true) OVERRIDE;
+	virtual ScriptStatus_t Run(HSCRIPT hScript, bool bWait) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Scope
 	//--------------------------------------------------------
-	virtual HSCRIPT CreateScope(const char* pszScope, HSCRIPT hParent = NULL) override;
-	virtual void ReleaseScope(HSCRIPT hScript) override;
+	virtual HSCRIPT CreateScope(const char* pszScope, HSCRIPT hParent = NULL) OVERRIDE;
+	virtual void ReleaseScope(HSCRIPT hScript) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Script functions
 	//--------------------------------------------------------
-	virtual HSCRIPT LookupFunction(const char* pszFunction, HSCRIPT hScope = NULL) override;
-	virtual void ReleaseFunction(HSCRIPT hScript) override;
+	virtual HSCRIPT LookupFunction(const char* pszFunction, HSCRIPT hScope = NULL) OVERRIDE;
+	virtual void ReleaseFunction(HSCRIPT hScript) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Script functions (raw, use Call())
 	//--------------------------------------------------------
-	virtual ScriptStatus_t ExecuteFunction(HSCRIPT hFunction, ScriptVariant_t* pArgs, int nArgs, ScriptVariant_t* pReturn, HSCRIPT hScope, bool bWait) override;
+	virtual ScriptStatus_t ExecuteFunction(HSCRIPT hFunction, ScriptVariant_t* pArgs, int nArgs, ScriptVariant_t* pReturn, HSCRIPT hScope, bool bWait) OVERRIDE;
 
 	//--------------------------------------------------------
 	// Hooks
 	//--------------------------------------------------------
-	virtual bool ScopeIsHooked( HSCRIPT hScope, const char *pszEventName ) override;
-	virtual HSCRIPT LookupHookFunction( const char *pszEventName, HSCRIPT hScope, bool &bLegacy ) override;
-	virtual ScriptStatus_t ExecuteHookFunction( const char *pszEventName, HSCRIPT hFunction, ScriptVariant_t *pArgs, int nArgs, ScriptVariant_t *pReturn, HSCRIPT hScope, bool bWait ) override;
+	virtual bool ScopeIsHooked( HSCRIPT hScope, const char *pszEventName ) OVERRIDE;
+	virtual HSCRIPT LookupHookFunction( const char *pszEventName, HSCRIPT hScope, bool &bLegacy ) OVERRIDE;
+	virtual ScriptStatus_t ExecuteHookFunction( const char *pszEventName, HSCRIPT hFunction, ScriptVariant_t *pArgs, int nArgs, ScriptVariant_t *pReturn, HSCRIPT hScope, bool bWait ) OVERRIDE;
 
 	//--------------------------------------------------------
 	// External functions
 	//--------------------------------------------------------
-	virtual void RegisterFunction(ScriptFunctionBinding_t* pScriptFunction) override;
+	virtual void RegisterFunction(ScriptFunctionBinding_t* pScriptFunction) OVERRIDE;
 
 	//--------------------------------------------------------
 	// External classes
 	//--------------------------------------------------------
-	virtual bool RegisterClass(ScriptClassDesc_t* pClassDesc) override;
+	virtual bool RegisterClass(ScriptClassDesc_t* pClassDesc) OVERRIDE;
 
 	//--------------------------------------------------------
 	// External constants
 	//--------------------------------------------------------
-	virtual void RegisterConstant(ScriptConstantBinding_t *pScriptConstant) override;
+	virtual void RegisterConstant(ScriptConstantBinding_t *pScriptConstant) OVERRIDE;
 
 	//--------------------------------------------------------
 	// External enums
 	//--------------------------------------------------------
-	virtual void RegisterEnum(ScriptEnumDesc_t *pEnumDesc) override;
+	virtual void RegisterEnum(ScriptEnumDesc_t *pEnumDesc) OVERRIDE;
 	
 	//--------------------------------------------------------
 	// External hooks
 	//--------------------------------------------------------
-	virtual void RegisterHook(ScriptHook_t *pHookDesc) override;
+	virtual void RegisterHook(ScriptHook_t *pHookDesc) OVERRIDE;
 
 	//--------------------------------------------------------
 	// External instances. Note class will be auto-registered.
 	//--------------------------------------------------------
 
-	virtual HSCRIPT RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance, bool bAllowDestruct = false) override;
-	virtual void SetInstanceUniqeId(HSCRIPT hInstance, const char* pszId) override;
-	virtual void RemoveInstance(HSCRIPT hInstance) override;
+	virtual HSCRIPT RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance, bool bAllowDestruct = false) OVERRIDE;
+	virtual void SetInstanceUniqeId(HSCRIPT hInstance, const char* pszId) OVERRIDE;
+	virtual void RemoveInstance(HSCRIPT hInstance) OVERRIDE;
 
-	virtual void* GetInstanceValue(HSCRIPT hInstance, ScriptClassDesc_t* pExpectedType = NULL) override;
-
-	//----------------------------------------------------------------------------
-
-	virtual bool GenerateUniqueKey(const char* pszRoot, char* pBuf, int nBufSize) override;
+	virtual void* GetInstanceValue(HSCRIPT hInstance, ScriptClassDesc_t* pExpectedType = NULL) OVERRIDE;
 
 	//----------------------------------------------------------------------------
 
-	virtual bool ValueExists(HSCRIPT hScope, const char* pszKey) override;
-
-	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const char* pszValue) override;
-	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const ScriptVariant_t& value) override;
-	virtual bool SetValue(HSCRIPT hScope, const ScriptVariant_t& key, const ScriptVariant_t& val) override;
-
-	virtual void CreateTable(ScriptVariant_t& Table) override;
-	virtual int	GetNumTableEntries(HSCRIPT hScope) override;
-	virtual int GetKeyValue(HSCRIPT hScope, int nIterator, ScriptVariant_t* pKey, ScriptVariant_t* pValue) override;
-
-	virtual bool GetValue(HSCRIPT hScope, const char* pszKey, ScriptVariant_t* pValue) override;
-	virtual bool GetValue(HSCRIPT hScope, ScriptVariant_t key, ScriptVariant_t* pValue) override;
-	virtual void ReleaseValue(ScriptVariant_t& value) override;
-
-	virtual bool ClearValue(HSCRIPT hScope, const char* pszKey) override;
-	virtual bool ClearValue( HSCRIPT hScope, ScriptVariant_t pKey ) override;
-
-	virtual void CreateArray(ScriptVariant_t &arr, int size = 0) override;
-	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t &val) override;
+	virtual bool GenerateUniqueKey(const char* pszRoot, char* pBuf, int nBufSize) OVERRIDE;
 
 	//----------------------------------------------------------------------------
 
-	virtual void WriteState(CUtlBuffer* pBuffer) override;
-	virtual void ReadState(CUtlBuffer* pBuffer) override;
-	virtual void RemoveOrphanInstances() override;
+	virtual bool ValueExists(HSCRIPT hScope, const char* pszKey) OVERRIDE;
 
-	virtual void DumpState() override;
+	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const char* pszValue) OVERRIDE;
+	virtual bool SetValue(HSCRIPT hScope, const char* pszKey, const ScriptVariant_t& value) OVERRIDE;
+	virtual bool SetValue(HSCRIPT hScope, const ScriptVariant_t& key, const ScriptVariant_t& val) OVERRIDE;
 
-	virtual void SetOutputCallback(ScriptOutputFunc_t pFunc) override;
-	virtual void SetErrorCallback(ScriptErrorFunc_t pFunc) override;
+	virtual void CreateTable(ScriptVariant_t& Table) OVERRIDE;
+	virtual int	GetNumTableEntries(HSCRIPT hScope) OVERRIDE;
+	virtual int GetKeyValue(HSCRIPT hScope, int nIterator, ScriptVariant_t* pKey, ScriptVariant_t* pValue) OVERRIDE;
+
+	virtual bool GetValue(HSCRIPT hScope, const char* pszKey, ScriptVariant_t* pValue) OVERRIDE;
+	virtual bool GetValue(HSCRIPT hScope, ScriptVariant_t key, ScriptVariant_t* pValue) OVERRIDE;
+	virtual void ReleaseValue(ScriptVariant_t& value) OVERRIDE;
+
+	virtual bool ClearValue(HSCRIPT hScope, const char* pszKey) OVERRIDE;
+	virtual bool ClearValue( HSCRIPT hScope, ScriptVariant_t pKey ) OVERRIDE;
+
+	virtual void CreateArray(ScriptVariant_t &arr, int size = 0) OVERRIDE;
+	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t &val) OVERRIDE;
 
 	//----------------------------------------------------------------------------
 
-	virtual bool RaiseException(const char* pszExceptionText) override;
+	virtual void WriteState(CUtlBuffer* pBuffer) OVERRIDE;
+	virtual void ReadState(CUtlBuffer* pBuffer) OVERRIDE;
+	virtual void RemoveOrphanInstances() OVERRIDE;
+
+	virtual void DumpState() OVERRIDE;
+
+	virtual void SetOutputCallback(ScriptOutputFunc_t pFunc) OVERRIDE;
+	virtual void SetErrorCallback(ScriptErrorFunc_t pFunc) OVERRIDE;
+
+	//----------------------------------------------------------------------------
+
+	virtual bool RaiseException(const char* pszExceptionText) OVERRIDE;
 
 
 	void WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQInteger idx);
 	void ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState);
-	HSQUIRRELVM vm_ = nullptr;
+	HSQUIRRELVM vm_;
 	HSQOBJECT lastError_;
 	HSQOBJECT vectorClass_;
 	HSQOBJECT regexpClass_;

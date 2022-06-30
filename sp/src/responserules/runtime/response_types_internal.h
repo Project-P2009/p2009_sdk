@@ -356,7 +356,7 @@ namespace ResponseRules
 	};
 #pragma pack(pop)
 
-	template <typename T, typename I = unsigned short>
+	template <typename T, typename I>
 	class CResponseDict : public CUtlMap<unsigned int, T, I>
 	{
 	public:
@@ -422,7 +422,7 @@ namespace ResponseRules
 		ResponseRulePartition( void );
 		~ResponseRulePartition();
 
-		typedef CResponseDict< Rule * > tRuleDict;
+		typedef CResponseDict< Rule *, unsigned short > tRuleDict;
 		typedef uint32 tIndex; // an integer that can be used to find any rule in the dict
 
 		/// get the appropriate m_rules dict for the provided rule

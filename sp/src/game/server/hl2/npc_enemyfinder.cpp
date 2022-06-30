@@ -32,6 +32,9 @@ public:
 	DECLARE_CLASS( CNPC_EnemyFinder, CAI_BaseNPC );
 
 	CNPC_EnemyFinder()
+#ifdef MAPBASE
+		: m_iClassify( CLASS_NONE )
+#endif
 	{
 		m_PlayerFreePass.SetOuter( this );
 	}
@@ -70,7 +73,7 @@ private:
 	bool	m_bEnemyStatus;
 
 #ifdef MAPBASE
-	Class_T		m_iClassify = CLASS_NONE;
+	Class_T		m_iClassify;
 #endif
 
 	COutputEvent m_OnLostEnemies;

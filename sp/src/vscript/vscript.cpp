@@ -21,7 +21,7 @@ int vscript_token = 0;
 class CScriptManager : public CTier1AppSystem<IScriptManager>
 {
 public:
-	virtual IScriptVM* CreateVM(ScriptLanguage_t language) override
+	virtual IScriptVM* CreateVM(ScriptLanguage_t language) OVERRIDE
 	{
 		IScriptVM* pScriptVM = nullptr;
 		if (language == SL_SQUIRREL)
@@ -50,7 +50,7 @@ public:
 		return pScriptVM;
 	}
 
-	virtual void DestroyVM(IScriptVM * pScriptVM) override
+	virtual void DestroyVM(IScriptVM * pScriptVM) OVERRIDE
 	{
 		if (pScriptVM)
 		{
@@ -60,14 +60,14 @@ public:
 	}
 
 	// Mapbase moves CScriptKeyValues into the library so it could be used elsewhere
-	virtual HSCRIPT CreateScriptKeyValues( IScriptVM *pVM, KeyValues *pKV, bool bAllowDestruct ) override
+	virtual HSCRIPT CreateScriptKeyValues( IScriptVM *pVM, KeyValues *pKV, bool bAllowDestruct ) OVERRIDE
 	{
 		CScriptKeyValues *pSKV = new CScriptKeyValues( pKV );
 		HSCRIPT hSKV = pVM->RegisterInstance( pSKV, bAllowDestruct );
 		return hSKV;
 	}
 
-	virtual KeyValues *GetKeyValuesFromScriptKV( IScriptVM *pVM, HSCRIPT hSKV ) override
+	virtual KeyValues *GetKeyValuesFromScriptKV( IScriptVM *pVM, HSCRIPT hSKV ) OVERRIDE
 	{
 		CScriptKeyValues *pSKV = (hSKV ? (CScriptKeyValues*)pVM->GetInstanceValue( hSKV, GetScriptDesc( (CScriptKeyValues*)NULL ) ) : nullptr);
 		if (pSKV)

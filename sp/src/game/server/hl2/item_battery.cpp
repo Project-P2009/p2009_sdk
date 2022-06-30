@@ -20,6 +20,12 @@ class CItemBattery : public CItem
 public:
 	DECLARE_CLASS( CItemBattery, CItem );
 
+#ifdef MAPBASE
+	CItemBattery() : m_flPowerMultiplier( 1.0f )
+	{
+	}
+#endif
+
 	void Spawn( void )
 	{ 
 		Precache( );
@@ -45,7 +51,7 @@ public:
 
 #ifdef MAPBASE
 	void	InputSetPowerMultiplier( inputdata_t &inputdata ) { m_flPowerMultiplier = inputdata.value.Float(); }
-	float	m_flPowerMultiplier = 1.0f;
+	float	m_flPowerMultiplier;
 
 	DECLARE_DATADESC();
 #endif

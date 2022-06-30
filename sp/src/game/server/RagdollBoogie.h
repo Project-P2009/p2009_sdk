@@ -29,6 +29,7 @@ class CRagdollBoogie : public CBaseEntity
 
 public:
 #ifdef MAPBASE
+	CRagdollBoogie() : m_vecColor( Vector(1, 1, 1) ) {};
 	static CRagdollBoogie	*Create( CBaseEntity *pTarget, float flMagnitude, float flStartTime, float flLengthTime = 0.0f, int nSpawnFlags = 0, const Vector *vecColor = NULL );
 #else
 	static CRagdollBoogie	*Create( CBaseEntity *pTarget, float flMagnitude, float flStartTime, float flLengthTime = 0.0f, int nSpawnFlags = 0 );
@@ -55,7 +56,7 @@ private:
 	int	m_nSuppressionCount;
 
 #ifdef MAPBASE
-	Vector m_vecColor = Vector(1, 1, 1);
+	Vector m_vecColor;
 #endif
 };
 

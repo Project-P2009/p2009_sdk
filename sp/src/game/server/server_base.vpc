@@ -340,6 +340,8 @@ $Project
 		$File	"EnvBeam.cpp"
 		$File	"EnvFade.cpp"
 		$File	"EnvHudHint.cpp"
+		$File	"EnvLaser.cpp"
+		$File	"EnvLaser.h"
 		$File	"EnvMessage.cpp"
 		$File	"EnvMessage.h"
 		$File	"envmicrophone.cpp"

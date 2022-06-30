@@ -46,7 +46,7 @@ private:
 	dworldlight_t *m_pWorldLights;
 
 #ifdef MAPBASE
-	int m_iSunIndex = -1; // The sun's personal index
+	int m_iSunIndex; // The sun's personal index
 
 	struct clusterLightList_t
 	{

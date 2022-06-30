@@ -397,6 +397,10 @@ class CFuncRotating : public CBaseEntity
 {
 	DECLARE_CLASS( CFuncRotating, CBaseEntity );
 public:
+#ifdef MAPBASE
+	CFuncRotating() : m_iMinPitch( 30 ), m_iMaxPitch( 100 ) {};
+#endif
+
 	// basic functions
 	void Spawn( void  );
 	void Precache( void  );
@@ -451,8 +455,8 @@ protected:
 	bool m_bSolidBsp;				// Brush is SOLID_BSP
 
 #ifdef MAPBASE
-	int		m_iMinPitch = 30; // FANPITCHMIN
-	int		m_iMaxPitch = 100; // FANPITCHMAX
+	int		m_iMinPitch; // FANPITCHMIN
+	int		m_iMaxPitch; // FANPITCHMAX
 #endif
 
 public:

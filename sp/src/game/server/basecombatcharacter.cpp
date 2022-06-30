@@ -835,6 +835,9 @@ bool CBaseCombatCharacter::HandleInteraction( int interactionType, void *data, C
 // Purpose: Constructor : Initialize some fields
 //-----------------------------------------------------------------------------
 CBaseCombatCharacter::CBaseCombatCharacter( void )
+#ifdef MAPBASE
+	: m_ProficiencyOverride( WEAPON_PROFICIENCY_INVALID )
+#endif
 {
 #ifdef _DEBUG
 	// necessary since in debug, we initialize vectors to NAN for debugging

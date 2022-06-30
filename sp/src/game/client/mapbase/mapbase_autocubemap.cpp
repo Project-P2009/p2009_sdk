@@ -32,7 +32,12 @@ ConVar autocubemap_hdr_value( "autocubemap_hdr_value", "2" );
 class CAutoCubemapSystem : public CAutoGameSystem
 {
 public:
-	CAutoCubemapSystem() : CAutoGameSystem( "CAutoCubemapSystem" )
+	CAutoCubemapSystem() :
+		CAutoGameSystem( "CAutoCubemapSystem" ),
+		m_bAutoCubemapActive( false ),
+		m_bAutoCubemapBuildingCubemaps( false ),
+		m_bAutoCubemapDoingBoth( false ),
+		m_bAutoCubemapOnFirstLevel( false )
 	{
 	}
 
@@ -215,13 +220,13 @@ public:
 
 	//-------------------------------------------------------------------------------------
 
-	bool m_bAutoCubemapActive = false;
-	bool m_bAutoCubemapBuildingCubemaps = false;
-	bool m_bAutoCubemapDoingBoth = false;
+	bool m_bAutoCubemapActive;
+	bool m_bAutoCubemapBuildingCubemaps;
+	bool m_bAutoCubemapDoingBoth;
 	int m_iAutoCubemapUserHDRLevel;		// For setting the user back to the right HDR level when we're finished
 
 	// Start autocubemap with the first level we load (used for launch parameter)
-	bool m_bAutoCubemapOnFirstLevel = false;
+	bool m_bAutoCubemapOnFirstLevel;
 
 	CUtlVector<const char*> m_AutoCubemapMaps;
 	int m_AutoCubemapMapsIndex;

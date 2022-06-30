@@ -99,7 +99,11 @@ static float Engine_WorldLightDistanceFalloff( const dworldlight_t *wl, const Ve
 //-----------------------------------------------------------------------------
 // Purpose: initialise game system and members
 //-----------------------------------------------------------------------------
-CWorldLights::CWorldLights() : CAutoGameSystem("World lights")
+CWorldLights::CWorldLights() :
+#ifdef MAPBASE
+	m_iSunIndex(-1),
+#endif
+	CAutoGameSystem("World lights")
 {
 	m_nWorldLights = 0;
 	m_pWorldLights = NULL;

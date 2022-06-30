@@ -1484,7 +1484,14 @@ class CPhysConvert : public CLogicalEntity
 	DECLARE_CLASS( CPhysConvert, CLogicalEntity );
 
 public:
-	CPhysConvert( void ) : m_flMassOverride( 0.0f ) {};
+	CPhysConvert( void ) :
+#ifdef MAPBASE
+		m_iPhysicsEntityType( CONVERT_ENTITYTYPE_SIMPLE ),
+#endif
+		m_flMassOverride( 0.0f )
+	{
+	};
+
 	COutputEvent m_OnConvert;	
 
 	// Input handlers
@@ -1504,7 +1511,7 @@ private:
 	string_t		m_swapModel;
 	float			m_flMassOverride;
 #ifdef MAPBASE
-	int				m_iPhysicsEntityType = CONVERT_ENTITYTYPE_SIMPLE;
+	int				m_iPhysicsEntityType;
 #endif
 };
 

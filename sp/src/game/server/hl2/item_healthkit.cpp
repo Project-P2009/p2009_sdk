@@ -27,6 +27,12 @@ class CHealthKit : public CItem
 public:
 	DECLARE_CLASS( CHealthKit, CItem );
 
+#ifdef MAPBASE
+	CHealthKit() : m_flHealthMultiplier( 1.0f )
+	{
+	};
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	bool MyTouch( CBasePlayer *pPlayer );
@@ -35,7 +41,7 @@ public:
 	float GetItemAmount() { return sk_healthkit.GetFloat() * m_flHealthMultiplier; }
 
 	void	InputSetHealthMultiplier( inputdata_t &inputdata ) { m_flHealthMultiplier = inputdata.value.Float(); }
-	float	m_flHealthMultiplier = 1.0f;
+	float	m_flHealthMultiplier;
 
 	DECLARE_DATADESC();
 #endif
@@ -124,6 +130,12 @@ class CHealthVial : public CItem
 public:
 	DECLARE_CLASS( CHealthVial, CItem );
 
+#ifdef MAPBASE
+	CHealthVial() : m_flHealthMultiplier( 1.0f )
+	{
+	}
+#endif
+
 	void Spawn( void )
 	{
 		Precache();
@@ -176,7 +188,7 @@ public:
 	float GetItemAmount() { return sk_healthvial.GetFloat() * m_flHealthMultiplier; }
 
 	void	InputSetHealthMultiplier( inputdata_t &inputdata ) { m_flHealthMultiplier = inputdata.value.Float(); }
-	float	m_flHealthMultiplier = 1.0f;
+	float	m_flHealthMultiplier;
 
 	DECLARE_DATADESC();
 #endif

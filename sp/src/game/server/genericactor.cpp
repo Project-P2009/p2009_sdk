@@ -40,6 +40,12 @@ class CGenericActor : public CAI_BaseActor
 public:
 	DECLARE_CLASS( CGenericActor, CAI_BaseActor );
 
+#ifdef MAPBASE
+	CGenericActor( void ) : m_iClassify ( CLASS_NONE )
+	{
+	};
+#endif
+
 	void	Spawn( void );
 	void	Precache( void );
 	float	MaxYawSpeed( void );
@@ -52,7 +58,7 @@ public:
 
 	string_t			m_strHullName;
 #ifdef MAPBASE
-	Class_T				m_iClassify = CLASS_NONE;
+	Class_T				m_iClassify;
 #endif
 
 	DECLARE_DATADESC();

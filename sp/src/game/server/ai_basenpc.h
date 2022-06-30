@@ -541,7 +541,7 @@ public:
 	//
 	// Initialization, cleanup, serialization, identity
 	//
-	
+
 	CAI_BaseNPC();
 	~CAI_BaseNPC();
 
@@ -1232,7 +1232,7 @@ public:
 	CAI_MoveMonitor	m_CommandMoveMonitor;
 
 #ifdef MAPBASE
-	ThreeState_t m_FriendlyFireOverride = TRS_NONE;
+	ThreeState_t m_FriendlyFireOverride;
 	virtual bool	FriendlyFireEnabled();
 	void			InputSetFriendlyFire( inputdata_t &inputdata );
 

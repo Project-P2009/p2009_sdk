@@ -222,6 +222,13 @@ private:
 	DECLARE_DATADESC();
 
 public:
+#ifdef MAPBASE
+	CLogicPlayerProxy() :
+		m_MaxArmor( 100 ),
+		m_SuitZoomFOV( 25 )
+	{
+	}
+#endif
 
 	COutputEvent m_OnFlashlightOn;
 	COutputEvent m_OnFlashlightOff;
@@ -283,8 +290,8 @@ public:
 	// Hope there wouldn't be enough time for this to need to be saved...
 	CUtlDict<string_t, int> m_QueuedKV;
 
-	int m_MaxArmor = 100;
-	int m_SuitZoomFOV = 25;
+	int m_MaxArmor;
+	int m_SuitZoomFOV;
 #endif
 
 	bool PassesDamageFilter( const CTakeDamageInfo &info );

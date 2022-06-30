@@ -157,9 +157,15 @@ class CMapbaseSystem : public CAutoGameSystem
 public:
 	DECLARE_DATADESC();
 
+#ifdef CLIENT_DLL
+	CMapbaseSystem() : CAutoGameSystem( "CMapbaseSystem" ), m_bInitializedRTs ( false )
+	{
+	}
+#else
 	CMapbaseSystem() : CAutoGameSystem( "CMapbaseSystem" )
 	{
 	}
+#endif
 
 	inline bool GetGameInfoKeyValues(KeyValues *pKeyValues)
 	{
@@ -618,7 +624,7 @@ public:
 private:
 
 #ifdef CLIENT_DLL
-	bool m_bInitializedRTs = false;
+	bool m_bInitializedRTs;
 	CUtlVector<CTextureReference> m_CameraTextures;
 
 	CUtlVector<CUtlSymbol> m_CloseCaptionFileNames;

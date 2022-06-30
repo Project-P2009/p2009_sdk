@@ -1741,6 +1741,10 @@ class CFilterDamageTransfer : public CBaseFilterRedirect
 	DECLARE_DATADESC();
 
 public:
+	CFilterDamageTransfer() : m_iMaxEntities( MAX_EDICTS )
+	{
+	};
+
 	void Spawn()
 	{
 		BaseClass::Spawn();
@@ -1849,7 +1853,7 @@ public:
 	// If enabled, the caller can be damaged after the transfer. If disabled, the caller cannot.
 	bool m_bCallerDamageAllowed;
 
-	int m_iMaxEntities = MAX_EDICTS;
+	int m_iMaxEntities;
 };
 
 LINK_ENTITY_TO_CLASS( filter_damage_transfer, CFilterDamageTransfer );
@@ -1919,6 +1923,10 @@ class CFilterDamageMod : public CBaseFilterRedirect
 	DECLARE_CLASS( CFilterDamageMod, CBaseFilterRedirect );
 	DECLARE_DATADESC();
 public:
+	CFilterDamageMod() : m_flDamageMultiplier ( 1.0f )
+	{
+	};
+
 	bool PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity )
 	{
 		if (GetTargetFilter() && m_iSecondaryFilterMode == REDIRECT_MUST_PASS_TO_DAMAGE_CALLER)
@@ -1989,7 +1997,7 @@ public:
 	void InputSetNewInflictor( inputdata_t &inputdata ) { m_iszNewInflictor = inputdata.value.StringID(); m_hNewInflictor = NULL; }
 	void InputSetNewWeapon( inputdata_t &inputdata ) { m_iszNewWeapon = inputdata.value.StringID(); m_hNewWeapon = NULL; }
 
-	float m_flDamageMultiplier	= 1.0f;
+	float m_flDamageMultiplier;
 	float m_flDamageAddend;
 	int m_iDamageBitsAdded;
 	int m_iDamageBitsRemoved;
