@@ -61,6 +61,7 @@ config.cfg
 *.filters
 *.vpc_crc
 *.sentinel
+*.project
 
 # Backup files
 *.bak
@@ -80,6 +81,8 @@ sp/src/*/Release/
 sp/game/*.dll
 sp/game/*.pdb
 sp/game/*.exe
+sp/game/p2009/bin/*.so
+sp/game/p2009/bin/*.dbg
 sp/src/utils/*.dll
 sp/src/utils/*.pdb
 sp/src/utils/*.exe

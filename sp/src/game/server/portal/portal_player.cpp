@@ -14,7 +14,7 @@
 #include "in_buttons.h"
 #include "portal_gamerules.h"
 #include "weapon_portalgun.h"
-#include "portal\weapon_physcannon.h"
+#include "portal/weapon_physcannon.h"
 #include "KeyValues.h"
 #include "team.h"
 #include "eventqueue.h"
@@ -384,7 +384,8 @@ void CPortal_Player::GiveDefaultItems(void)
 {
 	castable_string_t st("suit_no_sprint");
 	GlobalEntity_SetState(st, GLOBAL_OFF);
-	InputDisableFlashlight(inputdata_t());
+	inputdata_t in;
+	InputDisableFlashlight(in);
 }
 
 
@@ -546,7 +547,8 @@ void CPortal_Player::UpdateExpression(void)
 	GetExpresser()->SetOuter(this);
 
 	ClearExpression();
-	AI_Response* result = SpeakFindResponse(g_pszChellConcepts[iConcept]);
+	AI_Response response;
+	bool result = SpeakFindResponse(response, g_pszChellConcepts[iConcept]);
 	if (!result)
 	{
 		m_flExpressionLoopTime = gpGlobals->curtime + RandomFloat(30, 40);
@@ -554,7 +556,7 @@ void CPortal_Player::UpdateExpression(void)
 	}
 
 	char szScene[MAX_PATH];
-	result->GetResponse(szScene, sizeof(szScene));
+	response.GetResponse(szScene, sizeof(szScene));
 
 	// Ignore updates that choose the same scene
 	if (m_iszExpressionScene != NULL_STRING && stricmp(STRING(m_iszExpressionScene), szScene) == 0)
