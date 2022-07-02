@@ -7856,6 +7856,10 @@ Activity CBasePlayer::Weapon_TranslateActivity( Activity baseAct, bool *pRequire
 		// Our weapon is holstered. Use the base activity.
 		return baseAct;
 	}
+// we don't fricking care about  bool * forcing to true/false here. - Anthonyp
+#pragma warning(push)
+#pragma warning(disable : 4800)
+
 	if ( GetModelPtr() && (!GetModelPtr()->HaveSequenceForActivity(weaponTranslation) || baseAct == weaponTranslation) )
 	{
 		// This is used so players can fall back to backup activities in the same way NPCs in Mapbase can
@@ -7865,7 +7869,7 @@ Activity CBasePlayer::Weapon_TranslateActivity( Activity baseAct, bool *pRequire
 
 		return baseAct;
 	}
-
+#pragma warning(pop)
 	return weaponTranslation;
 }
 #endif

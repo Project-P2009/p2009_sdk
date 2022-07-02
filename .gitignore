@@ -61,6 +61,7 @@ config.cfg
 *.filters
 *.vpc_crc
 *.sentinel
+Release_*
 
 # Backup files
 *.bak
