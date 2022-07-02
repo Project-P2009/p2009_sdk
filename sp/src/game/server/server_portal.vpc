@@ -342,6 +342,8 @@ $Project "Server (Portal)"
 			$File	"portal\portal_radio.cpp"
 			$File   "portal\EnvLaser.cpp"
 			$file   "portal\EnvLaser.h"
+			$File   "portal\env_portal_laser.cpp"
+			$file   "portal\env_portal_laser.h"
 			$Folder	"Weapons"
 			{
 				$File	"$SRCDIR\game\server\portal\weapon_physcannon.cpp"
