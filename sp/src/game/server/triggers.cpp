@@ -486,6 +486,24 @@ void CBaseTrigger::InputEndTouch( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: Called when the first entity that passes filters starts touching us.
+// Input  : pOther - The entity that is touching us.
+//-----------------------------------------------------------------------------
+void CBaseTrigger::OnStartTouchAll(CBaseEntity* pOther)
+{
+	m_OnStartTouchAll.FireOutput(pOther, this);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when the last entity stops touching us
+// Input  : pOther - The entity that is touching us.
+//-----------------------------------------------------------------------------
+void CBaseTrigger::OnEndTouchAll(CBaseEntity* pOther)
+{
+	m_OnEndTouchAll.FireOutput(pOther, this);
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Called when an entity starts touching us.
 // Input  : pOther - The entity that is touching us.
 //-----------------------------------------------------------------------------
@@ -507,8 +525,7 @@ void CBaseTrigger::StartTouch(CBaseEntity *pOther)
 
 		if ( bAdded && ( m_hTouchingEntities.Count() == 1 ) )
 		{
-			// First entity to touch us that passes our filters
-			m_OnStartTouchAll.FireOutput( pOther, this );
+			OnStartTouchAll(pOther);
 		}
 	}
 }
@@ -563,7 +580,7 @@ void CBaseTrigger::EndTouch(CBaseEntity *pOther)
 		// Didn't find one?
 		if ( !bFoundOtherTouchee /*&& !m_bDisabled*/ )
 		{
-			m_OnEndTouchAll.FireOutput(pOther, this);
+			OnEndTouchAll(pOther);
 		}
 	}
 }

@@ -177,6 +177,7 @@ $Project "Client (Portal)"
 			$File	"portal\vgui_portal_stats_display_screen.cpp"
 			$File	"portal\vgui_neurotoxin_countdown_screen.cpp"
 			$File	"$SRCDIR\game\shared\portal\portal_weapon_parse.cpp"
+			$File	"portal\c_prop_floor_button.cpp"
 
 			$Folder	"Weapons"
 			{
