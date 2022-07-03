@@ -340,9 +340,8 @@ $Project
 		$File	"EnvBeam.cpp"
 		$File	"EnvFade.cpp"
 		$File	"EnvHudHint.cpp"
-		//Base file that interfered with windows compiling
-		//$File   "EnvLaser.cpp"
-		//$File   "EnvLaser.h"
+		$File   "EnvLaser.cpp"
+		$File   "EnvLaser.h"
 		$File	"EnvMessage.cpp"
 		$File	"EnvMessage.h"
 		$File	"envmicrophone.cpp"
