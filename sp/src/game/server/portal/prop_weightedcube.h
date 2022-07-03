@@ -6,7 +6,7 @@
 
 #include "props.h"
 #include "baseanimating.h"
-#include "sprite.h"
+#include "Sprite.h"
 #include "particle_parse.h"
 #include "particle_system.h"
 #include "player_pickup.h"
@@ -51,7 +51,7 @@ public:
 	//virtual void Activate(void);
 
 	int GetCubeType() { return m_cubeType; }
-	int SetCubeType(int type) { m_cubeType = type; }
+	void SetCubeType(int type) { m_cubeType = type; }
 
 	void SetActivated(bool active);
 
