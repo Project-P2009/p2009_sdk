@@ -458,12 +458,6 @@ public:
 	float			m_flConstraintRadius;
 	float			m_flConstraintWidth;
 	float			m_flConstraintSpeedFactor;
-	
-#ifdef PORTAL
-	bool m_bCurrentlyLaunchedByCatapult; // Check if player is currently being launched by a catapult
-	float m_fLaunchpadAirAccelerate; // The air accerate used during the use of a launchpad
-#endif
-
 
 #ifdef MAPBASE
 	// Transmitted from the server for internal player spawnflags.

@@ -878,12 +878,7 @@ public:
 
 	// Used by gamemovement to check if the entity is stuck.
 	int m_StuckLast;
-
-#ifdef PORTAL	
-	CNetworkVar(bool, m_bCurrentlyLaunchedByCatapult); // Check if player is currently being launched by a catapult
-	CNetworkVar(float, m_fLaunchpadAirAccelerate); // The air accerate used during the use of a launchpad
-#endif
-
+	
 	// FIXME: Make these protected or private!
 
 	// This player's data that should only be replicated to 

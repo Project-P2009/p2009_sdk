@@ -359,14 +359,7 @@ void CPortalGameMovement::AirMove( void )
 		wishspeed = mv->m_flMaxSpeed;
 	}
 
-	if (player->m_bCurrentlyLaunchedByCatapult)
-	{
-		AirAccelerate(wishdir, wishspeed, player->m_fLaunchpadAirAccelerate); // Sets the air accelerate during the use of a launchpad
-	}
-	else
-	{
-		AirAccelerate(wishdir, wishspeed, 15.0f);
-	}
+	AirAccelerate( wishdir, wishspeed, 15.0f );
 
 	// Add in any base velocity to the current velocity.
 	VectorAdd(mv->m_vecVelocity, player->GetBaseVelocity(), mv->m_vecVelocity );

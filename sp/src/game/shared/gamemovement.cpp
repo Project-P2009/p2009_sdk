@@ -1790,18 +1790,8 @@ void CGameMovement::AirMove( void )
 		VectorScale (wishvel, mv->m_flMaxSpeed/wishspeed, wishvel);
 		wishspeed = mv->m_flMaxSpeed;
 	}
-#if defined (PORTAL)	
-	if (player->m_bCurrentlyLaunchedByCatapult) 
-	{
-		AirAccelerate(wishdir, wishspeed, player->m_fLaunchpadAirAccelerate); // Sets the air accelerate during the use of a launchpad
-	}
-	else 
-	{
-		AirAccelerate(wishdir, wishspeed, sv_airaccelerate.GetFloat());
-	}
-#else
-	AirAccelerate(wishdir, wishspeed, sv_airaccelerate.GetFloat());
-#endif
+	
+	AirAccelerate( wishdir, wishspeed, sv_airaccelerate.GetFloat() );
 
 	// Add in any base velocity to the current velocity.
 	VectorAdd(mv->m_vecVelocity, player->GetBaseVelocity(), mv->m_vecVelocity );
@@ -3988,10 +3978,6 @@ void CGameMovement::CheckFalling( void )
 	// Clear the fall velocity so the impact doesn't happen again.
 	//
 	player->m_Local.m_flFallVelocity = 0;
-#ifdef PORTAL
-	player->m_bCurrentlyLaunchedByCatapult = false; // No longer being launched by the catapult
-	player->m_fLaunchpadAirAccelerate = 0; // Sets the launchpad air accelerate value to 0, disables i
-#endif
 }
 
 void CGameMovement::PlayerRoughLandingEffects( float fvol )

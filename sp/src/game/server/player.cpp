@@ -775,10 +775,6 @@ CBasePlayer::CBasePlayer( )
 	m_flLastUserCommandTime = 0.f;
 	m_flMovementTimeForUserCmdProcessingRemaining = 0.0f;
 
-#ifdef PORTAL
-	m_bCurrentlyLaunchedByCatapult = false;
-#endif
-
 	m_hPostProcessCtrl.Set( NULL );
 }
 
@@ -8756,11 +8752,6 @@ void SendProxy_ShiftPlayerSpawnflags( const SendProp *pProp, const void *pStruct
 
 		SendPropInt			( SENDINFO( m_nWaterLevel ), 2, SPROP_UNSIGNED ),
 		SendPropFloat		( SENDINFO( m_flLaggedMovementValue ), 0, SPROP_NOSCALE ),
-
-#ifdef PORTAL
-		SendPropBool(SENDINFO(m_bCurrentlyLaunchedByCatapult)),
-		SendPropFloat(SENDINFO(m_fLaunchpadAirAccelerate)),
-#endif
 
 #ifdef MAPBASE
 		// Transmitted from the server for internal player spawnflags.
