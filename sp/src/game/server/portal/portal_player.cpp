@@ -332,9 +332,13 @@ void CPortal_Player::StopLoopingSounds()
 
 void CPortal_Player::GiveAllItems(void)
 {
+	CBasePlayer::GiveAmmo(255, "Pistol");
+
+	GiveNamedItem("weapon_pistol");
+
 	EquipSuit();
 
-	CBasePlayer::GiveAmmo(255, "Pistol");
+	
 	CBasePlayer::GiveAmmo(32, "357");
 
 	CBasePlayer::GiveAmmo(255, "AR2");
@@ -351,7 +355,6 @@ void CPortal_Player::GiveAllItems(void)
 	GiveNamedItem("weapon_crowbar");
 	GiveNamedItem("weapon_physcannon");
 
-	GiveNamedItem("weapon_pistol");
 	GiveNamedItem("weapon_357");
 
 	GiveNamedItem("weapon_smg1");
