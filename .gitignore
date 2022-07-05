@@ -96,5 +96,8 @@ sp/src/materialsystem/*.pdb
 sp/src/vgui2/*.dll
 sp/src/vgui2/*.pdb
 
+Debug/
+Debug_*
+
 # Build support files
 sp/src/devtools/gcc9+support.o

@@ -19,7 +19,7 @@
 #define PROP_FLOOR_BALL_BUTTON_MODEL_NAME "models/props/ball_button.mdl"
 #define PROP_UNDER_FLOOR_BUTTON_MODEL_NAME "models/props_underground/underground_floor_button.mdl"
 
-static const char * s_pszPressingBoxHasSetteledThinkContext = "PressingBoxHasSetteledThinkContext";
+static const char* s_pszPressingBoxHasSetteledThinkContext = "PressingBoxHasSetteledThinkContext";
 
 class CPropFloorButton;
 
@@ -36,30 +36,30 @@ enum button_skins
 class CPortalButtonTrigger : public CBaseTrigger
 {
 public:
-	DECLARE_CLASS( CPortalButtonTrigger, CBaseTrigger );
+	DECLARE_CLASS(CPortalButtonTrigger, CBaseTrigger);
 	DECLARE_DATADESC();
 
-	static CPortalButtonTrigger *Create( const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecMins, const Vector &vecMaxs, CPropFloorButton *pOwner );
+	static CPortalButtonTrigger* Create(const Vector& vecOrigin, const QAngle& vecAngles, const Vector& vecMins, const Vector& vecMaxs, CPropFloorButton* pOwner);
 
-	virtual bool PassesTriggerFilters(CBaseEntity *pOther);
+	virtual bool PassesTriggerFilters(CBaseEntity* pOther);
 
-	void OnStartTouchAll( CBaseEntity *pOther );
+	void OnStartTouchAll(CBaseEntity* pOther);
 
-	virtual void EndTouch(CBaseEntity *pOther);
-	virtual void OnEndTouchAll( CBaseEntity *pOther );
-	virtual void StartTouch(CBaseEntity *pOther);
-	virtual void Spawn( void );
+	virtual void EndTouch(CBaseEntity* pOther);
+	virtual void OnEndTouchAll(CBaseEntity* pOther);
+	virtual void StartTouch(CBaseEntity* pOther);
+	virtual void Spawn(void);
 
 
 private:
-	CPropFloorButton *m_pOwnerButton;
+	CPropFloorButton* m_pOwnerButton;
 };
 
-LINK_ENTITY_TO_CLASS( trigger_portal_button, CPortalButtonTrigger );
+LINK_ENTITY_TO_CLASS(trigger_portal_button, CPortalButtonTrigger);
 
-BEGIN_DATADESC( CPortalButtonTrigger )
+BEGIN_DATADESC(CPortalButtonTrigger)
 
-	DEFINE_FIELD( m_pOwnerButton, FIELD_CLASSPTR ),
+DEFINE_FIELD(m_pOwnerButton, FIELD_CLASSPTR),
 
 END_DATADESC()
 
@@ -70,31 +70,31 @@ END_DATADESC()
 class CPropFloorButton : public CDynamicProp
 {
 public:
-	DECLARE_CLASS( CPropFloorButton, CDynamicProp );
+	DECLARE_CLASS(CPropFloorButton, CDynamicProp);
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
 	CPropFloorButton();
 
-	virtual void Precache( void );
-	virtual void Spawn( void );
-	virtual bool CreateVPhysics( void );
-	virtual void Activate( void );
-	
-	virtual void AnimateThink( void );
-	virtual void UpdateOnRemove( void );
-	void PressingBoxHasSetteledThink( void );
+	virtual void Precache(void);
+	virtual void Spawn(void);
+	virtual bool CreateVPhysics(void);
+	virtual void Activate(void);
 
-	virtual const char	*GetButtonModelName();
+	virtual void AnimateThink(void);
+	virtual void UpdateOnRemove(void);
+	void PressingBoxHasSetteledThink(void);
+
+	virtual const char* GetButtonModelName();
 	virtual bool ShouldPlayerTouch();
-	virtual bool OnlyAcceptBall( void ) { return false; }
-	virtual bool AcceptsBall( void ) { return true; }
-	void	SetSkin( int skinNum );
-	
+	virtual bool OnlyAcceptBall(void) { return false; }
+	virtual bool AcceptsBall(void) { return true; }
+	void	SetSkin(int skinNum);
+
 private:
-	void OnPressed( CBaseEntity* pActivator );
-	void OnUnPressed( CBaseEntity* pActivator );
-	
+	void OnPressed(CBaseEntity* pActivator);
+	void OnUnPressed(CBaseEntity* pActivator);
+
 	COutputEvent					m_OnPressed;
 	COutputEvent					m_OnPressedOrange;
 	COutputEvent					m_OnPressedBlue;
@@ -102,29 +102,29 @@ private:
 
 protected:
 	CHandle<CPortalButtonTrigger>	m_hButtonTrigger;
-	
-	CNetworkVar( bool,	m_bButtonState );
 
-	virtual void CreateTriggers( void );
-	void TriggerStartTouch( CBaseEntity *pOther );
-	void TriggerEndTouch( CBaseEntity *pOther );
+	CNetworkVar(bool, m_bButtonState);
 
-	virtual void Press( CBaseEntity *pActivator );	
-	virtual void UnPress( CBaseEntity *pActivator );
+	virtual void CreateTriggers(void);
+	void TriggerStartTouch(CBaseEntity* pOther);
+	void TriggerEndTouch(CBaseEntity* pOther);
 
-	void InputPressIn( inputdata_t &inputdata );
-	void InputPressOut( inputdata_t &inputdata );
+	virtual void Press(CBaseEntity* pActivator);
+	virtual void UnPress(CBaseEntity* pActivator);
 
-	virtual void LookUpAnimationSequences( void );
+	void InputPressIn(inputdata_t& inputdata);
+	void InputPressOut(inputdata_t& inputdata);
+
+	virtual void LookUpAnimationSequences(void);
 
 	// animation sequences for the button
 	int								m_UpSequence;
 	int								m_DownSequence;
-	
+
 	friend class CPortalButtonTrigger;
 };
 
-LINK_ENTITY_TO_CLASS( prop_floor_button, CPropFloorButton );
+LINK_ENTITY_TO_CLASS(prop_floor_button, CPropFloorButton);
 
 BEGIN_DATADESC(CPropFloorButton)
 
@@ -159,15 +159,15 @@ CPropFloorButton::CPropFloorButton()
 {
 	m_bButtonState.Set(false); // button is not pressed by default
 }
-	
+
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPropFloorButton::Precache( void )
+void CPropFloorButton::Precache(void)
 {
-	PrecacheModel( GetButtonModelName() );
+	PrecacheModel(GetButtonModelName());
 
 	BaseClass::Precache();
 }
@@ -175,22 +175,22 @@ void CPropFloorButton::Precache( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPropFloorButton::Spawn( void )
+void CPropFloorButton::Spawn(void)
 {
-	KeyValue( "model", GetButtonModelName() );
+	KeyValue("model", GetButtonModelName());
 
 	Precache();
 	BaseClass::Spawn();
 
-	SetSolid( SOLID_VPHYSICS );
+	SetSolid(SOLID_VPHYSICS);
 
 	LookUpAnimationSequences();
-	
+
 	// Start in the up state
-	ResetSequence( m_UpSequence );
+	ResetSequence(m_UpSequence);
 
 	// Ensure the 'off' skin is set
-	SetSkin( button_off_skin );
+	SetSkin(button_off_skin);
 
 	//Buttons are unpaintable
 	//AddFlag( FL_UNPAINTABLE );
@@ -202,65 +202,65 @@ void CPropFloorButton::Spawn( void )
 	//AddEffects( EF_MARKED_FOR_FAST_REFLECTION );
 
 	// Never let crucial game components fade out!
-	SetFadeDistance( -1.0f, 0.0f );
+	SetFadeDistance(-1.0f, 0.0f);
 	//SetGlobalFadeScale( 0.0f );
 }
 
 
-void CPropFloorButton::LookUpAnimationSequences( void )
+void CPropFloorButton::LookUpAnimationSequences(void)
 {
 	// look up animation sequences
-	m_UpSequence = LookupSequence( "up" );
-	m_DownSequence = LookupSequence( "down" );
+	m_UpSequence = LookupSequence("up");
+	m_DownSequence = LookupSequence("down");
 }
 
 
-bool CPropFloorButton::CreateVPhysics( void )
+bool CPropFloorButton::CreateVPhysics(void)
 {
 	BaseClass::CreateVPhysics();
 	return true;
 }
 
-void CPropFloorButton::Activate( void )
+void CPropFloorButton::Activate(void)
 {
 	BaseClass::Activate();
 
-	SetThink( &CPropFloorButton::AnimateThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetThink(&CPropFloorButton::AnimateThink);
+	SetNextThink(gpGlobals->curtime + 0.1f);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Animate and catch edge cases for us stopping / starting our animation
 //-----------------------------------------------------------------------------
-void CPropFloorButton::AnimateThink( void )
+void CPropFloorButton::AnimateThink(void)
 {
- 	// Update our animation
- 	StudioFrameAdvance();
- 	DispatchAnimEvents( this );
+	// Update our animation
+	StudioFrameAdvance();
+	DispatchAnimEvents(this);
 	m_BoneFollowerManager.UpdateBoneFollowers(this);
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink(gpGlobals->curtime + 0.1f);
 	//RANDOM_CEG_TEST_SECRET();
 
 	// debug overlay of trigger displays if ent_bbox is used on entity
-	if ( m_debugOverlays & OVERLAY_BBOX_BIT )
+	if (m_debugOverlays & OVERLAY_BBOX_BIT)
 	{
-		if ( m_hButtonTrigger )
+		if (m_hButtonTrigger)
 		{
 			m_hButtonTrigger->m_debugOverlays |= OVERLAY_BBOX_BIT;
-			NDebugOverlay::Cross3D( GetAbsOrigin(), 4, 0, 255, 0, true, 0.1f );
+			NDebugOverlay::Cross3D(GetAbsOrigin(), 4, 0, 255, 0, true, 0.1f);
 		}
 	}
 	else
 	{
-		if ( m_hButtonTrigger )
+		if (m_hButtonTrigger)
 		{
 			m_hButtonTrigger->m_debugOverlays &= ~OVERLAY_BBOX_BIT;
 		}
 	}
 }
- 
-void CPropFloorButton::PressingBoxHasSetteledThink( void )
+
+void CPropFloorButton::PressingBoxHasSetteledThink(void)
 {
 	/*if (gpGlobals->maxClients == 1 && (V_strcmp(gpGlobals->mapname.ToCStr(), "sp_a2_bts1") != 0)
 									&& (V_strcmp( gpGlobals->mapname.ToCStr(), "mp_coop_catapult_1" ) != 0) )
@@ -268,17 +268,17 @@ void CPropFloorButton::PressingBoxHasSetteledThink( void )
 		UTIL_RecordAchievementEvent( "ACH.BOX_HOLE_IN_ONE" );
 	}*/
 
-	SetContextThink( NULL, gpGlobals->curtime, s_pszPressingBoxHasSetteledThinkContext );
+	SetContextThink(NULL, gpGlobals->curtime, s_pszPressingBoxHasSetteledThinkContext);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CPropFloorButton::UpdateOnRemove( void )
+void CPropFloorButton::UpdateOnRemove(void)
 {
-	if ( m_hButtonTrigger )
+	if (m_hButtonTrigger)
 	{
-		UTIL_Remove( m_hButtonTrigger );
+		UTIL_Remove(m_hButtonTrigger);
 		m_hButtonTrigger = NULL;
 	}
 	BaseClass::UpdateOnRemove();
@@ -288,9 +288,9 @@ void CPropFloorButton::UpdateOnRemove( void )
 //-----------------------------------------------------------------------------
 // Purpose: return floor button model name
 //-----------------------------------------------------------------------------
-const char *CPropFloorButton::GetButtonModelName()
+const char* CPropFloorButton::GetButtonModelName()
 {
-	if ( GetModelName() == NULL_STRING)
+	if (GetModelName() == NULL_STRING)
 		return PROP_FLOOR_BUTTON_DEFAULT_MODEL_NAME;
 
 	return STRING(GetModelName());
@@ -299,59 +299,59 @@ const char *CPropFloorButton::GetButtonModelName()
 //-----------------------------------------------------------------------------
 // Purpose: Press the button
 //-----------------------------------------------------------------------------
-NOINLINE void CPropFloorButton::Press( CBaseEntity *pActivator )
+NOINLINE void CPropFloorButton::Press(CBaseEntity* pActivator)
 {
 	// play the down sequence
-	ResetSequence( m_DownSequence );
+	ResetSequence(m_DownSequence);
 
 	// set the button state for the client
 	m_bButtonState = true;
 
 	// Change the skin
-	SetSkin( button_on_skin );
+	SetSkin(button_on_skin);
 	//PROTECT_MEMBER_FUNCTION( CPropFloorButton_Press );
 
 	// call the function that fires the OnPressed output
-	OnPressed( pActivator );
+	OnPressed(pActivator);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: UnPress the button
 //-----------------------------------------------------------------------------
-void CPropFloorButton::UnPress( CBaseEntity *pActivator )
+void CPropFloorButton::UnPress(CBaseEntity* pActivator)
 {
 	// play the up sequence
-	ResetSequence( m_UpSequence );
+	ResetSequence(m_UpSequence);
 
 	// set the button state for the client
 	m_bButtonState = false;
 
 	// Change the skin
-	SetSkin( button_off_skin );
+	SetSkin(button_off_skin);
 
 	// call the function that fires the OnUnPressed output
-	OnUnPressed( pActivator );
+	OnUnPressed(pActivator);
 }
 
-void CPropFloorButton::InputPressIn( inputdata_t &inputdata )
+void CPropFloorButton::InputPressIn(inputdata_t& inputdata)
 {
-	Press( inputdata.pActivator );
+	Press(inputdata.pActivator);
 }
 
-void CPropFloorButton::InputPressOut( inputdata_t &inputdata )
+void CPropFloorButton::InputPressOut(inputdata_t& inputdata)
 {
-	UnPress( inputdata.pActivator );
+	UnPress(inputdata.pActivator);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Fire output for button being pressed
 //-----------------------------------------------------------------------------
-void CPropFloorButton::OnPressed( CBaseEntity* pActivator )
+void CPropFloorButton::OnPressed(CBaseEntity* pActivator)
 {
-	if ( pActivator != NULL )
+	if (pActivator != NULL)
 	{
 		//CBaseEntity *pOther = dynamic_cast<CBaseEntity*>(pActivator);
-		
+
 		/*if (GameRules() && GameRules()->IsMultiplayer() && pOther && pOther->IsPlayer())
 		{
 			if ( pOther->GetTeamNumber() == TEAM_RED )
@@ -372,7 +372,7 @@ void CPropFloorButton::OnPressed( CBaseEntity* pActivator )
 	}
 
 	// If this button was pressed without touching the player, fire the special output used for the 'hole in one' achievement.
-	
+
 	/*if (pActivator->GetClassname() == "prop_weighted_cube")
 	{
 		CPropWeightedCube *pCube = (CPropWeightedCube*)pActivator;
@@ -381,19 +381,19 @@ void CPropFloorButton::OnPressed( CBaseEntity* pActivator )
 		{
 			if ( pCube->WasTouchedByPlayer() == false )
 			{
-				// HACK: this delay is a guess at how long it takes to be sure the box has setteled... 
+				// HACK: this delay is a guess at how long it takes to be sure the box has setteled...
 				SetContextThink( &CPropFloorButton::PressingBoxHasSetteledThink, gpGlobals->curtime + 2.0f, s_pszPressingBoxHasSetteledThinkContext );
 			}
 		}
 	}*/
 
-	m_OnPressed.FireOutput( pActivator, this );
+	m_OnPressed.FireOutput(pActivator, this);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Fire output when button has reset after being pressed
 //-----------------------------------------------------------------------------
-void CPropFloorButton::OnUnPressed( CBaseEntity* pActivator )
+void CPropFloorButton::OnUnPressed(CBaseEntity* pActivator)
 {
 	/*if (pActivator && FClassnameIs(pActivator, "prop_monster_box"))
 	{
@@ -402,42 +402,42 @@ void CPropFloorButton::OnUnPressed( CBaseEntity* pActivator )
 	}*/
 
 
-	SetContextThink( NULL, gpGlobals->curtime, s_pszPressingBoxHasSetteledThinkContext );
+	SetContextThink(NULL, gpGlobals->curtime, s_pszPressingBoxHasSetteledThinkContext);
 
 	// fire the OnUnPressed output
-	m_OnUnPressed.FireOutput( pActivator, this );
+	m_OnUnPressed.FireOutput(pActivator, this);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Create triggers for button
 //-----------------------------------------------------------------------------
-void CPropFloorButton::CreateTriggers( void )
+void CPropFloorButton::CreateTriggers(void)
 {
 	Vector vecOrigin = GetAbsOrigin();
 
 	// trigger size
-	Vector vecMins( -20,-20,0 );
-	Vector vecMaxs( 20,20,14 );
+	Vector vecMins(-20, -20, 0);
+	Vector vecMaxs(20, 20, 14);
 
 
 	// Create the button trigger
-	m_hButtonTrigger = CPortalButtonTrigger::Create( vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this );
+	m_hButtonTrigger = CPortalButtonTrigger::Create(vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPropFloorButton::TriggerStartTouch( CBaseEntity *pOther )
+void CPropFloorButton::TriggerStartTouch(CBaseEntity* pOther)
 {
-	Press( pOther );
+	Press(pOther);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPropFloorButton::TriggerEndTouch( CBaseEntity *pOther )
+void CPropFloorButton::TriggerEndTouch(CBaseEntity* pOther)
 {
-	UnPress( pOther );
+	UnPress(pOther);
 }
 
 //-----------------------------------------------------------------------------
@@ -452,7 +452,7 @@ bool CPropFloorButton::ShouldPlayerTouch()
 //-----------------------------------------------------------------------------
 // Purpose: Set the model skin
 //-----------------------------------------------------------------------------
-void CPropFloorButton::SetSkin( int skinNum )
+void CPropFloorButton::SetSkin(int skinNum)
 {
 	m_nSkin = skinNum;
 }
@@ -460,89 +460,89 @@ void CPropFloorButton::SetSkin( int skinNum )
 //-----------------------------------------------------------------------------
 // Purpose: creates the button trigger
 //-----------------------------------------------------------------------------
-CPortalButtonTrigger *CPortalButtonTrigger::Create( const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecMins, const Vector &vecMaxs, CPropFloorButton *pOwner )
+CPortalButtonTrigger* CPortalButtonTrigger::Create(const Vector& vecOrigin, const QAngle& vecAngles, const Vector& vecMins, const Vector& vecMaxs, CPropFloorButton* pOwner)
 {
-	CPortalButtonTrigger *pTrigger = (CPortalButtonTrigger *) CreateEntityByName( "trigger_portal_button" );
-	if ( pTrigger == NULL )
+	CPortalButtonTrigger* pTrigger = (CPortalButtonTrigger*)CreateEntityByName("trigger_portal_button");
+	if (pTrigger == NULL)
 		return NULL;
 
-	UTIL_SetOrigin( pTrigger, vecOrigin );
-	pTrigger->SetAbsAngles( vecAngles );
-	UTIL_SetSize( pTrigger, vecMins, vecMaxs );
+	UTIL_SetOrigin(pTrigger, vecOrigin);
+	pTrigger->SetAbsAngles(vecAngles);
+	UTIL_SetSize(pTrigger, vecMins, vecMaxs);
 
-	DispatchSpawn( pTrigger );
+	DispatchSpawn(pTrigger);
 
-	pTrigger->SetParent( (CBaseEntity *) pOwner );
+	pTrigger->SetParent((CBaseEntity*)pOwner);
 
 	pTrigger->m_pOwnerButton = pOwner;
 
 	return pTrigger;
 }
 
-void CPortalButtonTrigger::StartTouch(CBaseEntity *pOther)
+void CPortalButtonTrigger::StartTouch(CBaseEntity* pOther)
 {
-	if( !pOther->IsMarkedForDeletion() && FClassnameIs( pOther, "prop_weighted_cube") )
+	if (!pOther->IsMarkedForDeletion() && FClassnameIs(pOther, "prop_weighted_cube"))
 	{
-		if ( PassesTriggerFilters( pOther ) )
+		if (PassesTriggerFilters(pOther))
 		{
 			//Set the cube to activate
-			CPropWeightedCube* pCube = assert_cast<CPropWeightedCube*>( pOther );
-			if( pCube )
+			CPropWeightedCube* pCube = assert_cast<CPropWeightedCube*>(pOther);
+			if (pCube)
 			{
-				pCube->SetActivated( true );
+				pCube->SetActivated(true);
 			}
 		}
 	}
 
-	BaseClass::StartTouch( pOther );
+	BaseClass::StartTouch(pOther);
 }
 
-void CPortalButtonTrigger::EndTouch(CBaseEntity *pOther)
+void CPortalButtonTrigger::EndTouch(CBaseEntity* pOther)
 {
-	if( !pOther->IsMarkedForDeletion() && FClassnameIs( pOther, "prop_weighted_cube") )
+	if (!pOther->IsMarkedForDeletion() && FClassnameIs(pOther, "prop_weighted_cube"))
 	{
-		if ( PassesTriggerFilters( pOther ) )
+		if (PassesTriggerFilters(pOther))
 		{
 			//Set the cube to deactivate
-			CPropWeightedCube* pCube = assert_cast<CPropWeightedCube*>( pOther );
-			if( pCube )
+			CPropWeightedCube* pCube = assert_cast<CPropWeightedCube*>(pOther);
+			if (pCube)
 			{
-				pCube->SetActivated( false );
+				pCube->SetActivated(false);
 			}
 		}
 	}
 
-	BaseClass::EndTouch( pOther );
+	BaseClass::EndTouch(pOther);
 }
 
 //----------------------------------------------------------------------------------
 // Purpose: checks filters on trigger in addition to specific filters (player, cube)
 //----------------------------------------------------------------------------------
-bool CPortalButtonTrigger::PassesTriggerFilters(CBaseEntity *pOther)
+bool CPortalButtonTrigger::PassesTriggerFilters(CBaseEntity* pOther)
 {
-	bool bPassedFilter = BaseClass::PassesTriggerFilters( pOther );
+	bool bPassedFilter = BaseClass::PassesTriggerFilters(pOther);
 
 	// did I fail the baseclass filter check?
-	if ( !bPassedFilter )
+	if (!bPassedFilter)
 		return false;
 
 
 	// are players allowed to touch me?
-	if ( m_pOwnerButton->ShouldPlayerTouch() )
+	if (m_pOwnerButton->ShouldPlayerTouch())
 	{
 		// did a player touch me?
-		if ( pOther->IsPlayer() )
+		if (pOther->IsPlayer())
 			return true;
 	}
 
 	// did a cube touch me?
-	if ( FClassnameIs( pOther, "prop_weighted_cube") /*|| FClassnameIs(pOther, "prop_monster_box")*/)
+	if (FClassnameIs(pOther, "prop_weighted_cube") /*|| FClassnameIs(pOther, "prop_monster_box")*/)
 	{
-		CPropWeightedCube *pCube = static_cast<CPropWeightedCube*>( pOther );
+		CPropWeightedCube* pCube = static_cast<CPropWeightedCube*>(pOther);
 		bool bIsBall = pCube && pCube->GetCubeType() == 3; //CUBE_SPHERE
 
-		if ( ( bIsBall && m_pOwnerButton->AcceptsBall() ) || //If the button accepts balls and this is a ball ( floor, under and ball buttons )
-		   ( !bIsBall && !m_pOwnerButton->OnlyAcceptBall() ) ) //If the button doesn't only accept balls and this is not a ball ( cube buttons )
+		if ((bIsBall && m_pOwnerButton->AcceptsBall()) || //If the button accepts balls and this is a ball ( floor, under and ball buttons )
+			(!bIsBall && !m_pOwnerButton->OnlyAcceptBall())) //If the button doesn't only accept balls and this is not a ball ( cube buttons )
 		{
 			return true;
 		}
@@ -555,42 +555,42 @@ bool CPortalButtonTrigger::PassesTriggerFilters(CBaseEntity *pOther)
 //----------------------------------------------------------------------------------
 // Purpose: called only when the trigger is touched for the first time
 //----------------------------------------------------------------------------------
-void CPortalButtonTrigger::OnStartTouchAll( CBaseEntity *pOther )
+void CPortalButtonTrigger::OnStartTouchAll(CBaseEntity* pOther)
 {
 	// call the button's start touch function
-	if ( m_pOwnerButton )
+	if (m_pOwnerButton)
 	{
-		m_pOwnerButton->TriggerStartTouch( pOther );
+		m_pOwnerButton->TriggerStartTouch(pOther);
 	}
 
-	BaseClass::OnStartTouchAll( pOther );
+	BaseClass::OnStartTouchAll(pOther);
 }
 
 //----------------------------------------------------------------------------------
 // Purpose: called when the last object stops touching the trigger
 //----------------------------------------------------------------------------------
-void CPortalButtonTrigger::OnEndTouchAll( CBaseEntity *pOther )
+void CPortalButtonTrigger::OnEndTouchAll(CBaseEntity* pOther)
 {
 	// call the button's end touch function
-	if ( m_pOwnerButton )
+	if (m_pOwnerButton)
 	{
-		m_pOwnerButton->TriggerEndTouch( pOther );
+		m_pOwnerButton->TriggerEndTouch(pOther);
 	}
 
-	BaseClass::OnEndTouchAll( pOther );
+	BaseClass::OnEndTouchAll(pOther);
 }
 
 //----------------------------------------------------------------------------------
 // Purpose: spawn the trigger
 //----------------------------------------------------------------------------------
-void CPortalButtonTrigger::Spawn( void )
+void CPortalButtonTrigger::Spawn(void)
 {
 	// Setup our basic attributes
-	SetMoveType( MOVETYPE_NONE );
-	SetSolid( SOLID_OBB );
-	SetSolidFlags( FSOLID_NOT_SOLID|FSOLID_TRIGGER );
+	SetMoveType(MOVETYPE_NONE);
+	SetSolid(SOLID_OBB);
+	SetSolidFlags(FSOLID_NOT_SOLID | FSOLID_TRIGGER);
 
-	AddSpawnFlags( SF_TRIGGER_ALLOW_CLIENTS|SF_TRIGGER_ALLOW_PHYSICS );
+	AddSpawnFlags(SF_TRIGGER_ALLOW_CLIENTS | SF_TRIGGER_ALLOW_PHYSICS);
 
 	BaseClass::Spawn();
 }
@@ -599,26 +599,26 @@ void CPortalButtonTrigger::Spawn( void )
 // Floor Button
 //
 
-ConVar sv_slippery_cube_button( "sv_slippery_cube_button", "1", FCVAR_CHEAT );
+ConVar sv_slippery_cube_button("sv_slippery_cube_button", "1", FCVAR_CHEAT);
 
 class CPropFloorCubeButton : public CPropFloorButton
 {
 public:
-	DECLARE_CLASS( CPropFloorCubeButton, CPropFloorButton );
+	DECLARE_CLASS(CPropFloorCubeButton, CPropFloorButton);
 	DECLARE_DATADESC();
 
 	CPropFloorCubeButton();
 
-	virtual const char	*GetButtonModelName();
+	virtual const char* GetButtonModelName();
 	virtual bool ShouldPlayerTouch();
-	virtual bool OnlyAcceptBall( void ) { return false; }
-	virtual bool AcceptsBall( void ) { return m_bAcceptsBall; }
+	virtual bool OnlyAcceptBall(void) { return false; }
+	virtual bool AcceptsBall(void) { return m_bAcceptsBall; }
 
 	friend class CPortalButtonTrigger;
 
 protected:
-	virtual void Press( CBaseEntity *pActivator );	
-	virtual void UnPress( CBaseEntity *pActivator );
+	virtual void Press(CBaseEntity* pActivator);
+	virtual void UnPress(CBaseEntity* pActivator);
 
 private:
 	int m_nStoredMaterialIndex;
@@ -626,11 +626,11 @@ private:
 	bool m_bAcceptsBall;
 };
 
-LINK_ENTITY_TO_CLASS( prop_floor_cube_button, CPropFloorCubeButton );
+LINK_ENTITY_TO_CLASS(prop_floor_cube_button, CPropFloorCubeButton);
 
-BEGIN_DATADESC( CPropFloorCubeButton )
+BEGIN_DATADESC(CPropFloorCubeButton)
 
-	DEFINE_KEYFIELD( m_bAcceptsBall, FIELD_BOOLEAN, "AcceptsBall" ),
+DEFINE_KEYFIELD(m_bAcceptsBall, FIELD_BOOLEAN, "AcceptsBall"),
 
 END_DATADESC()
 
@@ -639,16 +639,20 @@ END_DATADESC()
 // Purpose: 
 //-----------------------------------------------------------------------------
 CPropFloorCubeButton::CPropFloorCubeButton()
-					: m_bAcceptsBall( true )
+	: m_bAcceptsBall(true)
 {
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: get cube button model name
 //-----------------------------------------------------------------------------
-const char *CPropFloorCubeButton::GetButtonModelName()
+const char* CPropFloorCubeButton::GetButtonModelName()
 {
-	return PROP_FLOOR_CUBE_BUTTON_MODEL_NAME;
+	if (GetModelName() == NULL_STRING)
+		return PROP_FLOOR_CUBE_BUTTON_MODEL_NAME;
+
+	return STRING(GetModelName());
+	
 }
 
 //-----------------------------------------------------------------------------
@@ -661,50 +665,50 @@ bool CPropFloorCubeButton::ShouldPlayerTouch()
 }
 
 
-void CPropFloorCubeButton::Press( CBaseEntity *pActivator )
+void CPropFloorCubeButton::Press(CBaseEntity* pActivator)
 {
-	if ( sv_slippery_cube_button.GetBool() )
+	if (sv_slippery_cube_button.GetBool())
 	{
 		// set the object material type to be ice so it will slip into the cube button
 		IPhysicsObject* pPhysObject = pActivator->VPhysicsGetObject();
-		if( pPhysObject )
+		if (pPhysObject)
 		{
 			m_nStoredMaterialIndex = pPhysObject->GetMaterialIndex();
 
-			pPhysObject->SetMaterialIndex( physprops->GetSurfaceIndex( "ice" ) );
+			pPhysObject->SetMaterialIndex(physprops->GetSurfaceIndex("ice"));
 		}
 	}
 
-	BaseClass::Press( pActivator );
+	BaseClass::Press(pActivator);
 }
 
 
-void CPropFloorCubeButton::UnPress( CBaseEntity *pActivator )
+void CPropFloorCubeButton::UnPress(CBaseEntity* pActivator)
 {
-	if ( sv_slippery_cube_button.GetBool() )
+	if (sv_slippery_cube_button.GetBool())
 	{
 		IPhysicsObject* pPhysObject = pActivator->VPhysicsGetObject();
-		if( pPhysObject )
+		if (pPhysObject)
 		{
-			pPhysObject->SetMaterialIndex( m_nStoredMaterialIndex );
+			pPhysObject->SetMaterialIndex(m_nStoredMaterialIndex);
 		}
 	}
 
-	BaseClass::UnPress( pActivator );
+	BaseClass::UnPress(pActivator);
 }
 
 
 class CPropFloorBallButton : public CPropFloorButton
 {
 public:
-	DECLARE_CLASS( CPropFloorBallButton, CPropFloorButton );
+	DECLARE_CLASS(CPropFloorBallButton, CPropFloorButton);
 	DECLARE_DATADESC();
 
-	virtual const char	*GetButtonModelName();
+	virtual const char* GetButtonModelName();
 	virtual bool ShouldPlayerTouch();
-	virtual bool OnlyAcceptBall( void ) { return true; }
-	virtual bool AcceptsBall( void ) { return true; }
-	virtual void CreateTriggers( void );
+	virtual bool OnlyAcceptBall(void) { return true; }
+	virtual bool AcceptsBall(void) { return true; }
+	virtual void CreateTriggers(void);
 
 	friend class CPortalButtonTrigger;
 
@@ -712,32 +716,36 @@ private:
 	int m_nStoredMaterialIndex;
 };
 
-LINK_ENTITY_TO_CLASS( prop_floor_ball_button, CPropFloorBallButton );
+LINK_ENTITY_TO_CLASS(prop_floor_ball_button, CPropFloorBallButton);
 
-BEGIN_DATADESC( CPropFloorBallButton )
+BEGIN_DATADESC(CPropFloorBallButton)
 
 END_DATADESC()
 
 
-void CPropFloorBallButton::CreateTriggers( void )
+void CPropFloorBallButton::CreateTriggers(void)
 {
 	Vector vecOrigin = GetAbsOrigin();
 
 	// trigger size
-	Vector vecMins( -5,-5,0 );
-	Vector vecMaxs( 5,5,14 );
+	Vector vecMins(-5, -5, 0);
+	Vector vecMaxs(5, 5, 14);
 
 	// Create the button trigger
-	m_hButtonTrigger = CPortalButtonTrigger::Create( vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this );
+	m_hButtonTrigger = CPortalButtonTrigger::Create(vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this);
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: get cube button model name
 //-----------------------------------------------------------------------------
-const char *CPropFloorBallButton::GetButtonModelName()
+const char* CPropFloorBallButton::GetButtonModelName()
 {
-	return PROP_FLOOR_BALL_BUTTON_MODEL_NAME;
+	if (GetModelName() == NULL_STRING)
+		return PROP_FLOOR_BALL_BUTTON_MODEL_NAME;
+
+	return STRING(GetModelName());
+	
 }
 
 //-----------------------------------------------------------------------------
@@ -752,49 +760,53 @@ bool CPropFloorBallButton::ShouldPlayerTouch()
 class CPropUnderFloorButton : public CPropFloorButton
 {
 public:
-	DECLARE_CLASS( CPropUnderFloorButton, CPropFloorButton );
+	DECLARE_CLASS(CPropUnderFloorButton, CPropFloorButton);
 	DECLARE_DATADESC();
 
-	virtual const char	*GetButtonModelName();
+	virtual const char* GetButtonModelName();
 
 	friend class CPortalButtonTrigger;
 
 protected:
 
-	virtual void LookUpAnimationSequences( void );
-	virtual	void CreateTriggers( void );
+	virtual void LookUpAnimationSequences(void);
+	virtual	void CreateTriggers(void);
 };
 
-LINK_ENTITY_TO_CLASS( prop_under_floor_button, CPropUnderFloorButton );
+LINK_ENTITY_TO_CLASS(prop_under_floor_button, CPropUnderFloorButton);
 
-BEGIN_DATADESC( CPropUnderFloorButton )
+BEGIN_DATADESC(CPropUnderFloorButton)
 
 END_DATADESC()
 
 
-const char *CPropUnderFloorButton::GetButtonModelName()
+const char* CPropUnderFloorButton::GetButtonModelName()
 {
-	return PROP_UNDER_FLOOR_BUTTON_MODEL_NAME;
+	if (GetModelName() == NULL_STRING)
+		return PROP_UNDER_FLOOR_BUTTON_MODEL_NAME;
+
+	return STRING(GetModelName());
+	
 }
 
 
-void CPropUnderFloorButton::LookUpAnimationSequences( void )
+void CPropUnderFloorButton::LookUpAnimationSequences(void)
 {
 	// look up animation sequences
-	m_UpSequence = LookupSequence( "release" );
-	m_DownSequence = LookupSequence( "press" );
+	m_UpSequence = LookupSequence("release");
+	m_DownSequence = LookupSequence("press");
 }
 
 
-void CPropUnderFloorButton::CreateTriggers( void )
+void CPropUnderFloorButton::CreateTriggers(void)
 {
 	Vector vecOrigin = GetAbsOrigin();
 
 	// trigger size
-	Vector vecMins( -30, -30, 0 );
-	Vector vecMaxs( 30, 30, 17 );
+	Vector vecMins(-30, -30, 0);
+	Vector vecMaxs(30, 30, 17);
 
 
 	// Create the button trigger
-	m_hButtonTrigger = CPortalButtonTrigger::Create( vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this );
+	m_hButtonTrigger = CPortalButtonTrigger::Create(vecOrigin, GetAbsAngles(), vecMins, vecMaxs, this);
 }
