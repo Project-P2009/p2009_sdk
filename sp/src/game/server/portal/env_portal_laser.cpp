@@ -22,6 +22,7 @@ LINK_ENTITY_TO_CLASS( env_portal_laser, CEnvPortalLaser );
 BEGIN_DATADESC( CEnvPortalLaser )
 
 	DEFINE_KEYFIELD( m_iszLaserTarget, FIELD_STRING, "LaserTarget" ),
+	DEFINE_FIELD(m_pSprite, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_firePosition, FIELD_VECTOR ),
 	DEFINE_KEYFIELD( m_flStartFrame, FIELD_FLOAT, "framestart" ),
@@ -86,9 +87,11 @@ void CEnvPortalLaser::Spawn( void )
 //-----------------------------------------------------------------------------
 void CEnvPortalLaser::Precache( void )
 {
-	m_nSiteHalo = PrecacheModel("sprites/light_glow03.vmt");
+	m_nSiteHalo = PrecacheModel("sprites/redglow2.vmt");
 
 	SetModelIndex( PrecacheModel( STRING( GetModelName() ) ) );
+	if ( m_iszSpriteName != NULL_STRING )
+		PrecacheModel( STRING(m_iszSpriteName) );
 }
 
 
@@ -245,10 +248,10 @@ void CEnvPortalLaser::StrikeThink( void )
 	{
 		m_pBeam = CBeam::BeamCreate("effects/redlaser1.vmt", 0.1);
 		m_pBeam->SetHaloTexture(m_nSiteHalo);
-		//m_pBeam->SetColor(100, 100, 255);
+		m_pBeam->SetColor(100, 100, 255);
 		m_pBeam->SetBrightness(100);
 		m_pBeam->SetNoise(0);
-		m_pBeam->SetWidth(1);
+		m_pBeam->SetWidth(2);
 		m_pBeam->SetEndWidth(0);
 		m_pBeam->SetScrollRate(0);
 		m_pBeam->SetFadeLength(0);

@@ -801,14 +801,14 @@ void CBeam::BeamDamage( trace_t *ptr )
 			int nDamageType = DMG_BURN;
 
 #ifndef HL1_DLL
-			if (m_nDissolveType == 0)
+			/*if (m_nDissolveType == 0)
 			{
 				nDamageType = DMG_DISSOLVE;
 			}
 			else if ( m_nDissolveType > 0 )
 			{
 				nDamageType = DMG_DISSOLVE | DMG_SHOCK; 
-			}
+			}*/
 #endif
 
 			CTakeDamageInfo info( this, this, m_flDamage * (gpGlobals->curtime - m_flFireTime), nDamageType );
