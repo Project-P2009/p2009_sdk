@@ -8,6 +8,7 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "dbg.h"
 #include "env_portal_laser.h"
 #include "Sprite.h"
 #include "physicsshadowclone.h"		// For translating hit entities shadow clones to real ent
@@ -251,7 +252,7 @@ void CEnvPortalLaser::StrikeThink( void )
 		m_pBeam->SetColor(100, 100, 255);
 		m_pBeam->SetBrightness(100);
 		m_pBeam->SetNoise(0);
-		m_pBeam->SetWidth(2);
+		m_pBeam->SetWidth(4);
 		m_pBeam->SetEndWidth(0);
 		m_pBeam->SetScrollRate(0);
 		m_pBeam->SetFadeLength(0);
@@ -274,12 +275,17 @@ void CEnvPortalLaser::StrikeThink( void )
 	rayPath.Init(vecMuzzle, vecMuzzle + vecAimDir * LASER_RANGE);
 
 	if (UTIL_Portal_TraceRay_Beam(rayPath, MASK_SHOT, &m_filterBeams, &fEndFraction))
+	{
 		vEndPointBeam = vecMuzzle + vecAimDir * LASER_RANGE;	// Trace went through portal and endpoint is unknown
+		//DevMsg("\nBeam Points (PORTAL):\nStart: x:%e y:%e z:%e\nEnd: x:%e y:%e z:%e",vecMuzzle.x+vecAimDir.x,vecMuzzle.y+vecAimDir.y,vecMuzzle.z+vecAimDir.z,vEndPointBeam.x,vEndPointBeam.y,vEndPointBeam.z);
+	}
 	else
+	{
 		vEndPointBeam = vecMuzzle + vecAimDir * LASER_RANGE * fEndFraction;	// Trace hit a wall
-
+		//DevMsg("\nBeam Points:\nStart: x:%e y:%e z:%e\nEnd: x:%e y:%e z:%e",vecMuzzle.x+vecAimDir.x,vecMuzzle.y+vecAimDir.y,vecMuzzle.z+vecAimDir.z,vEndPointBeam.x,vEndPointBeam.y,vEndPointBeam.z);
+	}
 	m_pBeam->PointsInit(vEndPointBeam, vecMuzzle);
-
+	
 	//m_pBeam->SetHaloScale(LaserEndPointSize());
 
 
