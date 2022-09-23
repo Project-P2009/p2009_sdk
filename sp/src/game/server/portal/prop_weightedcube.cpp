@@ -12,8 +12,8 @@
 
 #define	CUBE_MODEL			"models/props/metal_box.mdl"
 #define	REFLECTION_MODEL	"models/props/reflection_cube.mdl"
-#define	SPHERE_MODEL		"models/props/metal_box.mdl"
-#define	ANTIQUE_MODEL		"models/props_underground/underground_weighted_cube.mdl"
+#define	SPHERE_MODEL		"models/props/sphere.mdl"
+#define	ANTIQUE_MODEL		"models/props/p2/metal_box.mdl"
 
 #define FIZZLE_SOUND		"Prop.Fizzled"
 
@@ -157,10 +157,12 @@ void CPropWeightedCube::Spawn()
 			break;
 		case Antique:
 			SetModel(ANTIQUE_MODEL);
+			if (m_skinType == Rusted)
+				m_nSkin = 3;
 			if (m_paintPower == Stick)
-				m_nSkin = 1;
+				m_nSkin = 8;
 			if (m_paintPower == Speed)
-				m_nSkin = 2;
+				m_nSkin = 9;
 			break;
 		}
 	}
@@ -199,10 +201,12 @@ void CPropWeightedCube::Spawn()
 			break;
 		case OLDAntique:
 			SetModel(ANTIQUE_MODEL);
+			if (m_skinType == Rusted)
+				m_nSkin = 3;
 			if (m_paintPower == Stick)
-				m_nSkin = 1;
+				m_nSkin = 8;
 			if (m_paintPower == Speed)
-				m_nSkin = 2;
+				m_nSkin = 9;
 			break;
 		}
 	}
@@ -430,7 +434,55 @@ void CPropWeightedCube::SetActivated(bool active)
 			break;
 		case Antique:
 			
-			
+			if (m_skinType == Rusted)
+			{
+				if (active)
+				{
+					m_nSkin = 5;
+				}
+				else
+				{
+					m_nSkin = 3;
+				}
+				
+			}
+			else
+			{
+				if (active)
+				{
+					m_nSkin = 2;
+				}
+				else
+				{
+					m_nSkin = 0;
+				}
+				
+			}
+				
+			if (m_paintPower == Bounce)
+			{
+				if (active)
+				{
+					m_nSkin = 10;
+				}
+				else
+				{
+					m_nSkin = 6;
+				}
+			}
+				
+			if (m_paintPower == Speed)
+			{
+				if (active)
+				{
+					m_nSkin = 11;
+				}
+				else
+				{
+					m_nSkin = 7;
+				}
+			}
+				
 			break;
 		}
 	}
@@ -577,7 +629,54 @@ void CPropWeightedCube::SetActivated(bool active)
 
 			break;
 		case OLDAntique:
-			
+			if (m_skinType == Rusted)
+			{
+				if (active)
+				{
+					m_nSkin = 5;
+				}
+				else
+				{
+					m_nSkin = 3;
+				}
+
+			}
+			else
+			{
+				if (active)
+				{
+					m_nSkin = 2;
+				}
+				else
+				{
+					m_nSkin = 0;
+				}
+
+			}
+
+			if (m_paintPower == Bounce)
+			{
+				if (active)
+				{
+					m_nSkin = 10;
+				}
+				else
+				{
+					m_nSkin = 6;
+				}
+			}
+
+			if (m_paintPower == Speed)
+			{
+				if (active)
+				{
+					m_nSkin = 11;
+				}
+				else
+				{
+					m_nSkin = 7;
+				}
+			}
 			break;
 		}
 	}
