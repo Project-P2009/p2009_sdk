@@ -23,7 +23,7 @@ LINK_ENTITY_TO_CLASS( env_portal_laser, CEnvPortalLaser );
 BEGIN_DATADESC( CEnvPortalLaser )
 
 	DEFINE_KEYFIELD( m_iszLaserTarget, FIELD_STRING, "LaserTarget" ),
-	DEFINE_FIELD(m_pSprite, FIELD_CLASSPTR),
+	//DEFINE_FIELD(m_pSprite, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_firePosition, FIELD_VECTOR ),
 	DEFINE_KEYFIELD( m_flStartFrame, FIELD_FLOAT, "framestart" ),
@@ -88,7 +88,7 @@ void CEnvPortalLaser::Spawn( void )
 //-----------------------------------------------------------------------------
 void CEnvPortalLaser::Precache( void )
 {
-	m_nSiteHalo = PrecacheModel("sprites/redglow2.vmt");
+	m_nSiteHalo = PrecacheModel("sprites/purpleglow1.vmt");
 
 	SetModelIndex( PrecacheModel( STRING( GetModelName() ) ) );
 	if ( m_iszSpriteName != NULL_STRING )
@@ -182,7 +182,7 @@ void CEnvPortalLaser::InputToggle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CEnvPortalLaser::TurnOff( void )
 {
-	AddEffects( EF_NODRAW );
+	//AddEffects( EF_NODRAW );
 	if (m_pBeam)
 		m_pBeam->TurnOff();
 
@@ -196,7 +196,7 @@ void CEnvPortalLaser::TurnOff( void )
 //-----------------------------------------------------------------------------
 void CEnvPortalLaser::TurnOn( void )
 {
-	RemoveEffects( EF_NODRAW );
+	//RemoveEffects( EF_NODRAW );
 	if (m_pBeam)
 		m_pBeam->TurnOn();
 
@@ -277,12 +277,10 @@ void CEnvPortalLaser::StrikeThink( void )
 	if (UTIL_Portal_TraceRay_Beam(rayPath, MASK_SHOT, &m_filterBeams, &fEndFraction))
 	{
 		vEndPointBeam = vecMuzzle + vecAimDir * LASER_RANGE;	// Trace went through portal and endpoint is unknown
-		//DevMsg("\nBeam Points (PORTAL):\nStart: x:%e y:%e z:%e\nEnd: x:%e y:%e z:%e",vecMuzzle.x+vecAimDir.x,vecMuzzle.y+vecAimDir.y,vecMuzzle.z+vecAimDir.z,vEndPointBeam.x,vEndPointBeam.y,vEndPointBeam.z);
 	}
 	else
 	{
 		vEndPointBeam = vecMuzzle + vecAimDir * LASER_RANGE * fEndFraction;	// Trace hit a wall
-		//DevMsg("\nBeam Points:\nStart: x:%e y:%e z:%e\nEnd: x:%e y:%e z:%e",vecMuzzle.x+vecAimDir.x,vecMuzzle.y+vecAimDir.y,vecMuzzle.z+vecAimDir.z,vEndPointBeam.x,vEndPointBeam.y,vEndPointBeam.z);
 	}
 	m_pBeam->PointsInit(vEndPointBeam, vecMuzzle);
 	

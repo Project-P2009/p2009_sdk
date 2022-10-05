@@ -42,13 +42,11 @@ public:
 	void InputTurnOn( inputdata_t &inputdata );
 	void InputTurnOff( inputdata_t &inputdata );
 	void InputToggle( inputdata_t &inputdata );
-#ifdef MAPBASE
-	void InputSetTarget( inputdata_t &inputdata ) { m_iszLaserTarget = inputdata.value.StringID(); }
-#endif
+
 	DECLARE_DATADESC();
 
 	string_t m_iszLaserTarget;	// Name of entity or entities to strike at, randomly picked if more than one match.
-	CSprite *m_pSprite;
+	//CSprite *m_pSprite;
 	CBeam* m_pBeam;
 	string_t m_iszSpriteName;
 	Vector  m_firePosition;
