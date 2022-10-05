@@ -1647,6 +1647,9 @@ class CAI_LeadGoal_Weapon : public CAI_LeadGoal
 {
 	DECLARE_CLASS( CAI_LeadGoal_Weapon, CAI_LeadGoal );
 public:
+#ifdef MAPBASE
+	CAI_LeadGoal_Weapon() : m_flTimeoutTime( 60 ) {};
+#endif
 
 	virtual const char *GetConceptModifiers( const char *pszConcept );
 	virtual void InputActivate( inputdata_t &inputdata );
@@ -1654,7 +1657,7 @@ public:
 private:
 	string_t	m_iszWeaponName;
 #ifdef MAPBASE
-	float		m_flTimeoutTime = 60;
+	float		m_flTimeoutTime;
 #endif
 	string_t	m_iszMissingWeaponConceptModifier;
 

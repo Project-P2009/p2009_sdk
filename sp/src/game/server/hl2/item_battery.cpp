@@ -20,15 +20,21 @@ class CItemBattery : public CItem
 public:
 	DECLARE_CLASS( CItemBattery, CItem );
 
+#ifdef MAPBASE
+	CItemBattery() : m_flPowerMultiplier( 1.0f )
+	{
+	}
+#endif
+
 	void Spawn( void )
 	{ 
 		Precache( );
-		SetModel( "models/items/battery.mdl" );
+		SetModel( DefaultOrCustomModel( "models/items/battery.mdl" ) );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/battery.mdl");
+		PrecacheModel( DefaultOrCustomModel( "models/items/battery.mdl" ) );
 
 		PrecacheScriptSound( "ItemBattery.Touch" );
 
@@ -36,10 +42,30 @@ public:
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
 		CHL2_Player *pHL2Player = dynamic_cast<CHL2_Player *>( pPlayer );
+#ifdef MAPBASE
+		return ( pHL2Player && pHL2Player->ApplyBattery( m_flPowerMultiplier ) );
+#else
 		return ( pHL2Player && pHL2Player->ApplyBattery() );
+#endif
 	}
+
+#ifdef MAPBASE
+	void	InputSetPowerMultiplier( inputdata_t &inputdata ) { m_flPowerMultiplier = inputdata.value.Float(); }
+	float	m_flPowerMultiplier;
+
+	DECLARE_DATADESC();
+#endif
 };
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
 PRECACHE_REGISTER(item_battery);
+
+#ifdef MAPBASE
+BEGIN_DATADESC( CItemBattery )
+
+	DEFINE_KEYFIELD( m_flPowerMultiplier, FIELD_FLOAT, "PowerMultiplier" ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPowerMultiplier", InputSetPowerMultiplier ),
+
+END_DATADESC()
+#endif
 

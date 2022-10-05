@@ -47,8 +47,7 @@ public:
 	CBeam*				m_pBeam;
 	CSprite*			m_pLightGlow;
 #ifdef MAPBASE
-	// This is a keyvalue now, so we have to initialize the value through somewhere that isn't Spawn()
-	int					m_iPlayerAggression = 0;
+	int					m_iPlayerAggression;
 	bool				m_bBleed;
 #else
 	int					m_iPlayerAggression;

@@ -26,7 +26,12 @@
 //-----------------------------------------------------------------------------
 class CPointAdvancedFinder : public CLogicalEntity
 {
+public:
 	DECLARE_CLASS(CPointAdvancedFinder, CLogicalEntity);
+
+	CPointAdvancedFinder() : m_flLastOutputDelay( 0.0f )
+	{
+	}
 
 private:
 	// Inputs
@@ -66,7 +71,7 @@ private:
 	};
 
 	float m_flOutputDelay;
-	float m_flLastOutputDelay = 0.0f;
+	float m_flLastOutputDelay;
 
 #if ENTITYFINDER_UTLVECTOR
 	CUtlVector<CBaseEntity*> m_StoredEntities;

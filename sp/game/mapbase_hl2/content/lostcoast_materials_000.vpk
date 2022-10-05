@@ -1,0 +1,1981 @@
+SDK_UnlitGeneric
+{
+	"$basetexture" "console/background01"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$ignorez" 1
+	"$no_fullbright" "1"
+	"$nolod" "1"
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "console/background01_widescreen"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$ignorez" 1
+	"$no_fullbright" "1"
+	"$nolod" "1"
+}
+SDK_UnlitGeneric
+{
+	"$translucent" 1
+	"$basetexture" "detail/detailsprites"
+	"$nocull" 1
+//	"$alphatest" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/concrete/lostcoast_concretestair001a"
+	"$surfaceprop" "concrete"
+}
+SDK_UnlitGeneric
+{
+	"$baseTexture" "lostcoast/Models/Effects/stainedglass_light"
+	"$nocull" "1"	
+	"$additive" "1"
+//	"$translucent" "1"
+	"$model" "1"
+	"$no_fullbright" 1
+
+}
+
+SDK_UnlitGeneric
+{
+	"$baseTexture" "lostcoast/Models/Effects/stainedglass_light_white"
+	"$nocull" "1"	
+	"$additive" "1"
+//	"$translucent" "1"
+	"$model" "1"
+	"$no_fullbright" 1
+
+}
+
+SDK_Eyes
+{
+	"$basetexture" "lostcoast/models/fisherman/eyeball_l"
+	"$iris" "lostcoast/models/fisherman/pupil_l"
+	"$halflambert" 1
+	"$nodecal" "1"
+}
+SDK_Eyes
+{
+	"$basetexture" "lostcoast/models/fisherman/eyeball_r"
+	"$iris" "lostcoast/models/fisherman/pupil_r"
+	"$halflambert" 1
+	"$nodecal" "1"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/fisherman_head"
+	"$bumpmap" "lostcoast/models/fisherman/fisherman_head_normal"
+	"$halflambert" 1	
+        "$envmap" 			"env_cubemap"
+        "$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 0.4
+	"$envmapsaturation" 0.7
+	"$envmaptint" "[ .4 .4 .4 ]"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/fisherman_lower_body"
+	"$bumpmap" "lostcoast/models/fisherman/fisherman_lower_body_normal"
+	"$envmap" 			"env_cubemap"
+        "$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 0.6
+	"$envmapsaturation" 0.7
+	"$envmaptint" "[ .4 .4 .4 ]"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/fisherman_upper_body"
+	"$bumpmap" "lostcoast/models/fisherman/fisherman_upper_body_normal"
+	"$envmap" 			"env_cubemap"
+        "$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 0.6
+	"$envmapsaturation" 0.7
+	"$envmaptint" "[ .6 .6 .6 ]"
+}
+SDK_UnlitGeneric
+{
+	// Original shader: AddTexture
+	"$basetexture" "lostcoast/models/fisherman/glint"
+	"$additive" 1
+	"$model" 1
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/harpoon_sheet"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/keys_sheet"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/mouth"
+	"$model" 1
+	"$clientshader" "MouthShader"
+	"$halflambert" 1
+	
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast/models/fisherman/teeth"
+	//"$model" 1
+	//"$clientshader" "MouthShader"
+	"$halflambert" 1
+	
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_debris\metalwall001a"
+	"$surfaceprop" "metal"
+	"$bumpmap" "lostcoast\models\props_debris/metalwall001a_normal"
+	"$envmaptint" "[ .56 .56 .56 ]"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_junk\float01a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_junk\float02a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_junk\float03a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\altar"
+	"$bumpmap" "lostcoast\models\props_monastery\altar_normal"
+	"$envmap" "env_cubemap"	
+	"$normalmapalphaenvmapmask" 1
+	
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\candlestick"
+	"$bumpmap"	"lostcoast\models\props_monastery\candlestick_normal"
+	"$normalmapalphaenvmapmask" 1
+	//"$envmap" "lostcoast\models\props_monastery\candlestick_cube"
+	"$envmap" "env_cubemap"
+//	"$envmapcontrast" 0.5
+	"$envmapsaturation" 1.2
+	"$envmaptint" "{ 220 170 110}"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\chandelier"
+//	"$alpha" 1
+//	"$selfillum" 1
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.5 .5 .5]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\chandelier_votives"
+	"$model" 1
+	"$alpha" 1
+	"$translucent" 1
+	"$envmap" "env_cubemap"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.5 .5 .5]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\cloisters"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\destroyed_walls01"
+	//"$bumpmap"	"lostcoast\models\props_monastery\destroyed_walls03_normal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\destroyed_walls02"
+	//"$bumpmap"	"lostcoast\models\props_monastery\destroyed_walls03_normal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\destroyed_walls03"
+	"$bumpmap"	"lostcoast\models\props_monastery\destroyed_walls03_normal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\destroyed_walls04"
+//	"$bumpmap"	"lostcoast\models\props_monastery\destroyed_walls04_normal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\dome_large"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\door01a"
+	"$surfaceprop" "wood"
+//	"$basealphaenvmapmask" 1
+//	"$envmap" "env_cubemap"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture"	"lostcoast\models\props_monastery\furniture_doublechair"
+	"$bumpmap"	"lostcoast\models\props_monastery\furniture_doublechair_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[ .20 .20 .20]"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.10 .10 .10]"
+ 		}
+
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\Gutter001"
+	"$surfaceprop" "metal"
+	"$basealphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .75 .75 .75]"
+}
+
+
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\hanging_oil_lamp"
+	"$bumpmap"	"lostcoast\models\props_monastery\hanging_oil_lamp_normal"
+	"$normalmapalphaenvmapmask" 1
+	//"$envmap" "lostcoast\models\props_monastery\hanging_oil_lampcube"
+	"$envmap" "env_cubemap"
+//	"$envmapcontrast" 0.5
+	"$envmapsaturation" 1.2
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\interior_dome_door"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+	//"$bumpMap" "lostcoast\models\props_monastery\interior_dome_door_normal"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\interior_dome_door02"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\interior_dome_wall01"
+}
+SDK_Refract
+{
+
+SDK_Refract_DX60
+{
+  "$fallbackmaterial" "lostcoast\models\props_monastery\interior_dome_wall_window_dx60"
+}
+ 
+	"$surfaceprop" "glass"
+	"$model" 1
+	"$bluramount" 1
+	"$refractamount" ".05"
+	"$refracttint" "[.8 .8 .8]"
+	"$nocull" 1
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.7 .7 .7]"
+
+	"$normalmap" "lostcoast\models\props_monastery\interior_dome_wall_window_normal"
+	"$refracttinttexture" "lostcoast\models\props_monastery\interior_dome_wall_window"
+
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\interior_dome_wall_window"
+	"$surfaceprop" "glass"
+	"$model" 1
+	"$nocull" 1
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\interior_end_domes"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\interior_middle_divide"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.33 .33 .33]"
+ 		}
+
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\monastery01"
+	"$surfaceprop" "stone"
+}
+
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\monastery_chimmney01"
+	"$surfaceprop" "stone"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmaptint" "[.35 .35 .35]"
+}
+
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\monastery_pillar_medium"
+	"$bumpMap" "lostcoast\models\props_monastery\monastery_pillar_medium_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[ .32 .32 .32 ]"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_monastery\monastery_pillar_tall"
+	"$bumpMap" "lostcoast\models\props_monastery\monastery_pillar_tall_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .16 .16 .16 ]"
+
+}
+SDK_Refract
+{
+
+SDK_Refract_DX60
+{
+  "$fallbackmaterial" "lostcoast\models\props_monastery\monastery_stain_window001a_dx60"
+}
+ 
+
+	"$surfaceprop" "glass"
+	"$model" 1
+	"$bluramount" 1
+	"$refractamount" ".05"
+	"$refracttint" "[.8 .8 .8]"
+	"$nocull" 1
+	
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.7 .7 .7]"
+
+	"$normalmap" "lostcoast\models\props_monastery\Monastery_Stain_window001a_normal"
+	
+	"$REFRACTTINTTEXTURE" "lostcoast\models\props_monastery\Monastery_Stain_window001a"
+
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\Monastery_Stain_Window001a"
+	"$surfaceprop" "glass"
+	"$model" 1
+	"$nocull" 1
+
+}
+SDK_VertexLitGeneric
+{
+
+	"$basetexture" "lostcoast\models\props_monastery\Monastery_window001a"
+	"$surfaceprop" "wood"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_monastery\scaffolding01a"
+	"$surfaceprop" "metal"
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\boat_drydock01a"
+	//"$envmap" "env_cubemap"
+	//"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\boat_fishing01a"
+	//"$envmap" "env_cubemap"
+	//"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\boat_wooden01a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "wood"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\boat_wooden02a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "wood"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\boat_wooden03a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "wood"
+
+}
+SDK_VertexLitGeneric
+{
+
+	"$basetexture" "lostcoast\models\props_wasteland\Cliffrock001"
+	"$surfaceprop" "rock"
+//	"$bumpmap" "lostcoast\models\props_wasteland\Cliffrock001_normal"
+//	"$normalmapalphaenvmapmask" 1
+//	"$envmapcontrast" 1
+//	"$envmapsaturation" 1
+//	"$envmaptint" "[ .5 .5 .5]"
+//	"$envmap" "env_cubemap"
+}
+
+SDK_VertexLitGeneric
+{
+
+	"$basetexture" "lostcoast\models\props_wasteland\Cliffrock001b"
+	"$surfaceprop" "rock"
+//	"$bumpmap" "lostcoast\models\props_wasteland\Cliffrock001b_normal"
+//	"$normalmapalphaenvmapmask" 1
+//	"$envmapcontrast" 1
+//	"$envmapsaturation" 1
+//	"$envmaptint" "[ .5 .5 .5]"
+//	"$envmap" "env_cubemap"
+}
+
+SDK_VertexLitGeneric
+{
+	"$basetexture" "lostcoast\models\props_wasteland\Cliff_stairs01"
+	"$surfaceprop" "wood"
+}
+
+SDK_VertexLitGeneric
+{
+
+	"$basetexture" "lostcoast\models\props_wasteland\Coastrock001"
+	"$surfaceprop" "rock"
+	"$bumpmap" "lostcoast\models\props_wasteland\coastrock001_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+//	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.3 .3 .3]"
+ 		}
+}
+
+SDK_VertexLitGeneric
+{
+
+	"$basetexture" "lostcoast\models\props_wasteland\coastrock02"
+	"$surfaceprop" "rock"
+	"$bumpmap" "lostcoast\models\props_wasteland\coastrock02_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .3 .3 .3]"
+	"$envmap" "env_cubemap"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.3 .3 .3]"
+ 		}
+}
+
+SDK_VertexLitGeneric
+{
+	
+	"$baseTexture"			"lostcoast/models/props_wasteland/crabpot"
+	"$alphatest"			1
+	"$bumpmap" "lostcoast\models\props_wasteland\crabpot_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+
+
+	
+}
+//.vmt file generated by MAYA. Remove this line if you edit this file! -- theo 
+SDK_VertexLitGeneric
+{
+	"$color"				"[1 1 1]"
+	"$baseTexture"			"lostcoast/models/props_wasteland/fchurchtowerwalls"
+	"$selfIllum"			0
+	"$translucent"			0
+	"$alpha"				1
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "lostcoast\models\props_wasteland\gate01a"
+	//"$envmap" "env_cubemap"
+	//"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+
+}
+//.vmt file generated by MAYA. Remove this line if you edit this file! -- theo 
+SDK_VertexLitGeneric
+{
+	"$color"				"[1 1 1]"
+	"$baseTexture"			"lostcoast/models/props_wasteland/haeimchch4"
+	"$selfIllum"			0
+	"$translucent"			0
+	"$alpha"				1
+}
+//.vmt file generated by MAYA. Remove this line if you edit this file! -- theo 
+SDK_VertexLitGeneric
+{
+	"$color"				"[1 1 1]"
+	"$baseTexture"			"lostcoast/models/props_wasteland/lkgjbbuildch3ch5"
+	"$selfIllum"			0
+	"$translucent"			0
+	"$alpha"				1
+}
+SDK_VertexLitGeneric
+{
+	
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part01"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part01_normal"
+	//"$normalmapalphaenvmapmask" 1
+
+	
+}
+SDK_VertexLitGeneric
+{
+	
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part01a"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part01a_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmap" "env_cubemap"
+
+}
+SDK_VertexLitGeneric
+{
+	
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part01b"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part01b_normal"
+	//"$normalmapalphaenvmapmask" 1
+	
+
+
+}
+SDK_VertexLitGeneric
+{
+	
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part02"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part02_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmap" "env_cubemap"
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part03"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part03_normal"
+	//"$normalmapalphaenvmapmask" 1
+
+
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture"			"lostcoast/models/props_wasteland/shipwreck_part03a"
+	//"$bumpmap" "lostcoast\models\props_wasteland\shipwreck_part03a_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmap" "env_cubemap"
+
+
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Carpet001a"
+	"$surfaceprop" "carpet"
+
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Door001a"
+	"$surfaceprop" "wood"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Exterior001a"
+	"$surfaceprop" "plaster"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Exterior001b"
+	"$surfaceprop" "plaster"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Exterior001c"
+	"$surfaceprop" "plaster"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Floor001a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Floor001a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .05 .05 .05 ]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Floor001b"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Floor001b_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .05 .05 .05 ]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Floor001c"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Floor001c_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .075 .075 .075 ]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001a"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001b"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001c"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001d"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001e"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001f"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001g"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001h"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001j"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001k"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001l"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001m"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001n"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001o"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Fresco001p"
+	"$surfaceprop" "plaster"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "{ 220 200 110}"
+
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall001a"
+	"$surfaceprop" "brick"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall001a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall001b"
+	"$surfaceprop" "brick"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall001b_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall001c"
+	"$surfaceprop" "brick"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall001c_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall002a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall002a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall002b"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall002b_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall002c"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall002c_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall002d"
+	"$surfaceprop" "concrete"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .75 .75 .75]"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall003a"
+	"$surfaceprop" "concrete"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall003b"
+	"$surfaceprop" "concrete"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall003c"
+	"$surfaceprop" "concrete"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall003d"
+	"$surfaceprop" "concrete"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .75 .75 .75]"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall004a"
+	"$surfaceprop" "concrete"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Wall004c"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Wall004c_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .025 .025 .025 ]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	// Original shader: DecalBaseTimesLightmapAlphaBlend
+	"$basetexture" "lostcoast/monastery/sign_warning01"
+	"$decal" 1
+	"$decalscale" 0.125
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/nature/dirtfloor002a"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendpathweeds001a_tooltexture"
+	"%keywords" "wasteland"
+	"%detailtype" "lostcoast_grass"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/nature/dirtpath001a"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendpathweeds002a_tooltexture"
+	"%keywords" "wasteland"
+	"%detailtype" "lostcoast_grass2"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/gravelfloor006a"
+	"$basetexture2" "lostcoast/nature/rockwall021c"
+	"%tooltexture" "lostcoast/nature/blendrockgravel002a_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/gravelfloor006a_normal"
+	"$bumpmap2" "lostcoast/nature/rockwall021c_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmapcontrast" 1
+	//"$envmapsaturation" 1
+	//"$envmaptint" "[ .65 .65 .65]"
+	//"$envmap" "env_cubemap"
+	"%detailtype" "lostcoast_grass"
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/nature/rockwall021b"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendrockweeds001a_tooltexture"
+	"%keywords" "wasteland""
+	"$bumpmap" "lostcoast/nature/rockwall021b_normal"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/nature/rockwall021c"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendrockweeds001b_tooltexture"
+	"%keywords" "wasteland"
+	"$bumpmap" "lostcoast/nature/rockwall021c_normal"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/nature/rockwall021d"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendrockweeds001c_tooltexture"
+	"%keywords" "wasteland"
+	"$bumpmap" "lostcoast/nature/rockwall021d_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .625 .625 .625]"
+	"$envmap" "env_cubemap"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/rockwall021e"
+	"$basetexture2" "lostcoast/nature/rockwall020a"
+	"%tooltexture" "lostcoast/nature/blendrockwetrock001a_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/rockwall021e_normal"
+	"$bumpmap2" "lostcoast/nature/rockwall020a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+	"$basetexturenoenvmap" 1
+	//"$fresnelreflection" 0.0
+	//"$basetexturetransform" "center .5 .5 scale .25 .25 rotate 0 translate 0 0"
+	//"$basetexturetransform2" "center .5 .5 scale .5 .5 rotate 0 translate 0 0"
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007b"
+	"$basetexture2" "lostcoast/nature/waterfog"
+	"%tooltexture" "lostcoast/nature/blendsandsand007a_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007b_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .2 .2 .2]"
+	"$envmap" "env_cubemap"
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/dirtfloor006a"
+	"%tooltexture" "lostcoast/nature/blendsandgrass002a_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmapcontrast" 1
+	//"$envmapsaturation" 1
+	//"$envmaptint" "[ .6 .6 .6]"
+	//"$envmap" "env_cubemap"
+        "%detailtype" "coastline_grass01"
+	"$bumpbasetexture2withbumpmap" "0"
+
+
+	
+
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/rockwall019a"
+	"%tooltexture" "lostcoast/nature/blendsandrock005b_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	"$bumpmap2" "lostcoast/nature/rockwall019a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/sandfloor007b"
+	"%tooltexture" "lostcoast/nature/blendsandsand007a_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	"$bumpmap2" "lostcoast/nature/sandfloor007b_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/sandfloor007a"
+	"%tooltexture" "lostcoast/nature/blendsandsand007b_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	"$bumpmap2" "lostcoast/nature/sandfloor007a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+	"$basetexturenoenvmap" 1
+	"%detailtype" "redgrass_light"
+
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/sandfloor007b"
+	"%tooltexture" "lostcoast/nature/blendsandsand007c_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/Nature/sandfloor007c_normal"
+	"$bumpmap2" "lostcoast/nature/sandfloor007b_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .6 .6 .6]"
+	"$envmap" "env_cubemap"
+	"$parallaxmap" "lostcoast/nature/sandfloor007c_height"
+	"$parallaxmap2" "lostcoast/nature/sandfloor007c_height"
+	"$parallaxmapscale" ".05"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" 	"lostcoast/nature/sandfloor007c"
+	"$basetexture2" "lostcoast/nature/sandfloor007d"
+	"%tooltexture" "lostcoast/nature/blendsandsand007d_tooltexture"
+	"$surfaceprop" "sand"
+	"%keywords" "coastline"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	"$bumpmap2" "lostcoast/nature/sandfloor007d_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .6 .6 .6]"
+	"$envmap" "env_cubemap"
+	"$parallaxmap" "lostcoast/nature/sandfloor007c_height"
+	"$parallaxmap2" "lostcoast/nature/sandfloor007d_height"
+	"$parallaxmapscale" ".05"
+}
+SDK_WorldVertexTransition
+{
+	"$basetexture" "lostcoast/Monastery/Monastery_Ground001a"
+	"$basetexture2" "lostcoast/nature/grassweeds001a"
+	"%tooltexture" "lostcoast/nature/blendstonepathweeds001a_tooltexture"
+	"%keywords" "wasteland"
+	"%detailtype" "lostcoast_grass"
+	"$bumpmap" "lostcoast/Monastery/Monastery_Ground001a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Nature/dirtfloor002a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/dirtfloor006a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Nature/dirtpath001a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Nature/grassfloor003a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "Nature/grassweeds001a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/Nature/gravelfloor004a"
+	"$surfaceprop" "dirt"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall019a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall019a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall019a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall019a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall020a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall020a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .5 .5 .5]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall020b"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall020b_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall021b"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall021b_normal"
+	//"$parallaxmap" "lostcoast/nature/rockwall021b_height"
+	//"$parallaxmapscale" ".025"
+	"$detail" "lostcoast/nature/rockwall021_detail"
+	"$detailscale" 5
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall021c"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall021c_normal"
+	//"$parallaxmap" "lostcoast/nature/rockwall021c_height"
+	//"$parallaxmapscale" ".025"
+	"$detail" "lostcoast/nature/rockwall021_detail"
+	"$detailscale" 5
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall021d"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall021d_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .625 .625 .625]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall021e"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall021e_normal"
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall021_detail"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/rockwall022a"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "lostcoast/nature/rockwall022a_normal"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/sandfloor007a"
+	"$bumpmap" "lostcoast/nature/sandfloor007a_normal"
+	"$surfaceprop" "sand"
+	"%keywords" "wasteland"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .9 .9 .9]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/sandfloor007b"
+	"$bumpmap" "lostcoast/nature/sandfloor007b_normal"
+	"$surfaceprop" "sand"
+	"%keywords" "wasteland"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .9 .9 .9]"
+	"$envmap" "env_cubemap"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/sandfloor007c"
+	"$bumpmap" "lostcoast/nature/sandfloor007c_normal"
+	"$surfaceprop" "sand"
+	"%keywords" "wasteland"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture" "lostcoast/nature/sandfloor007d"
+	"$bumpmap" "lostcoast/nature/sandfloor007d_normal"
+	"$surfaceprop" "sand"
+	"%keywords" "wasteland"
+}
+SDK_UnlitGeneric
+{
+	"$color" "{20 42 37}"
+}
+SDK_Water
+{
+	"%compilewater" 1
+	"$forceexpensive" 1
+	"$reflectentities" 1
+	"$envmap" "env_cubemap"
+	"%tooltexture" "dev/water_normal"
+	"$refracttexture" "_rt_WaterRefraction"
+	"$refractamount" ".75"
+
+
+	SDK_Water_DX60
+	{
+		"$fallbackmaterial" "nature/water_canals_water2_dx70"
+	}	
+	"$reflecttexture" "_rt_WaterReflection"
+	"$reflectamount" ".75"
+	"$reflecttint" "[1 1 1]"
+
+	"$scale" "[1 1]"
+
+	"$bumpmap" "dev/water_dudv"
+	"$normalmap" "dev/water_normal"
+
+	"$surfaceprop" "water"
+	"$bottommaterial" "lostcoast/nature/water_ati_beneath"
+	"$bumpframe" "0"
+
+	"$fogenable" 1
+	"$fogcolor" "{20 42 37}"
+	"$fogstart" 1.00
+	"$fogend" 100.00
+
+	"$scroll1" "[.02 .02 .1]"
+	"$scroll2" "[-.05 .05 .15]"
+
+	"Proxies"
+	{
+//		"AnimatedTexture"
+//		{
+//			"animatedtexturevar" "$normalmap"
+//			"animatedtextureframenumvar" "$bumpframe"
+//			"animatedtextureframerate" 30.00
+//		}
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" .02
+			"texturescrollangle" 65.00
+		}
+	}
+}
+SDK_Water
+{
+	"%compilewater" 1
+	"$forceexpensive" 1
+	"$reflectentities" 0
+//	"$envmap" "env_cubemap"
+	"%tooltexture" "dev/water_normal"
+	"$refracttexture" "_rt_WaterRefraction"
+	"$refractamount" ".1"
+
+	SDK_Water_DX60
+	{
+		"$fallbackmaterial" "nature/water_canals_water2_dx70"
+	}	
+
+//	"$reflecttexture" "_rt_WaterReflection"
+//	"$reflectamount" "2.0"
+//	"$reflecttint" "[1 1 1]"
+
+	"$scale" "[1 1]"
+
+	"$bumpmap" "dev/water_dudv"
+	"$normalmap" "dev/water_normal"
+
+	"$surfaceprop" "water"
+	"$bumpframe" "0"
+
+	"$fogenable" 1
+	"$fogcolor" "{20 42 37}"
+	"$fogstart" 1.00
+	"$fogend" 100.00
+
+	"$scroll1" "[.02 .02 .1]"
+	"$scroll2" "[-.1 .1 .3]"
+
+	"Proxies"
+	{
+//		"AnimatedTexture"
+//		{
+//			"animatedtexturevar" "$normalmap"
+//			"animatedtextureframenumvar" "$bumpframe"
+//			"animatedtextureframerate" 30.00
+//		}
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" .05
+			"texturescrollangle" 45.00
+		}
+	}
+}
+SDK_Water
+{
+	"%compilewater" 1
+	"$forcecheap" 1
+	"$CHEAPWATERSTARTDISTANCE" 500.0
+	"$CHEAPWATERENDDISTANCE" 1000.0
+	"$envmap" "lostcoast/customcubemaps/cube_lostcoast"
+	SDK_Water_DX60
+	{
+		"$fallbackmaterial" "nature/water_canals_water2_dx70"
+	}	
+	SDK_Water_DX9_HDR
+	{
+		"$envmap" "lostcoast/customcubemaps/cube_lostcoast_hdr"
+	}
+	
+	"%tooltexture" "dev/water_normal"
+	"$refractamount" ".1"
+//	"$refracttint" "[0.95 1.0 0.97]"
+
+	"$reflectamount" "1.5"
+	"$reflecttint" "[1 1 1]"
+
+	"$scale" "[1 1]"
+
+	"$bumpmap" "dev/water_dudv"
+	"$normalmap" "dev/water_normal"
+
+	"$surfaceprop" "water"
+	"$bottommaterial" "lostcoast/nature/water_ati_beneath"
+	"$bumpframe" "0"
+
+	"$fogenable" 1
+	"$fogcolor" "{20 42 37}"
+	"$fogstart" 1.00
+	"$fogend" 100.00
+
+	"$scroll1" "[.02 .02 .1]"
+	"$scroll2" "[-.05 .05 .15]"
+
+	"Proxies"
+	{
+//		"AnimatedTexture"
+//		{
+//			"animatedtexturevar" "$normalmap"
+//			"animatedtextureframenumvar" "$bumpframe"
+//			"animatedtextureframerate" 30.00
+//		}
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" .05
+			"texturescrollangle" 45.00
+		}
+	}
+}
+//"UnlitGeneric"
+//"LightmappedGeneric"
+SDK_UnlitTwoTexture
+{
+	"$basetexture" "lostcoast/overlays/shorewave001a"
+	"$texture2"    "lostcoast/overlays/shorelap"
+	"$additive" 1
+	"$decal" 1
+//	"$ignorez" 1
+
+	"Proxies"
+	{
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" ".09"
+			"texturescrollangle" 90
+		}
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$texture2"
+			"animatedtextureframenumvar" "$frame2"
+			"animatedtextureframerate" 16
+		}
+
+}
+
+}
+// envmaptint_fix
+SDK_LightmappedGeneric
+{
+	"$basetexture" "Metal/metalwall077a"
+	"$surfaceprop" "metal"
+	"%keywords" "combine"
+
+	// NOTE: Even though env_cubemap is here, it will turned off for DX6
+	// because $multipass 1 isn't defined
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .56 .67 .75 ]"
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+
+	SDK_LightmappedGeneric_DX9
+	{
+		"$bumpmap" "metal/metalwall077a_normal"
+		"$nodiffusebumplighting" 1
+		"$normalmapalphaenvmapmask" 1
+	}
+
+	SDK_LightmappedGeneric_DX8
+	{
+		"$bumpmap" "metal/metalwall077a_normal"
+		"$nodiffusebumplighting" 1
+		"$normalmapalphaenvmapmask" 1
+	}
+
+	SDK_LightmappedGeneric_NoBump_DX8
+	{
+		"$basetexture" "metal/citadel_metalwall077a"
+		"$basealphaenvmapmask" 1
+	}
+ 		"lightmappedgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.14 .165 .185]"
+ 		}
+}
+// envmaptint_fix
+SDK_LightmappedGeneric
+{
+	"$basetexture" "Metal/metalwall091a"
+	"$surfaceprop" "metal"
+	"%keywords" "combine"
+
+	// NOTE: Even though env_cubemap is here, it will turned off for DX6
+	// because $multipass 1 isn't defined
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .56 .56 .75 ]"
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+
+	SDK_LightmappedGeneric_DX9
+	{
+		"$bumpmap" "metal/metalwall091a_normal"
+		"$parallaxmap" "Metal/metalwall091a_height"
+		"$parallaxmapscale" ".0125"
+		"$normalmapalphaenvmapmask" 1
+	}
+
+	SDK_LightmappedGeneric_DX8
+	{
+		"$bumpmap" "metal/metalwall091a_normal"
+		"$nodiffusebumplighting" 1
+		"$normalmapalphaenvmapmask" 1
+	}
+
+	SDK_LightmappedGeneric_NoBump_DX8
+	{
+		"$basetexture" "metal/citadel_metalwall091a"
+		"$basealphaenvmapmask" 1
+	}
+ 		"lightmappedgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.14 .165 .185]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" 	"Models/Combine_soldier/combinesoldiersheet"
+	"$envmap" "env_cubemap"	
+	"$envmapmask" "Models/Combine_soldier/combinesoldiersheet_mask"
+	"$envmapcontrast" 1
+	"$surfaceprop" "flesh"
+	"$selfillum" 1
+	"$model" 1
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.5 .5 .5]"
+ 		}
+}
+
+
+
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "Models/extras/lambda_info"
+	"$selfillum" "1"
+	"$envmap" "lostcoast/CustomCubeMaps/simplespec"
+//	"$envmaptint" "[0.9 0.9 0.9]"
+//	"$envmapcontrast" ".3"
+}
+SDK_UnlitGeneric
+{
+	"$baseTexture" "Models/extras/speech_info"
+	"$model" 1
+
+//	"$envmap" "lostcoast/CustomCubeMaps/simplespec"
+//	"$envmaptint" "[0.9 0.9 0.9]"
+//	"$envmapcontrast" ".3"
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "Models/Combine_Helicopter/combine_helicopter01"
+	//"$surfaceprop" "metal"
+	//"$nocull" 1
+	"$envmap" "env_cubemap"	
+	"$envmaptint" "[ .1 .1 .1]"
+	"$basealphaenvmapmask" 1
+	//"$envmapmask" "Models/Combine_Helicopter/combine_helicopter02_mask"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.1 .1 .1]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "Models/Combine_Helicopter/combine_helicopter02"
+	"$surfaceprop" "metal"
+	"$translucent" 1
+	"$envmap" "env_cubemap"
+	"$envmapmask" "Models/Combine_Helicopter/combine_helicopter02_mask"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.1 .1 .1]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$basetexture" "Models/Combine_Helicopter/helicopter_prop_01"
+	//"$surfaceprop" "metal"
+	//"$nocull" 1
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .1 .1 .1]"
+	"$basealphaenvmapmask" 1
+	"nodecal" 1
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.1 .1 .1]"
+ 		}
+}
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "models/Headcrab_black/Blackcrab_sheet"
+	"$envmap" "env_cubemap"
+	"$envmapcontrast" 1
+	"$bumpmap" "models/headcrab_black/blackcrab_sheet_normal"
+	"$normalmapalphaenvmapmask" 1
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.5 .5 .5]"
+ 		}
+}
+// envmaptint_fix
+SDK_VertexLitGeneric
+{
+	//"$baseTexture" "Models/props_combine/headcrabcannister01b"
+	//"$envmap" "env_cubemap"
+	//"$basealphaenvmapmask" 1
+	//"$envmaptint" "[ .01 .01 .01 ]"
+
+	"$baseTexture" "Models/props_combine/headcrabcannister01b"
+	"$surfaceprop" "metal"
+	"$bumpmap" "models/props_combine/headcrabcannister01b_normal"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	"$envmaptint" "[ .56 .67 .75 ]"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.28 .33 .37]"
+ 		}
+
+
+}
+
+SDK_VertexLitGeneric
+{
+	"$baseTexture" "models\props_debris\metalwall001a"
+	"$surfaceprop" "metal"
+	"$bumpmap" "models\props_debris\metalwall001a_normal"
+	"$envmaptint" "[ .56 .56 .56 ]"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+}
+
+SDK_VertexLitGeneric
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "Models/props_junk/Bicycle01a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.33 .33 .33]"
+ 		}	
+}
+
+
+SDK_VertexLitGeneric
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "Models/props_junk/MetalBucket01a"
+	"$envmap" "env_cubemap"
+	"$basealphaenvmapmask" 1
+	"$surfaceprop" "metal"
+ 		"vertexlitgeneric_HDR_dx9"
+ 		{
+  			"$envmaptint" "[.5 .5 .5]"
+ 		}
+}
+
+SDK_WorldVertexTransition
+{
+	"$basetexture" "nature/dirtfloor006a"
+	"$basetexture2" "nature/gravelfloor004a"
+	"$detail" "overlays/macro01a"
+//	"$detailscale" .1
+//	"%detailtype" "coastline_redgrass02"
+	"%tooltexture" "nature/blendgrassgravel001a_tooltexture"
+	"%keywords" "wasteland"
+	"$surfaceprop" "dirt"
+	"$surfaceprop2" "dirt"
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "overlays/shorefx/shorewave"
+	"$additive" 1
+	"$decal" 1
+//	"$ignorez" 1
+
+	"Proxies"
+	{
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$basetexture"
+			"animatedtextureframenumvar" "$frame"
+			"animatedtextureframerate" 23
+		}
+
+}
+
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlend
+	"$translucent" 1
+	"$basetexture" "Particle/ParticleDefault"
+	"$vertexcolor" 1
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "sprites/glow04"
+//	"$ignorez" 1
+	"$additive" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+}
+SDK_UnlitGeneric
+{
+	"$additive" 1
+	"$vertexalpha" 1
+	"$vertexcolor" 1
+	"$basetexture" "sprites/orangecore1"
+//	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "sprites/orangecore2"
+	"$additive" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "sprites/orangeflare1"
+	"$additive" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+}
+SDK_Sprite
+{
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "sprites/orangelight1"
+}
+SDK_Sprite
+{
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "sprites/orangelight1"
+	"$ignorez" "1"
+}
+SDK_UnlitGeneric
+{
+	"$basetexture" "sprites/redglow1"
+	"$additive" 1
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+}
+//"LightmappedGeneric"
+SDK_UnlitGeneric
+{
+	"$baseTexture" "vgui/chapters/chapter1"
+	"$vertexalpha" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\hl2mp_logo"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\not_available"
+	"$vertexcolor" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\round_corner_ne"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\round_corner_nw"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\round_corner_se"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\round_corner_sw"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\solid_background"
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\spray_bullseye"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+
+}
+SDK_UnlitGeneric
+{
+	// Original shader: BaseTimesVertexColorAlphaBlendNoOverbright
+	"$translucent" 1
+	"$basetexture" "VGUI\gfx\VGUI\trans_background"
+	"$vertexcolor" 1
+	"$no_fullbright" 1
+	"$ignorez" 1
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_canned"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_combine"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_cop"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_dog"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_freeman"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_head"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_lambda"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_plumbed"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}
+SDK_LightmappedGeneric
+{
+	"$basetexture"	"vgui\logos\Spray_soldier"
+	"$translucent" "1"
+	"$decal" "1"
+	"$decalscale" "0.250"
+}

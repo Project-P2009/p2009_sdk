@@ -42,6 +42,9 @@ public:
 	DECLARE_CLASS( CInfoTarget, CPointEntity );
 
 	void	Spawn( void );
+#ifdef MAPBASE
+	virtual int UpdateTransmitState();
+#endif
 };
 
 //info targets are like point entities except you can force them to spawn on the client
@@ -54,6 +57,19 @@ void CInfoTarget::Spawn( void )
 		SetEFlags( EFL_FORCE_CHECK_TRANSMIT );
 	}
 }
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: Always transmitted to clients
+//-----------------------------------------------------------------------------
+int CInfoTarget::UpdateTransmitState()
+{
+	// Spawn flags 2 means we always transmit
+	if ( HasSpawnFlags(0x02) )
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	return BaseClass::UpdateTransmitState();
+}
+#endif
 
 LINK_ENTITY_TO_CLASS( info_target, CInfoTarget );
 #endif
@@ -780,17 +796,19 @@ void CBeam::BeamDamage( trace_t *ptr )
 			ClearMultiDamage();
 			Vector dir = ptr->endpos - GetAbsOrigin();
 			VectorNormalize( dir );
-			int nDamageType = DMG_ENERGYBEAM;
+			//int nDamageType = DMG_ENERGYBEAM;
+			// maybe burn won't push things -litevex
+			int nDamageType = DMG_BURN;
 
 #ifndef HL1_DLL
-			if (m_nDissolveType == 0)
+			/*if (m_nDissolveType == 0)
 			{
 				nDamageType = DMG_DISSOLVE;
 			}
 			else if ( m_nDissolveType > 0 )
 			{
 				nDamageType = DMG_DISSOLVE | DMG_SHOCK; 
-			}
+			}*/
 #endif
 
 			CTakeDamageInfo info( this, this, m_flDamage * (gpGlobals->curtime - m_flFireTime), nDamageType );

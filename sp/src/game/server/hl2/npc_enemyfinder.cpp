@@ -32,6 +32,9 @@ public:
 	DECLARE_CLASS( CNPC_EnemyFinder, CAI_BaseNPC );
 
 	CNPC_EnemyFinder()
+#ifdef MAPBASE
+		: m_iClassify( CLASS_NONE )
+#endif
 	{
 		m_PlayerFreePass.SetOuter( this );
 	}
@@ -59,6 +62,10 @@ public:
 	void InputTurnOff( inputdata_t &inputdata );
 
 	virtual	void Wake( bool bFireOutput = true );
+#ifdef MAPBASE
+	// A version of Wake() that takes an activator
+	virtual	void		Wake(CBaseEntity* pActivator);
+#endif
 
 private:
 	int		m_nStartOn;
@@ -70,7 +77,7 @@ private:
 	bool	m_bEnemyStatus;
 
 #ifdef MAPBASE
-	Class_T		m_iClassify = CLASS_NONE;
+	Class_T		m_iClassify;
 #endif
 
 	COutputEvent m_OnLostEnemies;
@@ -233,6 +240,16 @@ void CNPC_EnemyFinder::Wake( bool bFireOutput )
 	//Enemy finder is not allowed to become visible.
 	AddEffects( EF_NODRAW );
 }
+
+#ifdef MAPBASE
+void CNPC_EnemyFinder::Wake(CBaseEntity* pActivator)
+{
+	BaseClass::Wake(pActivator);
+
+	//Enemy finder is not allowed to become visible.
+	AddEffects(EF_NODRAW);
+}
+#endif // MAPBASE
 
 //------------------------------------------------------------------------------
 //

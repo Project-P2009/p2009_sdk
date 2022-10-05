@@ -402,7 +402,11 @@ void CFuncTank::InputFindNPCToManTank( inputdata_t &inputdata )
 		{
 			// Verify the npc has the func_tank controller behavior.
 			CAI_FuncTankBehavior *pBehavior;
+#ifdef MAPBASE
+			if ( pNPC->GetBehavior( &pBehavior ) && pBehavior->CanManTank( this, true ) )
+#else
 			if ( pNPC->GetBehavior( &pBehavior ) )
+#endif
 			{
 				m_hController = pNPC;
 				pBehavior->SetFuncTank( this );
@@ -439,7 +443,7 @@ void CFuncTank::InputTeleportNPCToManTank( inputdata_t &inputdata )
 		{
 			// Verify the npc has the func_tank controller behavior.
 			CAI_FuncTankBehavior *pBehavior;
-			if ( pNPC->GetBehavior( &pBehavior ) )
+			if ( pNPC->GetBehavior( &pBehavior ) && pBehavior->CanManTank( this, true ) )
 			{
 				Vector vecVec;
 				QAngle angAng;
@@ -512,7 +516,7 @@ void CFuncTank::InputForceNPCToManTank( inputdata_t &inputdata )
 		{
 			// Verify the npc has the func_tank controller behavior.
 			CAI_FuncTankBehavior *pBehavior;
-			if ( pNPC->GetBehavior( &pBehavior ) )
+			if ( pNPC->GetBehavior( &pBehavior ) && pBehavior->CanManTank( this, true ) )
 			{
 				// Set the forced condition
 				pBehavior->SetCondition( CAI_FuncTankBehavior::COND_FUNCTANK_FORCED );
@@ -627,7 +631,11 @@ void CFuncTank::NPC_FindController( void )
 			continue;
 
 		CAI_FuncTankBehavior *pBehavior;
+#ifdef MAPBASE
+		if ( pNPC->GetBehavior( &pBehavior ) && pBehavior->CanManTank( this, false ) )
+#else
 		if ( pNPC->GetBehavior( &pBehavior ) )
+#endif
 		{
 			// Don't mount the func_tank if your "enemy" is within X feet or it or the npc.
 			CBaseEntity *pEnemy = pNPC->GetEnemy();
@@ -3324,7 +3332,7 @@ public:
  	DECLARE_DATADESC();
 
 #ifdef MAPBASE
-	CFuncTankAirboatGun()
+	CFuncTankAirboatGun() : m_flHeavyShotInterval( 0.2f )
 	{
 		// -1 = original behavior
 		m_spread = -1;
@@ -3367,7 +3375,7 @@ private:
 	float		m_flLastImpactEffectTime;
 
 #ifdef MAPBASE
-	float		m_flHeavyShotInterval = 0.2f;
+	float		m_flHeavyShotInterval;
 	int			m_iHeavyShotSpread;
 	bool		m_bUseDamageKV;
 #endif
@@ -4525,7 +4533,13 @@ class CFuncTankMortar : public CFuncTank
 public:
 	DECLARE_CLASS( CFuncTankMortar, CFuncTank );
 
-	CFuncTankMortar() { m_fLastShotMissed = false; }
+	CFuncTankMortar()
+#ifdef MAPBASE
+		: m_iMortarTraceMask( MASK_SOLID_BRUSHONLY )
+#endif
+	{
+		m_fLastShotMissed = false;
+	}
 
 	void Precache( void );
 	void FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
@@ -4557,7 +4571,7 @@ public:
 
 #ifdef MAPBASE
 	float		m_flRadius;
-	int			m_iMortarTraceMask = MASK_SOLID_BRUSHONLY;
+	int			m_iMortarTraceMask;
 #endif
 
 	// store future firing event
@@ -4832,7 +4846,14 @@ static const char *s_pUpdateBeamThinkContext = "UpdateBeamThinkContext";
 
 class CFuncTankCombineCannon : public CFuncTankGun
 {
+public:
 	DECLARE_CLASS( CFuncTankCombineCannon, CFuncTankGun );
+
+#ifdef MAPBASE
+	CFuncTankCombineCannon() : m_bControllableVersion( false )
+	{
+	}
+#endif
 
 	void Precache();
 	void Spawn();
@@ -4865,7 +4886,7 @@ private:
 	bool	m_bShouldHarrass;
 	bool	m_bLastTargetWasNPC; // Tells whether the last entity we fired a shot at was an NPC (otherwise it was the player)
 #ifdef MAPBASE
-	bool	m_bControllableVersion = false; // Allows new behavior that makes player/NPC control easier. Doesn't use spawnflag for legacy purposes, as if anyone used this as a regular tank before.
+	bool	m_bControllableVersion; // Allows new behavior that makes player/NPC control easier. Doesn't use spawnflag for legacy purposes, as if anyone used this as a regular tank before.
 #endif
 };
 

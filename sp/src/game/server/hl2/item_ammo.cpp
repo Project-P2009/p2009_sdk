@@ -27,6 +27,10 @@ public:
 	DECLARE_CLASS( CItemAmmo, CItem );
 	DECLARE_DATADESC();
 
+	CItemAmmo() : m_flAmmoMultiplier( 1.0f )
+	{
+	}
+
 	int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName, bool bSuppressSound = false )
 	{
 		int iAmmoType = GetAmmoDef()->Index(pszAmmoName);
@@ -57,7 +61,7 @@ public:
 
 	void	InputSetAmmoMultiplier( inputdata_t &inputdata ) { m_flAmmoMultiplier = inputdata.value.Float(); }
 
-	float m_flAmmoMultiplier = 1.0f;
+	float m_flAmmoMultiplier;
 };
 
 BEGIN_DATADESC( CItemAmmo )
