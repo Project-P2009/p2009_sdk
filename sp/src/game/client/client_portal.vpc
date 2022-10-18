@@ -178,6 +178,8 @@ $Project "Client (Portal)"
 			$File	"portal\vgui_neurotoxin_countdown_screen.cpp"
 			$File	"$SRCDIR\game\shared\portal\portal_weapon_parse.cpp"
 			$File	"portal\c_prop_floor_button.cpp"
+			$File	"portal\hud_devtag.h"
+			$File	"portal\hud_devtag.cpp"
 
 			$Folder	"Weapons"
 			{
