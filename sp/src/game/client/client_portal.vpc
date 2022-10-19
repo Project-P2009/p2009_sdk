@@ -180,7 +180,8 @@ $Project "Client (Portal)"
 			$File	"portal\c_prop_floor_button.cpp"
 			$File	"portal\hud_devtag.h"
 			$File	"portal\hud_devtag.cpp"
-
+			$File	"portal\hud_maptag.h"
+			$File	"portal\hud_maptag.cpp"
 			$Folder	"Weapons"
 			{
 				$File	"portal\c_weapon_physcannon.cpp"
