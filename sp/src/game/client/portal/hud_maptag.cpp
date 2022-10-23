@@ -38,10 +38,10 @@ CHudMaptag::CHudMaptag( const char *pElementName ) : CHudElement( pElementName )
 
 void CHudMaptag::printText(const wchar_t* text, const int lineNum)
 {
-    surface()->SetFontGlyphSet(2, "Tahoma", 15, 700, 0, 0, 0x080); // 0x200 is outline, use 0x080 for drop shadow
+    surface()->SetFontGlyphSet(2, "Tahoma", 13, 400, 0, 0, 0x080); // 0x200 is outline, use 0x080 for drop shadow
     surface()->DrawSetTextColor(255, 255, 255, 255);
     surface()->DrawSetTextFont(2);
-    surface()->DrawSetTextPos(0, (16 * lineNum) + 4);
+    surface()->DrawSetTextPos(0, (14 * lineNum) + 4);
     surface()->DrawPrintText(text, std::char_traits<wchar_t>::length(text)); // temp hardcode length
 }
 
