@@ -100,7 +100,7 @@ void CPortalgunEffectBeam::Init( int startAttachment, int endAttachment, CBaseEn
 	beamInfo.m_flFadeLength = 0.0f;
 	beamInfo.m_flAmplitude = 16;
 	beamInfo.m_flBrightness = 128.0;
-	beamInfo.m_flSpeed = 150.0f;
+	beamInfo.m_flSpeed = 10000.0f;
 	beamInfo.m_nStartFrame = 0.0;
 	beamInfo.m_flFrameRate = 30.0;
 	beamInfo.m_flRed = 255.0;

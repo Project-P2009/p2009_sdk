@@ -23,8 +23,8 @@
 #include "particle_parse.h"
 
 
-#define BLAST_SPEED_NON_PLAYER 1000.0f
-#define BLAST_SPEED 3000.0f
+#define BLAST_SPEED_NON_PLAYER 100000.0f
+#define BLAST_SPEED 300000.0f
 
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponPortalgun, DT_WeaponPortalgun )
@@ -529,6 +529,10 @@ float CWeaponPortalgun::FirePortal( bool bPortal2, Vector *pVector /*= 0*/, bool
 		AngleVectors( pPlayer->EyeAngles(), &forward, &right, &up );
 		pPlayer->EyeVectors( &vDirection, NULL, NULL );
 		vEye = pPlayer->EyePosition();
+
+		// npc bullseye code - litevex (thanks to boxfigs)
+		CBasePlayer *pBasePlayer = ToBasePlayer(pOwner);
+		vDirection = pBasePlayer->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
 
 		// Check if the players eye is behind the portal they're in and translate it
 		VMatrix matThisToLinked;
