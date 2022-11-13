@@ -40,6 +40,7 @@
 
 #include "debugoverlay_shared.h"
 
+ConVar cl_quick_portal_anim( "cl_quick_portal_anim", "0" );
 
 LINK_ENTITY_TO_CLASS( prop_portal, C_Prop_Portal );
 
@@ -237,7 +238,11 @@ void C_Prop_Portal::ClientThink( void )
 
 	if( m_fOpenAmount < 1.0f )
 	{
-		m_fOpenAmount += gpGlobals->absoluteframetime * 2.0f;
+		if(cl_quick_portal_anim.GetBool()){
+			m_fOpenAmount += gpGlobals->absoluteframetime * 6.0f;
+		}else{
+			m_fOpenAmount += gpGlobals->absoluteframetime * 2.0f;
+		}
 		if( m_fOpenAmount > 1.0f ) 
 			m_fOpenAmount = 1.0f;
 

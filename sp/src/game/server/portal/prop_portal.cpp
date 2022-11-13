@@ -48,6 +48,7 @@ ConVar sv_portal_debug_touch("sv_portal_debug_touch", "0", FCVAR_REPLICATED );
 ConVar sv_portal_placement_never_fail("sv_portal_placement_never_fail", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar sv_portal_new_velocity_check("sv_portal_new_velocity_check", "1", FCVAR_CHEAT );
 
+ConVar sv_instant_portal("sv_instant_portal", "0", FCVAR_REPLICATED ); // for slowfield -litevex
 static CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
 
 
@@ -2032,7 +2033,7 @@ void CProp_Portal::PlacePortal( const Vector &vOrigin, const QAngle &qAngles, fl
 		return;
 	}
 
-	if ( !bDelay )
+	if ( bDelay == 0 || sv_instant_portal.GetBool() ) // -litevex
 	{
 		m_vDelayedPosition = vNewOrigin;
 		m_qDelayedAngles = qNewAngles;
