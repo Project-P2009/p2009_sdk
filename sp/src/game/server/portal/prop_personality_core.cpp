@@ -14,13 +14,23 @@
 
 static const char *s_pAnimateThinkContext = "Animate";
 
+// Morgan Freeman
 #define SPHERE01_LOOK_ANINAME			"core02_idle"
-#define SPHERE02_LOOK_ANINAME			"core01_idle"
-#define SPHERE03_LOOK_ANINAME			"core02_idle"
-
 #define SPHERE01_SKIN					0
+// Aquarium
+#define SPHERE02_LOOK_ANINAME			"core01_idle"
 #define SPHERE02_SKIN					1
+// Pendleton
+#define SPHERE03_LOOK_ANINAME			"core03_idle"
 #define SPHERE03_SKIN					2
+
+// Extra Slots - Unused
+#define SPHERE04_LOOK_ANINAME			"core02_idle"
+#define SPHERE04_SKIN					3
+#define SPHERE05_LOOK_ANINAME			"core02_idle"
+#define SPHERE05_SKIN					4
+#define SPHERE06_LOOK_ANINAME			"core02_idle"
+#define SPHERE06_SKIN					5
 
 class CPropPersonalityCore : public CPhysicsProp
 {
@@ -87,6 +97,8 @@ BEGIN_DATADESC( CPropPersonalityCore )
 
 	DEFINE_KEYFIELD( m_iCoreType,			FIELD_INTEGER, "CoreType" ),
 	DEFINE_KEYFIELD(m_flBetweenVOPadding, FIELD_FLOAT, "DelayBetweenLines"),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "StartTalking", InputStartTalking),
 	
 	DEFINE_THINKFUNC(TalkingThink),
 	DEFINE_THINKFUNC( AnimateThink ),
@@ -138,6 +150,34 @@ void CPropPersonalityCore::Precache( void )
 //-----------------------------------------------------------------------------
 void CPropPersonalityCore::TalkingThink(void)
 {
+	if (m_speechEvents.Count() <= 0 || !m_speechEvents.IsValidIndex(m_iSpeechIter))
+	{
+		SetThink(NULL);
+		SetNextThink(gpGlobals->curtime);
+		return;
+	}
+
+	// Loop the 'look around' animation after the first line.
+	int iCurSequence = GetSequence();
+	int iLookSequence = LookupSequence(STRING(m_iszLookAnimationName));
+	if (iCurSequence != iLookSequence && m_iSpeechIter > 0)
+	{
+		ResetSequence(iLookSequence);
+	}
+
+	int iPrevIter = m_iSpeechIter - 1;
+	if (iPrevIter < 0)
+		iPrevIter = 0;
+
+	StopSound(m_speechEvents[iPrevIter].ToCStr());
+
+	float flCurDuration = GetSoundDuration(m_speechEvents[m_iSpeechIter].ToCStr(), GLADOS_CORE_MODEL_NAME);
+
+	EmitSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	SetNextThink(gpGlobals->curtime + m_flBetweenVOPadding + flCurDuration);
+
+	// wrap if we hit the end of the list
+	m_iSpeechIter = (m_iSpeechIter + 1) % m_speechEvents.Count();
 }
 
 //-----------------------------------------------------------------------------
