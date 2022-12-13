@@ -126,6 +126,10 @@ void CPropPersonalityCore::Precache( void )
 {
 	BaseClass::Precache();
 	
+	//TEMP VO
+	PrecacheScriptSound("citadel.br_youneedme");
+	PrecacheScriptSound("citadel.br_youfool");
+
 	PrecacheModel( GLADOS_CORE_MODEL_NAME );
 }
 
