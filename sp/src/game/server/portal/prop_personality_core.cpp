@@ -45,6 +45,10 @@ public:
 	virtual QAngle	PreferredCarryAngles( void ) { return QAngle( 180, -90, 180 ); }
 	virtual bool	HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer ) { return true; }
 
+	void	InputStartTalking(inputdata_t& inputdata);
+
+	void	StartTalking(float flDelay);
+
 	void	TalkingThink(void);
 	void	AnimateThink ( void );
 
@@ -53,9 +57,16 @@ public:
 	void	OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
 
 private:
+	int m_iTotalLines;
+	float m_flBetweenVOPadding;		// Spacing (in seconds) between VOs
 	bool m_bFirstPickup;
 
+	// Names of sound scripts for this core's personality
+	CUtlVector<string_t> m_speechEvents;
+	int m_iSpeechIter;
+
 	string_t	m_iszLookAnimationName;		// Different animations for each personality
+	string_t	m_iszGruntSoundScriptName;
 
 	CORETYPE m_iCoreType;
 };
@@ -67,10 +78,15 @@ LINK_ENTITY_TO_CLASS( prop_personality_core, CPropPersonalityCore );
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CPropPersonalityCore )
 
+	DEFINE_FIELD(m_iTotalLines, FIELD_INTEGER),
+	DEFINE_FIELD(m_iSpeechIter, FIELD_INTEGER),
 	DEFINE_FIELD( m_iszLookAnimationName,					FIELD_STRING ),
+	DEFINE_UTLVECTOR(m_speechEvents, FIELD_STRING),
+	DEFINE_FIELD(m_iszGruntSoundScriptName, FIELD_STRING),
 	DEFINE_FIELD( m_bFirstPickup,							FIELD_BOOLEAN ),
 
 	DEFINE_KEYFIELD( m_iCoreType,			FIELD_INTEGER, "CoreType" ),
+	DEFINE_KEYFIELD(m_flBetweenVOPadding, FIELD_FLOAT, "DelayBetweenLines"),
 	
 	DEFINE_THINKFUNC(TalkingThink),
 	DEFINE_THINKFUNC( AnimateThink ),
@@ -79,7 +95,14 @@ END_DATADESC()
 
 CPropPersonalityCore::CPropPersonalityCore()
 {
+	m_iTotalLines = m_iSpeechIter = 0;
+	m_flBetweenVOPadding = 2.5f;
 	m_bFirstPickup = true;
+}
+
+CPropPersonalityCore::~CPropPersonalityCore()
+{
+	m_speechEvents.Purge();
 }
 
 void CPropPersonalityCore::Spawn( void )
@@ -133,18 +156,24 @@ void CPropPersonalityCore::SetupVOList(void)
 	{
 	case CORETYPE_SPHERE01:
 	{
+		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
+		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
 		m_iszLookAnimationName = AllocPooledString(SPHERE01_LOOK_ANINAME);
 		m_nSkin = SPHERE01_SKIN;
 	}
 	break;
 	case CORETYPE_SPHERE02:
 	{
+		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
+		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
 		m_iszLookAnimationName = AllocPooledString(SPHERE02_LOOK_ANINAME);
 		m_nSkin = SPHERE02_SKIN;
 	}
 	break;
 	case CORETYPE_SPHERE03:
 	{
+		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
+		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
 		m_iszLookAnimationName = AllocPooledString(SPHERE03_LOOK_ANINAME);
 		m_nSkin = SPHERE03_SKIN;
 	}
@@ -164,6 +193,14 @@ void CPropPersonalityCore::SetupVOList(void)
 //-----------------------------------------------------------------------------
 void CPropPersonalityCore::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
+	if (m_bFirstPickup)
+	{
+		StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+		EmitSound(m_iszGruntSoundScriptName.ToCStr());
+		float flTalkingDelay = (2.0f);
+		StartTalking(flTalkingDelay);
+	}
+
 	// +use always enables motion on these props
 	EnableMotion();
 
