@@ -156,24 +156,24 @@ void CPropPersonalityCore::SetupVOList(void)
 	{
 	case CORETYPE_SPHERE01:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
-		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
+		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
 		m_iszLookAnimationName = AllocPooledString(SPHERE01_LOOK_ANINAME);
 		m_nSkin = SPHERE01_SKIN;
 	}
 	break;
 	case CORETYPE_SPHERE02:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
-		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
+		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
 		m_iszLookAnimationName = AllocPooledString(SPHERE02_LOOK_ANINAME);
 		m_nSkin = SPHERE02_SKIN;
 	}
 	break;
 	case CORETYPE_SPHERE03:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("Portal.Glados_core.Curiosity_1"));
-		m_iszGruntSoundScriptName = AllocPooledString("Portal.Glados_core.Curiosity_15");
+		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
 		m_iszLookAnimationName = AllocPooledString(SPHERE03_LOOK_ANINAME);
 		m_nSkin = SPHERE03_SKIN;
 	}
