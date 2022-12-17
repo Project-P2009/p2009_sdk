@@ -115,6 +115,7 @@ BEGIN_DATADESC( CPropPersonalityCore )
 	DEFINE_FIELD( m_bFirstPickup,							FIELD_BOOLEAN ),
 
 	DEFINE_KEYFIELD( m_iVoType,			FIELD_INTEGER, "VoVersion" ),
+	DEFINE_KEYFIELD( m_iVoMode,			FIELD_INTEGER, "VoMode"),
 	DEFINE_KEYFIELD( m_iCoreType,			FIELD_INTEGER, "CoreType" ),
 	DEFINE_KEYFIELD(m_flBetweenVOPadding, FIELD_FLOAT, "DelayBetweenLines"),
 
