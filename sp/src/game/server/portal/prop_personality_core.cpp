@@ -11,23 +11,24 @@
 #include "saverestore_utlvector.h"
 
 #define GLADOS_CORE_MODEL_NAME "models/npcs/personality_sphere/personality_sphere_skins.mdl" 
+// Should replace that with the non-skin version
 
 static const char *s_pAnimateThinkContext = "Animate";
 
 // Morgan Freeman
-#define SPHERE01_LOOK_ANINAME			"core02_idle"
+#define SPHERE01_LOOK_ANINAME			"sphere_idle_neutral"
 #define SPHERE01_SKIN					0
 // Aquarium
-#define SPHERE02_LOOK_ANINAME			"core01_idle"
+#define SPHERE02_LOOK_ANINAME			"sphere_idle_happy"
 #define SPHERE02_SKIN					1
 // Pendleton
-#define SPHERE03_LOOK_ANINAME			"core03_idle"
+#define SPHERE03_LOOK_ANINAME			"sphere_idle_snobby"
 #define SPHERE03_SKIN					2
 
 // Extra Slots - Unused
-#define SPHERE04_LOOK_ANINAME			"core02_idle"
+#define SPHERE04_LOOK_ANINAME			"sphere_idle_neutral"
 #define SPHERE04_SKIN					3
-#define SPHERE05_LOOK_ANINAME			"core02_idle"
+#define SPHERE05_LOOK_ANINAME			"sphere_idle_neutral"
 #define SPHERE05_SKIN					4
 #define SPHERE06_LOOK_ANINAME			"core02_idle"
 #define SPHERE06_SKIN					5
@@ -49,6 +50,21 @@ public:
 
 	} CORETYPE;
 
+	typedef enum
+	{
+		OLD,
+		NEW,
+
+	} VOTYPE;
+
+	typedef enum
+	{
+		HELD,
+		NOTHELD,
+		UNHELD,
+
+	} VOMODE;
+
 	virtual void Spawn( void );
 	virtual void Precache( void );
 
@@ -65,6 +81,7 @@ public:
 	void	SetupVOList(void);
 	
 	void	OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	void	OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t reason);
 
 private:
 	int m_iTotalLines;
@@ -78,6 +95,8 @@ private:
 	string_t	m_iszLookAnimationName;		// Different animations for each personality
 	string_t	m_iszGruntSoundScriptName;
 
+	VOTYPE m_iVoType;
+	VOMODE m_iVoMode;
 	CORETYPE m_iCoreType;
 };
 
@@ -95,6 +114,7 @@ BEGIN_DATADESC( CPropPersonalityCore )
 	DEFINE_FIELD(m_iszGruntSoundScriptName, FIELD_STRING),
 	DEFINE_FIELD( m_bFirstPickup,							FIELD_BOOLEAN ),
 
+	DEFINE_KEYFIELD( m_iVoType,			FIELD_INTEGER, "VoVersion" ),
 	DEFINE_KEYFIELD( m_iCoreType,			FIELD_INTEGER, "CoreType" ),
 	DEFINE_KEYFIELD(m_flBetweenVOPadding, FIELD_FLOAT, "DelayBetweenLines"),
 
@@ -131,6 +151,8 @@ void CPropPersonalityCore::Spawn( void )
 
 	DisableAutoFade();
 
+	m_iVoMode == 1;
+
 	SetContextThink( &CPropPersonalityCore::AnimateThink, gpGlobals->curtime + 0.1f, s_pAnimateThinkContext );
 }
 
@@ -140,7 +162,9 @@ void CPropPersonalityCore::Precache( void )
 	
 	//TEMP VO
 	PrecacheScriptSound("citadel.br_youneedme");
-	PrecacheScriptSound("citadel.br_youfool");
+	PrecacheScriptSound("npc_citizen.doingsomething");
+	PrecacheScriptSound("npc_citizen.holddownspot02");
+	PrecacheScriptSound("npc_citizen.die");
 
 	PrecacheModel( GLADOS_CORE_MODEL_NAME );
 }
@@ -200,26 +224,92 @@ void CPropPersonalityCore::SetupVOList(void)
 	{
 	case CORETYPE_SPHERE01:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
+		if (m_iVoType == 1)
+		{
+			switch (m_iVoMode)
+			{
+			case HELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+			}
+			break;
+			case NOTHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+			}
+			break;
+			case UNHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+			}
+			break;
+			}
+		}
+
+		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
 		m_iszLookAnimationName = AllocPooledString(SPHERE01_LOOK_ANINAME);
 		m_nSkin = SPHERE01_SKIN;
+
 	}
 	break;
 	case CORETYPE_SPHERE02:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
+		if (m_iVoType == 1)
+		{
+			switch (m_iVoMode)
+			{
+			case HELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+			}
+			break;
+			case NOTHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+			}
+			break;
+			case UNHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+			}
+			break;
+			}
+		}
+
+		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
 		m_iszLookAnimationName = AllocPooledString(SPHERE02_LOOK_ANINAME);
 		m_nSkin = SPHERE02_SKIN;
+
 	}
 	break;
 	case CORETYPE_SPHERE03:
 	{
-		m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-		m_iszGruntSoundScriptName = AllocPooledString("citadel.br_youfool");
+		if (m_iVoType == 1)
+		{
+			switch (m_iVoMode)
+			{
+			case HELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+			}
+			break;
+			case NOTHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+			}
+			break;
+			case UNHELD:
+			{
+				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+			}
+			break;
+			}
+		}
+
+		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
 		m_iszLookAnimationName = AllocPooledString(SPHERE03_LOOK_ANINAME);
 		m_nSkin = SPHERE03_SKIN;
+
 	}
 	break;
 	default:
@@ -237,16 +327,28 @@ void CPropPersonalityCore::SetupVOList(void)
 //-----------------------------------------------------------------------------
 void CPropPersonalityCore::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
-	if (m_bFirstPickup)
-	{
-		StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
-		EmitSound(m_iszGruntSoundScriptName.ToCStr());
-		float flTalkingDelay = (2.0f);
-		StartTalking(flTalkingDelay);
-	}
+	m_iVoMode == 0;
+	StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	EmitSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	float flTalkingDelay = (2.0f);
+	StartTalking(flTalkingDelay);
 
 	// +use always enables motion on these props
 	EnableMotion();
 
 	BaseClass::OnPhysGunPickup ( pPhysGunUser, reason );
+}
+
+void CPropPersonalityCore::OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t reason)
+{
+	m_iVoMode == 2;
+	StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	EmitSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	float flTalkingDelay = (2.0f);
+	StartTalking(flTalkingDelay);
+
+	// +use always enables motion on these props
+	EnableMotion();
+
+	BaseClass::OnPhysGunDrop(pPhysGunUser, reason);
 }
