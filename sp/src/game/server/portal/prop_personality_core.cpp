@@ -376,7 +376,7 @@ int CPropPersonalityCore::OnTakeDamage(const CTakeDamageInfo &info)
 	float flTalkingDelay = (2.0f);
 	StartTalking(flTalkingDelay);
 
-	BaseClass::OnTakeDamage(info);s
+	BaseClass::OnTakeDamage(info);
 
 	if (info.GetDamageType() & DMG_CRUSH & DMG_DIRECT & DMG_GENERIC)
 		return BaseClass::OnTakeDamage(info); 
