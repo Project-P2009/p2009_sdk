@@ -40,6 +40,7 @@ public:
 	DECLARE_DATADESC();
 
 	CPropPersonalityCore();
+	~CPropPersonalityCore();
 
 	typedef enum 
 	{
@@ -52,13 +53,6 @@ public:
 
 	typedef enum
 	{
-		OLD,
-		NEW,
-
-	} VOTYPE;
-
-	typedef enum
-	{
 		HELD,
 		NOTHELD,
 		UNHELD,
@@ -68,13 +62,13 @@ public:
 	virtual void Spawn( void );
 	virtual void Precache( void );
 
+	virtual int		OnTakeDamage(const CTakeDamageInfo &info);
 	virtual QAngle	PreferredCarryAngles( void ) { return QAngle( 180, -90, 180 ); }
 	virtual bool	HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer ) { return true; }
 
 	void	InputStartTalking(inputdata_t& inputdata);
 
 	void	StartTalking(float flDelay);
-
 	void	TalkingThink(void);
 	void	AnimateThink ( void );
 
@@ -95,7 +89,6 @@ private:
 	string_t	m_iszLookAnimationName;		// Different animations for each personality
 	string_t	m_iszGruntSoundScriptName;
 
-	VOTYPE m_iVoType;
 	VOMODE m_iVoMode;
 	CORETYPE m_iCoreType;
 };
@@ -114,7 +107,6 @@ BEGIN_DATADESC( CPropPersonalityCore )
 	DEFINE_FIELD(m_iszGruntSoundScriptName, FIELD_STRING),
 	DEFINE_FIELD( m_bFirstPickup,							FIELD_BOOLEAN ),
 
-	DEFINE_KEYFIELD( m_iVoType,			FIELD_INTEGER, "VoVersion" ),
 	DEFINE_KEYFIELD( m_iVoMode,			FIELD_INTEGER, "VoMode"),
 	DEFINE_KEYFIELD( m_iCoreType,			FIELD_INTEGER, "CoreType" ),
 	DEFINE_KEYFIELD(m_flBetweenVOPadding, FIELD_FLOAT, "DelayBetweenLines"),
@@ -140,6 +132,8 @@ CPropPersonalityCore::~CPropPersonalityCore()
 
 void CPropPersonalityCore::Spawn( void )
 {
+	m_iVoMode = NOTHELD;
+
 	SetupVOList();
 
 	Precache();
@@ -151,8 +145,6 @@ void CPropPersonalityCore::Spawn( void )
 	SetCycle(1.0f);
 
 	DisableAutoFade();
-
-	m_iVoMode == 1;
 
 	SetContextThink( &CPropPersonalityCore::AnimateThink, gpGlobals->curtime + 0.1f, s_pAnimateThinkContext );
 }
@@ -168,6 +160,27 @@ void CPropPersonalityCore::Precache( void )
 	PrecacheScriptSound("npc_citizen.die");
 
 	PrecacheModel( GLADOS_CORE_MODEL_NAME );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Start playing personality VO list
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CPropPersonalityCore::InputStartTalking(inputdata_t &inputdata)
+{
+	StartTalking(0.0f);
+}
+
+void CPropPersonalityCore::StartTalking(float flDelay)
+{
+	if (m_speechEvents.IsValidIndex(m_iSpeechIter) && m_speechEvents.Count() > 0)
+	{
+		StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	}
+
+	m_iSpeechIter = 0;
+	SetThink(&CPropPersonalityCore::TalkingThink);
+	SetNextThink(gpGlobals->curtime + m_flBetweenVOPadding + flDelay);
 }
 
 //-----------------------------------------------------------------------------
@@ -225,26 +238,26 @@ void CPropPersonalityCore::SetupVOList(void)
 	{
 	case CORETYPE_SPHERE01:
 	{
-		if (m_iVoType == 1)
+		switch (m_iVoMode)
 		{
-			switch (m_iVoMode)
-			{
-			case HELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-			}
-			break;
-			case NOTHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
-			}
-			break;
-			case UNHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
-			}
-			break;
-			}
+		case HELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		}
+		break;
+		case NOTHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+		}
+		break;
+		case UNHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+		}
+		break;
 		}
 
 		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
@@ -255,26 +268,26 @@ void CPropPersonalityCore::SetupVOList(void)
 	break;
 	case CORETYPE_SPHERE02:
 	{
-		if (m_iVoType == 1)
+		switch (m_iVoMode)
 		{
-			switch (m_iVoMode)
-			{
-			case HELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-			}
-			break;
-			case NOTHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
-			}
-			break;
-			case UNHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
-			}
-			break;
-			}
+		case HELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		}
+		break;
+		case NOTHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+		}
+		break;
+		case UNHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+		}
+		break;
 		}
 
 		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
@@ -285,26 +298,26 @@ void CPropPersonalityCore::SetupVOList(void)
 	break;
 	case CORETYPE_SPHERE03:
 	{
-		if (m_iVoType == 1)
+		switch (m_iVoMode)
 		{
-			switch (m_iVoMode)
-			{
-			case HELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
-			}
-			break;
-			case NOTHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
-			}
-			break;
-			case UNHELD:
-			{
-				m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
-			}
-			break;
-			}
+		case HELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("citadel.br_youneedme"));
+		}
+		break;
+		case NOTHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.doingsomething"));
+		}
+		break;
+		case UNHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("npc_citizen.holddownspot02"));
+		}
+		break;
 		}
 
 		m_iszGruntSoundScriptName = AllocPooledString("npc_citizen.die");
@@ -328,8 +341,9 @@ void CPropPersonalityCore::SetupVOList(void)
 //-----------------------------------------------------------------------------
 void CPropPersonalityCore::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
-	m_iVoMode == 0;
+	m_iVoMode = HELD;
 	StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	SetupVOList();
 	EmitSound(m_speechEvents[m_iSpeechIter].ToCStr());
 	float flTalkingDelay = (2.0f);
 	StartTalking(flTalkingDelay);
@@ -342,8 +356,9 @@ void CPropPersonalityCore::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPi
 
 void CPropPersonalityCore::OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t reason)
 {
-	m_iVoMode == 2;
+	m_iVoMode = UNHELD;
 	StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	SetupVOList();
 	EmitSound(m_speechEvents[m_iSpeechIter].ToCStr());
 	float flTalkingDelay = (2.0f);
 	StartTalking(flTalkingDelay);
@@ -352,4 +367,19 @@ void CPropPersonalityCore::OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_
 	EnableMotion();
 
 	BaseClass::OnPhysGunDrop(pPhysGunUser, reason);
+}
+
+int CPropPersonalityCore::OnTakeDamage(const CTakeDamageInfo &info)
+{
+	StopSound(m_speechEvents[m_iSpeechIter].ToCStr());
+	EmitSound(m_iszGruntSoundScriptName.ToCStr());
+	float flTalkingDelay = (2.0f);
+	StartTalking(flTalkingDelay);
+
+	BaseClass::OnTakeDamage(info);s
+
+	if (info.GetDamageType() & DMG_CRUSH & DMG_DIRECT & DMG_GENERIC)
+		return BaseClass::OnTakeDamage(info); 
+
+	return 0;
 }
