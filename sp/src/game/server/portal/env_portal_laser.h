@@ -18,30 +18,29 @@
 
 
 class CSprite;
-
-
 class CEnvPortalLaser : public CBeam
 {
-	DECLARE_CLASS( CEnvPortalLaser, CBeam );
+	DECLARE_CLASS(CEnvPortalLaser, CBeam);
 public:
 	CEnvPortalLaser(void);
 
-	void	Spawn( void );
-	void	Precache( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	void	Spawn(void);
+	void	Precache(void);
+	bool	KeyValue(const char* szKeyName, const char* szValue);
 
-	void	TurnOn( void );
-	void	TurnOff( void );
-	int		IsOn( void );
+	void	Toggle(void);
+	void	TurnOn(void);
+	void	TurnOff(void);
+	bool		IsOn(void);
 
 	virtual ITraceFilter* GetBeamTraceFilter(void);
 
-	void	FireAtPoint( trace_t &point );
-	void	StrikeThink( void );
+	void	FireAtPoint(trace_t& point);
+	void	StrikeThink(void);
 
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
+	void InputTurnOn(inputdata_t& inputdata);
+	void InputTurnOff(inputdata_t& inputdata);
+	void InputToggle(inputdata_t& inputdata);
 
 	DECLARE_DATADESC();
 
@@ -57,6 +56,33 @@ public:
 private:
 	CTraceFilterSkipTwoEntities		m_filterBeams;
 	QAngle angAimDir;
+	bool m_bActive = false;
+	bool m_bLastCatcherActivated = false;
+	bool m_bLastLaserTargetActivated = false;
+};
+
+// PROP LASER EMITTER
+class CPropLaserEmitter : public CBaseAnimating
+{
+public:
+	DECLARE_CLASS(CPropLaserEmitter, CBaseAnimating);
+
+	CPropLaserEmitter(void);
+
+	void Spawn(void);
+	void Precache(void);
+
+	int IsOn(void);
+
+	DECLARE_DATADESC();
+	void InputTurnOn(inputdata_t& inputdata);
+	void InputTurnOff(inputdata_t& inputdata);
+	void InputToggle(inputdata_t& inputdata);
+
+private:
+	int m_nEmitterType;
+	int m_nLaserOrigin;
+	CEnvPortalLaser* m_pLaser;
 };
 
 #endif // ENVPORTALLASER_H

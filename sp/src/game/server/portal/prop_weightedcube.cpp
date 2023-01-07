@@ -210,6 +210,7 @@ void CPropWeightedCube::Spawn()
 			break;
 		}
 	}
+
 	SetSolid(SOLID_VPHYSICS);
 
 	// In order to pick it up, needs to be physics.
@@ -219,6 +220,33 @@ void CPropWeightedCube::Spawn()
 
 	BaseClass::Spawn();
 
+}
+
+void CPropWeightedCube::ToggleLaser(bool state)
+{
+	if (m_cubeType != Reflective) return;
+
+	if (m_pLaser == nullptr) {
+		m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
+		m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
+		m_pLaser->KeyValue("damage", "100");
+		m_pLaser->KeyValue("width", "2");
+		m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");
+		m_pLaser->KeyValue("renderamt", "100");
+		m_pLaser->KeyValue("TextureScroll", "35");
+		m_pLaser->SetParent(this);
+		m_pLaser->SetParentAttachment("SetLaserAttachmentParent", "focus", false);
+		DispatchSpawn(m_pLaser);
+		m_pLaser->Activate();
+		m_pLaser->TurnOff();
+	}
+
+	if (state == true) {
+		m_pLaser->TurnOn();
+	}
+	else if (state == false) {
+		m_pLaser->TurnOff();
+	}
 }
 
 void CPropWeightedCube::InputPreDissolveJoke(inputdata_t& data)
@@ -275,7 +303,6 @@ void CPropWeightedCube::OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t r
 
 void CPropWeightedCube::SetActivated(bool active)
 {
-	
 	if (m_useNewSkins)
 	{
 		if (active)

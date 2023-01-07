@@ -14,27 +14,29 @@
 #include "physicsshadowclone.h"		// For translating hit entities shadow clones to real ent
 #include "props.h"				// CPhysicsProp base class
 #include "baseanimating.h"
+#include "prop_laser_catcher.h"
+#include "prop_weightedcube.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-LINK_ENTITY_TO_CLASS( env_portal_laser, CEnvPortalLaser );
+LINK_ENTITY_TO_CLASS(env_portal_laser, CEnvPortalLaser);
 #define LASER_ATTACHMENT 1
 
-BEGIN_DATADESC( CEnvPortalLaser )
+BEGIN_DATADESC(CEnvPortalLaser)
 
-	DEFINE_KEYFIELD( m_iszLaserTarget, FIELD_STRING, "LaserTarget" ),
-	//DEFINE_FIELD(m_pSprite, FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_firePosition, FIELD_VECTOR ),
-	DEFINE_KEYFIELD( m_flStartFrame, FIELD_FLOAT, "framestart" ),
+DEFINE_KEYFIELD(m_iszLaserTarget, FIELD_STRING, "LaserTarget"),
+//DEFINE_FIELD(m_pSprite, FIELD_CLASSPTR),
+DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR),
+DEFINE_FIELD(m_firePosition, FIELD_VECTOR),
+DEFINE_KEYFIELD(m_flStartFrame, FIELD_FLOAT, "framestart"),
 
-	// Function Pointers
-	DEFINE_FUNCTION( StrikeThink ),
+// Function Pointers
+DEFINE_FUNCTION(StrikeThink),
 
-	// Input functions
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+// Input functions
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOn", InputTurnOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOff", InputTurnOff),
+DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
 
 END_DATADESC()
 
@@ -57,22 +59,22 @@ ITraceFilter* CEnvPortalLaser::GetBeamTraceFilter(void)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::Spawn( void )
+void CEnvPortalLaser::Spawn(void)
 {
-	if ( !GetModelName() )
+	if (!GetModelName())
 	{
-		SetThink( &CEnvPortalLaser::SUB_Remove );
+		SetThink(&CEnvPortalLaser::SUB_Remove);
 		return;
 	}
 
-	SetSolid( SOLID_NONE );							// Remove model & collisions
-	SetThink( &CEnvPortalLaser::StrikeThink );
+	SetSolid(SOLID_NONE);							// Remove model & collisions
+	SetThink(&CEnvPortalLaser::StrikeThink);
 
-	SetEndWidth( GetWidth() );				// Note: EndWidth is not scaled
+	SetEndWidth(GetWidth());				// Note: EndWidth is not scaled\
 
-	Precache( );
+	Precache();
 
-	if ( GetEntityName() != NULL_STRING && !(m_spawnflags & SF_BEAM_STARTON) )
+	if (GetEntityName() != NULL_STRING && !(m_spawnflags & SF_BEAM_STARTON))
 	{
 		TurnOff();
 	}
@@ -86,40 +88,41 @@ void CEnvPortalLaser::Spawn( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::Precache( void )
+void CEnvPortalLaser::Precache(void)
 {
 	m_nSiteHalo = PrecacheModel("sprites/purpleglow1.vmt");
+	PrecacheMaterial("sprites/purplelaser1.vmt");
 
-	SetModelIndex( PrecacheModel( STRING( GetModelName() ) ) );
-	if ( m_iszSpriteName != NULL_STRING )
-		PrecacheModel( STRING(m_iszSpriteName) );
+	SetModelIndex(PrecacheModel(STRING(GetModelName())));
+	if (m_iszSpriteName != NULL_STRING)
+		PrecacheModel(STRING(m_iszSpriteName));
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CEnvPortalLaser::KeyValue( const char *szKeyName, const char *szValue )
+bool CEnvPortalLaser::KeyValue(const char* szKeyName, const char* szValue)
 {
 	if (FStrEq(szKeyName, "width"))
 	{
-		SetWidth( atof(szValue) );
+		SetWidth(atof(szValue));
 	}
 	else if (FStrEq(szKeyName, "NoiseAmplitude"))
 	{
-		SetNoise( atoi(szValue) );
+		SetNoise(atoi(szValue));
 	}
 	else if (FStrEq(szKeyName, "TextureScroll"))
 	{
-		SetScrollRate( atoi(szValue) );
+		SetScrollRate(atoi(szValue));
 	}
 	else if (FStrEq(szKeyName, "texture"))
 	{
-		SetModelName( AllocPooledString(szValue) );
+		SetModelName(AllocPooledString(szValue));
 	}
 	else
 	{
-		BaseClass::KeyValue( szKeyName, szValue );
+		BaseClass::KeyValue(szKeyName, szValue);
 	}
 
 	return true;
@@ -129,18 +132,16 @@ bool CEnvPortalLaser::KeyValue( const char *szKeyName, const char *szValue )
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether the laser is currently active.
 //-----------------------------------------------------------------------------
-int CEnvPortalLaser::IsOn( void )
+bool CEnvPortalLaser::IsOn(void)
 {
-	if ( IsEffectActive( EF_NODRAW ) )
-		return 0;
-	return 1;
+	return m_bActive;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::InputTurnOn( inputdata_t &inputdata )
+void CEnvPortalLaser::InputTurnOn(inputdata_t& inputdata)
 {
 	if (!IsOn())
 	{
@@ -152,7 +153,7 @@ void CEnvPortalLaser::InputTurnOn( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::InputTurnOff( inputdata_t &inputdata )
+void CEnvPortalLaser::InputTurnOff(inputdata_t& inputdata)
 {
 	if (IsOn())
 	{
@@ -164,9 +165,50 @@ void CEnvPortalLaser::InputTurnOff( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::InputToggle( inputdata_t &inputdata )
+void CEnvPortalLaser::InputToggle(inputdata_t& inputdata)
 {
-	if ( IsOn() )
+	Toggle();
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CEnvPortalLaser::TurnOff(void)
+{
+	if (m_pBeam)
+		m_pBeam->AddEffects(EF_NODRAW);
+	
+	m_bActive = false;
+	SetNextThink(TICK_NEVER_THINK);
+	SetThink(NULL);
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CEnvPortalLaser::TurnOn(void)
+{
+	//RemoveEffects( EF_NODRAW );
+	if (m_pBeam)
+		m_pBeam->RemoveEffects(EF_NODRAW);
+	m_bActive = true;
+
+	m_flFireTime = gpGlobals->curtime;
+
+	SetThink(&CEnvPortalLaser::StrikeThink);
+
+	//
+	// Call StrikeThink here to update the end position, otherwise we will see
+	// the beam in the wrong place for one frame since we cleared the nodraw flag.
+	//
+	StrikeThink();
+}
+
+void CEnvPortalLaser::Toggle()
+{
+	if (IsOn())
 	{
 		TurnOff();
 	}
@@ -180,50 +222,96 @@ void CEnvPortalLaser::InputToggle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::TurnOff( void )
-{
-	//AddEffects( EF_NODRAW );
-	if (m_pBeam)
-		m_pBeam->TurnOff();
+CPropWeightedCube* m_pLastCube = nullptr;
+CPropLaserCatcher* m_pLastCatcher = nullptr;
+CEnvLaserTarget* m_pLastLaserTarget = nullptr;
 
-	SetNextThink( TICK_NEVER_THINK );
-	SetThink( NULL );
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CEnvPortalLaser::TurnOn( void )
-{
-	//RemoveEffects( EF_NODRAW );
-	if (m_pBeam)
-		m_pBeam->TurnOn();
-
-	m_flFireTime = gpGlobals->curtime;
-
-	SetThink( &CEnvPortalLaser::StrikeThink );
-
-	//
-	// Call StrikeThink here to update the end position, otherwise we will see
-	// the beam in the wrong place for one frame since we cleared the nodraw flag.
-	//
-	StrikeThink();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CEnvPortalLaser::FireAtPoint( trace_t &tr )
+void CEnvPortalLaser::FireAtPoint(trace_t& tr)
 {
 
 	// Apply damage and do sparks every 1/10th of a second.
-	if ( gpGlobals->curtime >= m_flFireTime + 0.1 )
+	if (gpGlobals->curtime >= m_flFireTime + 0.1)
 	{
-		BeamDamage( &tr );
-		DoSparks( GetAbsStartPos(), tr.endpos );
+		BeamDamage(&tr);
+		DoSparks(GetAbsStartPos(), tr.endpos);
+		CBaseEntity *pHit = tr.m_pEnt;
+		if (dynamic_cast<CPropWeightedCube*>(pHit) != nullptr) {
+			if (dynamic_cast<CPropWeightedCube*>(GetParent()) != nullptr) {
+			}
+			else {
+				CPropWeightedCube* pCube = dynamic_cast<CPropWeightedCube*>(pHit);
+				if (pCube->GetCubeType() == 2) {
+					if (m_pLastCube != pCube) {
+						if (m_pLastCube != nullptr) m_pLastCube->ToggleLaser(false);
+						m_pLastCube = pCube;
+						m_pLastCube->ToggleLaser(true);
+					}
+					else {
+						m_pLastCube->ToggleLaser(true);
+					}
+				}
+			}
+		}
+		else {
+			if (m_pLastCube != nullptr) {
+				m_pLastCube->ToggleLaser(false);
+			}
+		}
 
+		if (dynamic_cast<CEnvLaserTarget*>(pHit) != nullptr) {
+			CEnvLaserTarget* pLaserTarget = dynamic_cast<CEnvLaserTarget*>(pHit);
+
+			if (m_pLastLaserTarget != pLaserTarget) {
+				if (m_pLastLaserTarget != nullptr) m_pLastLaserTarget->TurnOff(this);
+				m_pLastLaserTarget = pLaserTarget;
+				if (m_bLastCatcherActivated == false) {
+					m_bLastLaserTargetActivated = true;
+					m_pLastLaserTarget->TurnOn(this);
+				}
+			}
+			else {
+				if (m_bLastLaserTargetActivated == false) {
+					m_bLastLaserTargetActivated = true;
+					m_pLastLaserTarget->TurnOn(this);
+				}
+			}
+
+			CPropLaserCatcher* catcher = dynamic_cast<CPropLaserCatcher*>(pLaserTarget->GetParent());
+
+			if (m_pLastCatcher != catcher) {
+				if (m_pLastCatcher != nullptr) {
+					m_pLastCatcher->TurnOff(this);
+				}
+				m_pLastCatcher = catcher;
+				if (m_bLastCatcherActivated == false) {
+					m_bLastCatcherActivated = true;
+					catcher->TurnOn(this);
+				}
+			}
+			else {
+				if (m_bLastCatcherActivated == false) {
+					m_bLastCatcherActivated = true;
+					m_pLastCatcher->TurnOn(this);
+				}
+			}
+
+		}
+		else {
+			if (m_pLastLaserTarget != nullptr)
+			{
+				if (m_bLastLaserTargetActivated == false) {
+					m_bLastLaserTargetActivated = true;
+					m_pLastLaserTarget->TurnOff(this);
+				}
+			}
+
+			if (m_pLastCatcher != nullptr) {
+				if (m_bLastCatcherActivated == true) {
+					m_bLastCatcherActivated = false;
+					m_pLastCatcher->TurnOff(this);
+				}
+			}
+		}
 		// Add laser impact sprite
 		// Thanks to our method it works through portals as well :P
 		// not in portal we don't -litevex
@@ -235,19 +323,18 @@ void CEnvPortalLaser::FireAtPoint( trace_t &tr )
 //-----------------------------------------------------------------------------
 // Purpose: Does the damage through portals
 //-----------------------------------------------------------------------------
-void CEnvPortalLaser::StrikeThink( void )
+void CEnvPortalLaser::StrikeThink(void)
 {
-
 	Vector vecMuzzle = GetAbsOrigin();
 	QAngle angMuzzleDir = GetAbsAngles();
 
-	QAngle angAimDir = GetAbsAngles();
+	QAngle angAimDir = GetParent()->GetAbsAngles();
 	Vector vecAimDir;
 	AngleVectors(angAimDir, &vecAimDir);
 
 	if (!m_pBeam)
 	{
-		m_pBeam = CBeam::BeamCreate("effects/redlaser1.vmt", 0.1);
+		m_pBeam = CBeam::BeamCreate("sprites/purplelaser1.vmt", 0.1);
 		m_pBeam->SetHaloTexture(m_nSiteHalo);
 		m_pBeam->SetColor(100, 100, 255);
 		m_pBeam->SetBrightness(100);
@@ -283,7 +370,7 @@ void CEnvPortalLaser::StrikeThink( void )
 		vEndPointBeam = vecMuzzle + vecAimDir * LASER_RANGE * fEndFraction;	// Trace hit a wall
 	}
 	m_pBeam->PointsInit(vEndPointBeam, vecMuzzle);
-	
+
 	//m_pBeam->SetHaloScale(LaserEndPointSize());
 
 
@@ -307,5 +394,97 @@ void CEnvPortalLaser::StrikeThink( void )
 
 	//UTIL_TraceLine( GetAbsOrigin(), vecFireAt, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &traceDmg );
 	FireAtPoint(traceDmg);
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink(gpGlobals->curtime);
+}
+
+// PROP LASER EMITTER
+LINK_ENTITY_TO_CLASS(prop_laser_emitter, CPropLaserEmitter);
+
+BEGIN_DATADESC(CPropLaserEmitter)
+
+DEFINE_KEYFIELD(m_nEmitterType, FIELD_INTEGER, "EmitterType"),
+
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOn", InputTurnOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOff", InputTurnOff),
+DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
+END_DATADESC()
+
+#define EMITTER_MODEL_RETAIL "models/props/laser_emitter_center.mdl"
+#define EMITTER_MODEL "models/props/combine_laser_emitter.mdl"
+
+enum EmitterType {
+	STANDARD = 0,
+	RETAIL = 1,
+};
+
+CPropLaserEmitter::CPropLaserEmitter(void) {}
+
+void CPropLaserEmitter::Precache(void)
+{
+	PrecacheModel(EMITTER_MODEL);
+	PrecacheModel(EMITTER_MODEL_RETAIL);
+
+	BaseClass::Precache();
+}
+
+void CPropLaserEmitter::Spawn(void)
+{
+	Precache();
+	switch (m_nEmitterType) {
+	case STANDARD:
+		SetModel(EMITTER_MODEL);
+		SetModelScale(0.65);
+		break;
+	case RETAIL:
+		SetModel(EMITTER_MODEL_RETAIL);
+		break;
+	}
+	SetSolid(SOLID_VPHYSICS);
+
+	m_nLaserOrigin = LookupAttachment("laser_attachment");
+
+	Vector laserOriginVec;
+	QAngle laserOriginAng;
+	GetAttachment(m_nLaserOrigin, laserOriginVec, laserOriginAng);
+
+	DevMsg("Creating env_portal_laser at %.2f %.2f %.2f \n", laserOriginVec.x, laserOriginVec.y, laserOriginVec.z);
+	m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
+	m_pLaser->SetParent(this);
+	m_pLaser->KeyValue("damage", "100");
+	m_pLaser->KeyValue("width", "2");
+	m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");
+	m_pLaser->KeyValue("renderamt", "100");
+	m_pLaser->KeyValue("TextureScroll", "35");
+	DispatchSpawn(m_pLaser);
+	m_pLaser->SetAbsOrigin(laserOriginVec);
+	m_pLaser->SetAbsAngles(laserOriginAng);
+	m_pLaser->Activate();
+	m_pLaser->TurnOn();
+}
+
+int CPropLaserEmitter::IsOn(void)
+{
+	return m_pLaser->IsOn();
+}
+
+void CPropLaserEmitter::InputTurnOn(inputdata_t& inputdata)
+{
+	if (!IsOn()) m_pLaser->TurnOn();
+}
+
+void CPropLaserEmitter::InputTurnOff(inputdata_t& inputdata)
+{
+	if (IsOn()) m_pLaser->TurnOff();
+}
+
+void CPropLaserEmitter::InputToggle(inputdata_t& inputdata)
+{
+	if (IsOn())
+	{
+		m_pLaser->TurnOff();
+	}
+	else
+	{
+		m_pLaser->TurnOn();
+	}
 }

@@ -10,6 +10,7 @@
 #include "particle_parse.h"
 #include "particle_system.h"
 #include "player_pickup.h"
+#include "env_portal_laser.h"
 
 // resource file names
 #define IMPACT_DECAL_NAME	"decals/smscorch1model"
@@ -50,10 +51,16 @@ public:
 	void OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t reason);
 	//virtual void Activate(void);
 
+	void ToggleLaser(bool state);
+
 	int GetCubeType() { return m_cubeType; }
 	void SetCubeType(int type) { m_cubeType = type; }
 
 	void SetActivated(bool active);
+
+	int m_nLensAttachment;
+	Vector m_vLensVec;
+	QAngle m_aLensAng;
 
 private:
 	int	m_cubeType;
@@ -61,6 +68,8 @@ private:
 	int m_paintPower;
 	bool m_useNewSkins;
 	bool m_allowFunnel;
+
+	CEnvPortalLaser* m_pLaser;
 
 	CHandle<CBasePlayer> m_hPhysicsAttacker;
 
