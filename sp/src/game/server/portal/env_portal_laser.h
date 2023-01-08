@@ -52,6 +52,7 @@ public:
 
 	float	m_flStartFrame;
 
+	CBaseEntity* m_pHitObject;
 	int m_nSiteHalo;
 private:
 	CTraceFilterSkipTwoEntities		m_filterBeams;
@@ -59,6 +60,7 @@ private:
 	bool m_bActive = false;
 	bool m_bLastCatcherActivated = false;
 	bool m_bLastLaserTargetActivated = false;
+	bool m_bLastCubeActivated = false;
 };
 
 // PROP LASER EMITTER

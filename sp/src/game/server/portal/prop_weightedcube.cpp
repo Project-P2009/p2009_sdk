@@ -5,6 +5,7 @@
 //=====================================================================================//
 #include "cbase.h"					// for pch
 #include "prop_weightedcube.h"
+#include "prop_laser_catcher.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -246,6 +247,11 @@ void CPropWeightedCube::ToggleLaser(bool state)
 	}
 	else if (state == false) {
 		m_pLaser->TurnOff();
+		if (dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject) != nullptr) {
+			CEnvLaserTarget* pTarget = dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject);
+			CPropLaserCatcher* pCatcher = dynamic_cast<CPropLaserCatcher*>(pTarget->GetParent());
+			pCatcher->TurnOff(m_pLaser);
+		}
 	}
 }
 

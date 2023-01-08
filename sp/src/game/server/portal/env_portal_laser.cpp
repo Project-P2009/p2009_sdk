@@ -55,12 +55,19 @@ ITraceFilter* CEnvPortalLaser::GetBeamTraceFilter(void)
 	return &m_filterBeams;
 }
 
+CPropWeightedCube* m_pLastCube = nullptr;
+CPropLaserCatcher* m_pLastCatcher = nullptr;
+CEnvLaserTarget* m_pLastLaserTarget = nullptr;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CEnvPortalLaser::Spawn(void)
 {
+	m_pLastCube = nullptr;
+	m_pLastCatcher = nullptr;
+	m_pLastLaserTarget = nullptr;
+
 	if (!GetModelName())
 	{
 		SetThink(&CEnvPortalLaser::SUB_Remove);
@@ -83,7 +90,6 @@ void CEnvPortalLaser::Spawn(void)
 		TurnOn();
 	}
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -178,7 +184,7 @@ void CEnvPortalLaser::TurnOff(void)
 {
 	if (m_pBeam)
 		m_pBeam->AddEffects(EF_NODRAW);
-	
+
 	m_bActive = false;
 	SetNextThink(TICK_NEVER_THINK);
 	SetThink(NULL);
@@ -222,9 +228,6 @@ void CEnvPortalLaser::Toggle()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CPropWeightedCube* m_pLastCube = nullptr;
-CPropLaserCatcher* m_pLastCatcher = nullptr;
-CEnvLaserTarget* m_pLastLaserTarget = nullptr;
 
 void CEnvPortalLaser::FireAtPoint(trace_t& tr)
 {
@@ -235,26 +238,38 @@ void CEnvPortalLaser::FireAtPoint(trace_t& tr)
 		BeamDamage(&tr);
 		DoSparks(GetAbsStartPos(), tr.endpos);
 		CBaseEntity *pHit = tr.m_pEnt;
+		m_pHitObject = pHit;
 		if (dynamic_cast<CPropWeightedCube*>(pHit) != nullptr) {
 			if (dynamic_cast<CPropWeightedCube*>(GetParent()) != nullptr) {
 			}
 			else {
 				CPropWeightedCube* pCube = dynamic_cast<CPropWeightedCube*>(pHit);
-				if (pCube->GetCubeType() == 2) {
-					if (m_pLastCube != pCube) {
-						if (m_pLastCube != nullptr) m_pLastCube->ToggleLaser(false);
-						m_pLastCube = pCube;
+
+				if (m_pLastCube != pCube) {
+					if (m_pLastCube != nullptr) m_pLastCube->ToggleLaser(false);
+					m_pLastCube = pCube;
+				}
+
+				if (m_bActive) {
+					if (m_bLastCubeActivated == false) {
+						m_bLastCubeActivated = true;
 						m_pLastCube->ToggleLaser(true);
 					}
-					else {
-						m_pLastCube->ToggleLaser(true);
+				}
+				else {
+					if (m_bLastCubeActivated == true) {
+						m_bLastCubeActivated = false;
+						m_pLastCube->ToggleLaser(false);
 					}
 				}
 			}
 		}
 		else {
 			if (m_pLastCube != nullptr) {
-				m_pLastCube->ToggleLaser(false);
+				if (m_bLastCubeActivated == true) {
+					m_bLastCubeActivated = false;
+					m_pLastCube->ToggleLaser(false);
+				}
 			}
 		}
 
@@ -264,34 +279,38 @@ void CEnvPortalLaser::FireAtPoint(trace_t& tr)
 			if (m_pLastLaserTarget != pLaserTarget) {
 				if (m_pLastLaserTarget != nullptr) m_pLastLaserTarget->TurnOff(this);
 				m_pLastLaserTarget = pLaserTarget;
-				if (m_bLastCatcherActivated == false) {
-					m_bLastLaserTargetActivated = true;
-					m_pLastLaserTarget->TurnOn(this);
-				}
 			}
-			else {
+			
+			if (m_bActive) {
 				if (m_bLastLaserTargetActivated == false) {
 					m_bLastLaserTargetActivated = true;
 					m_pLastLaserTarget->TurnOn(this);
 				}
 			}
-
-			CPropLaserCatcher* catcher = dynamic_cast<CPropLaserCatcher*>(pLaserTarget->GetParent());
-
-			if (m_pLastCatcher != catcher) {
-				if (m_pLastCatcher != nullptr) {
-					m_pLastCatcher->TurnOff(this);
-				}
-				m_pLastCatcher = catcher;
-				if (m_bLastCatcherActivated == false) {
-					m_bLastCatcherActivated = true;
-					catcher->TurnOn(this);
+			else {
+				if (m_bLastLaserTargetActivated == true) {
+					m_bLastLaserTargetActivated = false;
+					m_pLastLaserTarget->TurnOff(this);
 				}
 			}
-			else {
+
+			CPropLaserCatcher* catcher = dynamic_cast<CPropLaserCatcher*>(m_pLastLaserTarget->GetParent());
+
+			if (m_pLastCatcher != catcher) {
+				if (m_pLastCatcher != nullptr) m_pLastCatcher->TurnOff(this);
+				m_pLastCatcher = catcher;
+			}
+
+			if (m_bActive) {
 				if (m_bLastCatcherActivated == false) {
 					m_bLastCatcherActivated = true;
 					m_pLastCatcher->TurnOn(this);
+				}
+			}
+			else {
+				if (m_bLastCatcherActivated == true) {
+					m_bLastCatcherActivated = false;
+					m_pLastCatcher->TurnOff(this);
 				}
 			}
 
