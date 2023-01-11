@@ -680,8 +680,6 @@ void CFlare::AddToActiveFlares( void )
 	}
 }
 
-#if 0
-
 IMPLEMENT_SERVERCLASS_ST(CFlaregun, DT_Flaregun)
 END_SEND_TABLE()
 
@@ -697,7 +695,9 @@ void CFlaregun::Precache( void )
 
 	PrecacheScriptSound( "Flare.Touch" );
 
-	PrecacheScriptSound( "Weapon_FlareGun.Burn" );
+	PrecacheScriptSound("Weapon_FlareGun.Burn");
+	PrecacheScriptSound("Weapon_FlareGun.Single");
+	PrecacheScriptSound("Weapon_FlareGun.Reload");
 
 	UTIL_PrecacheOther( "env_flare" );
 }
@@ -707,34 +707,55 @@ void CFlaregun::Precache( void )
 //-----------------------------------------------------------------------------
 void CFlaregun::PrimaryAttack( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	// Only the player fires this way so we can cast
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 	
-	if ( pOwner == NULL )
+	if (pPlayer == NULL)
 		return;
 
 	if ( m_iClip1 <= 0 )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
-		pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+		pPlayer->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+
+		if (!m_bFireOnEmpty)
+		{
+			Reload();
+		}
+		else
+		{
+			WeaponSound(EMPTY);
+//			m_flNextPrimaryAttack = 0.15;
+		}
+
 		return;
 	}
 
 	m_iClip1 = m_iClip1 - 1;
 
-	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
+	WeaponSound(SINGLE);
+	pPlayer->DoMuzzleFlash();
 
-	CFlare *pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	pPlayer->m_flNextAttack = gpGlobals->curtime + 1;
+
+	CFlare *pFlare = CFlare::Create(pPlayer->Weapon_ShootPosition(), pPlayer->EyeAngles(), pPlayer, FLARE_DURATION);
 
 	if ( pFlare == NULL )
 		return;
 
 	Vector forward;
-	pOwner->EyeVectors( &forward );
+	pPlayer->EyeVectors(&forward);
 
 	pFlare->SetAbsVelocity( forward * 1500 );
 
-	WeaponSound( SINGLE );
+	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		// HEV suit - indicate out of ammo condition
+		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -742,37 +763,64 @@ void CFlaregun::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 void CFlaregun::SecondaryAttack( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	// Only the player fires this way so we can cast
+	CBasePlayer *pPlayer = ToBasePlayer(GetOwner());
 	
-	if ( pOwner == NULL )
+	if (pPlayer == NULL)
 		return;
 
-	if ( m_iClip1 <= 0 )
+	if (m_iClip1 <= 0)
 	{
-		SendWeaponAnim( ACT_VM_DRYFIRE );
-		pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+		SendWeaponAnim(ACT_VM_DRYFIRE);
+		pPlayer->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+
+		if (!m_bFireOnEmpty)
+		{
+			Reload();
+		}
+		else
+		{
+			WeaponSound(EMPTY);
+//			m_flNextSecondaryAttack = 0.15;
+		}
+
 		return;
 	}
 
 	m_iClip1 = m_iClip1 - 1;
 
-	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
+	WeaponSound(SINGLE);
+	pPlayer->DoMuzzleFlash();
 
-	CFlare *pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+	pPlayer->SetAnimation(PLAYER_ATTACK1);
+
+	pPlayer->m_flNextAttack = gpGlobals->curtime + 1;
+
+	CFlare *pFlare = CFlare::Create(pPlayer->Weapon_ShootPosition(), pPlayer->EyeAngles(), pPlayer, FLARE_DURATION);
 
 	if ( pFlare == NULL )
 		return;
 
 	Vector forward;
-	pOwner->EyeVectors( &forward );
+	pPlayer->EyeVectors(&forward);
 
 	pFlare->SetAbsVelocity( forward * 500 );
 	pFlare->SetGravity(1.0f);
 	pFlare->SetFriction( 0.85f );
 	pFlare->SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-
-	WeaponSound( SINGLE );
 }
 
-#endif
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CFlaregun::Reload(void)
+{
+	bool fRet = DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD);
+	if (fRet)
+	{
+		WeaponSound(RELOAD);
+	}
+	return fRet;
+}
+

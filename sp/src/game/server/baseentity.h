@@ -1810,6 +1810,7 @@ protected:
 
 	// FIXME: Make this private! Still too many references to do so...
 	CNetworkVar( int, m_spawnflags );
+	CNetworkVar(unsigned char, m_MoveType);		// One of the MOVETYPE_ defines.
 
 private:
 	int		m_iEFlags;	// entity flags EFL_*
@@ -1825,7 +1826,6 @@ private:
 	EHANDLE m_pParent;  // for movement hierarchy
 	byte	m_nTransmitStateOwnedCounter;
 	CNetworkVar( unsigned char,  m_iParentAttachment ); // 0 if we're relative to the parent's absorigin and absangles.
-	CNetworkVar( unsigned char, m_MoveType );		// One of the MOVETYPE_ defines.
 	CNetworkVar( unsigned char, m_MoveCollide );
 
 	// Our immediate parent in the movement hierarchy.
@@ -2507,7 +2507,6 @@ inline const QAngle& CBaseEntity::GetAbsAngles( void ) const
 	return m_angAbsRotation;
 }
 
-#ifdef MAPBASE_VSCRIPT
 inline float CBaseEntity::GetMass()
 {
 	IPhysicsObject *vPhys = VPhysicsGetObject();
@@ -2536,7 +2535,6 @@ inline void CBaseEntity::SetMass(float mass)
 		Warning("Tried to call SetMass() on %s but it has no physics.\n", GetDebugName());
 	}
 }
-#endif
 
 
 //-----------------------------------------------------------------------------

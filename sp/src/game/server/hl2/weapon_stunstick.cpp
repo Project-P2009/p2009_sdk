@@ -27,10 +27,8 @@ IMPLEMENT_SERVERCLASS_ST(CWeaponStunStick, DT_WeaponStunStick)
 	SendPropInt( SENDINFO( m_bActive ), 1, SPROP_UNSIGNED ),
 END_SEND_TABLE()
 
-#ifndef HL2MP
 LINK_ENTITY_TO_CLASS( weapon_stunstick, CWeaponStunStick );
 PRECACHE_WEAPON_REGISTER( weapon_stunstick );
-#endif
 
 acttable_t CWeaponStunStick::m_acttable[] = 
 {

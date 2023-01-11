@@ -288,11 +288,7 @@ ConVar	sk_dmg_inflict_scale3( "sk_dmg_inflict_scale3", "0.75", FCVAR_REPLICATED 
 // Damage scale for damage taken by the player on each skill level.
 ConVar	sk_dmg_take_scale1( "sk_dmg_take_scale1", "0.50", FCVAR_REPLICATED );
 ConVar	sk_dmg_take_scale2( "sk_dmg_take_scale2", "1.00", FCVAR_REPLICATED );
-#ifdef HL2_EPISODIC
-	ConVar	sk_dmg_take_scale3( "sk_dmg_take_scale3", "2.0", FCVAR_REPLICATED );
-#else
-	ConVar	sk_dmg_take_scale3( "sk_dmg_take_scale3", "1.50", FCVAR_REPLICATED );
-#endif//HL2_EPISODIC
+ConVar	sk_dmg_take_scale3( "sk_dmg_take_scale3", "2.0", FCVAR_REPLICATED );
 
 ConVar	sk_allow_autoaim( "sk_allow_autoaim", "1", FCVAR_REPLICATED | FCVAR_ARCHIVE_XBOX );
 
@@ -309,27 +305,30 @@ ConVar	sk_ammo_qty_scale3 ( "sk_ammo_qty_scale3", "0.60", FCVAR_REPLICATED );
 ConVar	sk_plr_health_drop_time		( "sk_plr_health_drop_time", "30", FCVAR_REPLICATED );
 ConVar	sk_plr_grenade_drop_time	( "sk_plr_grenade_drop_time", "30", FCVAR_REPLICATED );
 
-ConVar	sk_plr_dmg_ar2			( "sk_plr_dmg_ar2","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_ar2			( "sk_npc_dmg_ar2","0", FCVAR_REPLICATED);
-ConVar	sk_max_ar2				( "sk_max_ar2","0", FCVAR_REPLICATED);
-ConVar	sk_max_ar2_altfire		( "sk_max_ar2_altfire","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_ar1			( "sk_plr_dmg_ar1",		"0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_ar1			( "sk_npc_dmg_ar1",		"0", FCVAR_REPLICATED);
+ConVar	sk_max_ar1				( "sk_max_ar1",			"0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_alyxgun		( "sk_plr_dmg_alyxgun","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_alyxgun		( "sk_npc_dmg_alyxgun","0", FCVAR_REPLICATED);
-ConVar	sk_max_alyxgun			( "sk_max_alyxgun","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_ar2			( "sk_plr_dmg_ar2",		"0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_ar2			( "sk_npc_dmg_ar2",		"0", FCVAR_REPLICATED);
+ConVar	sk_max_ar2				( "sk_max_ar2",			"0", FCVAR_REPLICATED);
+ConVar	sk_max_ar2_altfire		( "sk_max_ar2_altfire",	"0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_pistol		( "sk_plr_dmg_pistol","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_pistol		( "sk_npc_dmg_pistol","0", FCVAR_REPLICATED);
-ConVar	sk_max_pistol			( "sk_max_pistol","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_alyxgun		( "sk_plr_dmg_alyxgun",	"0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_alyxgun		( "sk_npc_dmg_alyxgun",	"0", FCVAR_REPLICATED);
+ConVar	sk_max_alyxgun			( "sk_max_alyxgun",		"0", FCVAR_REPLICATED);
 
-ConVar	sk_plr_dmg_smg1			( "sk_plr_dmg_smg1","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_smg1			( "sk_npc_dmg_smg1","0", FCVAR_REPLICATED);
-ConVar	sk_max_smg1				( "sk_max_smg1","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_pistol		( "sk_plr_dmg_pistol",	"0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_pistol		( "sk_npc_dmg_pistol",	"0", FCVAR_REPLICATED);
+ConVar	sk_max_pistol			( "sk_max_pistol",		"0", FCVAR_REPLICATED);
 
-// FIXME: remove these
-//ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
-//ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED);
-//ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_smg1			( "sk_plr_dmg_smg1",	"0", FCVAR_REPLICATED );
+ConVar	sk_npc_dmg_smg1			( "sk_npc_dmg_smg1",	"0", FCVAR_REPLICATED);
+ConVar	sk_max_smg1				( "sk_max_smg1",		"0", FCVAR_REPLICATED);
+
+ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED);
 
 ConVar	sk_plr_dmg_buckshot		( "sk_plr_dmg_buckshot","0", FCVAR_REPLICATED);	
 ConVar	sk_npc_dmg_buckshot		( "sk_npc_dmg_buckshot","0", FCVAR_REPLICATED);

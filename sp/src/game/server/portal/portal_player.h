@@ -173,6 +173,7 @@ public:
 
 	// Tracks our ragdoll entity.
 	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle
+	CNetworkVar(bool, m_bHasLongJump);
 
 	void SuppressCrosshair( bool bState ) { m_bSuppressingCrosshair = bState; }
 		

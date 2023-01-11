@@ -390,12 +390,20 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 	if ( gpGlobals->curtime >= m_flNextPrimaryAttack )
 	{
 		// If my clip is empty (and I use clips) start reload
-		if ( !m_iClip1 ) 
+		if (m_iClip1 <= 0)
 		{
-			Reload();
+			if (!m_bFireOnEmpty)
+			{
+				Reload();
+			}
+			else
+			{
+				WeaponSound(EMPTY);
+				m_flNextPrimaryAttack = 0.15;
+			}
+
 			return;
 		}
-
 		// MUST call sound before removing a round from the clip of a CMachineGun dvs: does this apply to the sniper rifle? I don't know.
 		WeaponSound(SINGLE);
 
@@ -406,7 +414,7 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 		// player "shoot" animation
 		pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-		// Don't fire again until fire animation has completed
+		// Don't fire again until fire animation has completed gaijin: Firerate goes ham when the model is missing, go figure.
 		m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 		m_iClip1 = m_iClip1 - 1;
 

@@ -379,7 +379,7 @@ int CPropPersonalityCore::OnTakeDamage(const CTakeDamageInfo &info)
 	BaseClass::OnTakeDamage(info);
 
 	if (info.GetDamageType() & DMG_CRUSH & DMG_DIRECT & DMG_GENERIC)
-		return BaseClass::OnTakeDamage(info); 
+		return BaseClass::OnTakeDamage(info);
 
 	return 0;
 }

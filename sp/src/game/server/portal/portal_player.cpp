@@ -157,6 +157,7 @@ SendPropExclude("DT_ServerAnimationData", "m_flCycle"),
 SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
 
 
+SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 0), 11, SPROP_CHANGES_OFTEN),
 SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 1), 11, SPROP_CHANGES_OFTEN),
 SendPropEHandle(SENDINFO(m_hRagdoll)),
@@ -203,6 +204,9 @@ DEFINE_FIELD(m_bFixEyeAnglesFromPortalling, FIELD_BOOLEAN),
 DEFINE_FIELD(m_matLastPortalled, FIELD_VMATRIX_WORLDSPACE),
 DEFINE_FIELD(m_vWorldSpaceCenterHolder, FIELD_POSITION_VECTOR),
 DEFINE_FIELD(m_hSurroundingLiquidPortal, FIELD_EHANDLE),
+
+DEFINE_FIELD(m_bHasLongJump, FIELD_BOOLEAN),
+
 //DEFINE_FIELD ( m_PlayerAnimState, CPortalPlayerAnimState ),
 //DEFINE_FIELD ( m_StatsThisLevel, PortalPlayerStatistics_t ),
 
@@ -264,6 +268,7 @@ CPortal_Player::CPortal_Player()
 	m_iszExpressionScene = NULL_STRING;
 	m_hExpressionSceneEnt = NULL;
 	m_flExpressionLoopTime = 0.0f;
+	m_bHasLongJump = false;
 }
 
 CPortal_Player::~CPortal_Player(void)
@@ -332,19 +337,17 @@ void CPortal_Player::StopLoopingSounds()
 
 void CPortal_Player::GiveAllItems(void)
 {
-	CBasePlayer::GiveAmmo(255, "Pistol");
-
-	GiveNamedItem("weapon_pistol");
-
 	EquipSuit();
 
-	
+	CBasePlayer::GiveAmmo(255, "Pistol");
 	CBasePlayer::GiveAmmo(32, "357");
+	CBasePlayer::GiveAmmo(30, "Flareround");
 
 	CBasePlayer::GiveAmmo(255, "AR2");
 	CBasePlayer::GiveAmmo(3, "AR2AltFire");
 	CBasePlayer::GiveAmmo(255, "SMG1");
 	CBasePlayer::GiveAmmo(3, "smg1_grenade");
+	CBasePlayer::GiveAmmo(255, "AR1");
 
 	CBasePlayer::GiveAmmo(255, "Buckshot");
 	CBasePlayer::GiveAmmo(16, "XBowBolt");
@@ -355,20 +358,23 @@ void CPortal_Player::GiveAllItems(void)
 	GiveNamedItem("weapon_crowbar");
 	GiveNamedItem("weapon_physcannon");
 
+	GiveNamedItem("weapon_pistol");
 	GiveNamedItem("weapon_357");
+	GiveNamedItem("weapon_flaregun");
 
 	GiveNamedItem("weapon_smg1");
 	GiveNamedItem("weapon_ar2");
+	GiveNamedItem("weapon_ar1");
 
 	GiveNamedItem("weapon_shotgun");
 	GiveNamedItem("weapon_crossbow");
+	GiveNamedItem("weapon_irifle");
 
-	GiveNamedItem("weapon_rpg");
 	GiveNamedItem("weapon_frag");
+	GiveNamedItem("weapon_rpg");
 
 	GiveNamedItem("weapon_bugbait");
 
-	//GiveNamedItem( "weapon_physcannon" );
 	CWeaponPortalgun* pPortalGun = static_cast<CWeaponPortalgun*>(GiveNamedItem("weapon_portalgun"));
 
 	if (!pPortalGun)
@@ -388,7 +394,6 @@ void CPortal_Player::GiveDefaultItems(void)
 	castable_string_t st("suit_no_sprint");
 	GlobalEntity_SetState(st, GLOBAL_OFF);
 	inputdata_t in;
-	InputDisableFlashlight(in);
 }
 
 

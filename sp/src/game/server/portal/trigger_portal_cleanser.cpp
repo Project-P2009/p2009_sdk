@@ -30,6 +30,13 @@ static char *g_pszPortalNonCleansable[] =
 	"env_ghostanimating",
 	"physicsshadowclone",
 	"prop_energy_ball",
+	"prop_laser_catcher",
+	"prop_laser_emitter",
+	"prop_laser_relay",
+	"prop_floor_button"
+	"prop_floor_cube_button",
+	"prop_floor_ball_button",
+	"prop_personality_core",
 	NULL,
 };
 

@@ -229,7 +229,6 @@ void CPropWeightedCube::ToggleLaser(bool state)
 
 	if (m_pLaser == nullptr) {
 		m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
-		m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
 		m_pLaser->KeyValue("damage", "100");
 		m_pLaser->KeyValue("width", "2");
 		m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");

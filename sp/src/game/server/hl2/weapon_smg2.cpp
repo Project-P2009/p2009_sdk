@@ -18,7 +18,9 @@
 
 class CWeaponSMG2 : public CHLSelectFireMachineGun
 {
+	DECLARE_DATADESC();
 public:
+
 	DECLARE_CLASS( CWeaponSMG2, CHLSelectFireMachineGun );
 
 	CWeaponSMG2();

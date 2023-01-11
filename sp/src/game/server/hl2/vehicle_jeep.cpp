@@ -1336,9 +1336,9 @@ void CPropJeep::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHe
 void CPropJeep::DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased )
 {
 	int iButtons = ucmd->buttons;
-
-	//Adrian: No headlights on Superfly.
-/*	if ( ucmd->impulse == 100 )
+// /*
+	//Adrian: No headlights on Superfly. Gaijin: Frick your stupid claim Adrian
+	if ( ucmd->impulse == 100 )
 	{
 		if (HeadlightIsOn())
 		{
@@ -1348,8 +1348,8 @@ void CPropJeep::DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDow
 		{
 			HeadlightTurnOn();
 		}
-	}*/
-		
+	}
+// */
 	// Only handle the cannon if the vehicle has one
 	if ( m_bHasGun )
 	{

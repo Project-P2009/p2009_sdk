@@ -49,8 +49,8 @@ void CGrenade_Molotov::Spawn( void )
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetSolid( SOLID_BBOX ); 
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
-
-	SetModel( "models/weapons/w_molotov.mdl");
+	
+	SetModel( "models/Weapons/w_slam.mdl" ); // "models/weapons/w_molotov.mdl"
 
 	UTIL_SetSize(this, Vector( -6, -6, -2), Vector(6, 6, 2));
 

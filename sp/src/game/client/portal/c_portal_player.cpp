@@ -119,7 +119,7 @@ private:
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_PortalRagdoll, DT_PortalRagdoll, CPortalRagdoll )
 RecvPropVector( RECVINFO(m_vecRagdollOrigin) ),
-RecvPropEHandle( RECVINFO( m_hPlayer ) ),
+RecvPropEHandle(RECVINFO( m_hPlayer )),
 RecvPropInt( RECVINFO( m_nModelIndex ) ),
 RecvPropInt( RECVINFO(m_nForceBone) ),
 RecvPropVector( RECVINFO(m_vecForce) ),
@@ -283,6 +283,7 @@ RecvPropBool( RECVINFO( m_bPitchReorientation ) ),
 RecvPropEHandle( RECVINFO( m_hPortalEnvironment ) ),
 RecvPropEHandle( RECVINFO( m_hSurroundingLiquidPortal ) ),
 RecvPropBool( RECVINFO( m_bSuppressingCrosshair ) ),
+RecvPropBool( RECVINFO( m_bHasLongJump ) ),
 END_RECV_TABLE()
 
 

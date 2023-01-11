@@ -49,8 +49,8 @@ BrickbatAmmo_s	BrickBatAmmoArray[NUM_BRICKBAT_AMMO_TYPES] =
 IMPLEMENT_SERVERCLASS_ST(CWeaponBrickbat, DT_WeaponBrickbat)
 END_SEND_TABLE()
 
-//LINK_ENTITY_TO_CLASS( weapon_brickbat, CWeaponBrickbat );
-//PRECACHE_WEAPON_REGISTER(weapon_brickbat);
+LINK_ENTITY_TO_CLASS( weapon_brickbat, CWeaponBrickbat );
+PRECACHE_WEAPON_REGISTER(weapon_brickbat);
 
 acttable_t	CWeaponBrickbat::m_acttable[] = 
 {

@@ -39,7 +39,7 @@ void CGrenadeEnergy::Spawn( void )
 	SetSolid( SOLID_BBOX );
 	SetMoveType( MOVETYPE_FLY );
 
-	SetModel( "Models/weapons/w_energy_grenade.mdl" );
+	SetModel( "models/Weapons/w_slam.mdl" ); //"Models/weapons/w_energy_grenade.mdl"
 
 	SetUse( DetonateUse );
 	SetTouch( GrenadeEnergyTouch );

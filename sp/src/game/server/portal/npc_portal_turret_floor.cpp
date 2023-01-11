@@ -335,6 +335,35 @@ int CNPC_Portal_FloorTurret::OnTakeDamage( const CTakeDamageInfo &info )
 		}
 	}
 
+	if (info.GetDamageType() & DMG_BURN)
+	{
+		// Ka-boom!
+		m_flDestructStartTime = gpGlobals->curtime;
+		m_flPingTime = gpGlobals->curtime;
+		m_bSelfDestructing = true;
+
+		SetThink(&CNPC_FloorTurret::SelfDestructThink);
+		SetNextThink(gpGlobals->curtime + 0.1f);
+
+		// Create the dust effect in place
+		m_hFizzleEffect = (CParticleSystem *)CreateEntityByName("info_particle_system");
+		if (m_hFizzleEffect != NULL)
+		{
+			Vector vecUp;
+			GetVectors(NULL, NULL, &vecUp);
+
+			// Setup our basic parameters
+			m_hFizzleEffect->KeyValue("start_active", "1");
+			m_hFizzleEffect->KeyValue("effect_name", "explosion_turret_fizzle");
+			m_hFizzleEffect->SetParent(this);
+			m_hFizzleEffect->SetAbsOrigin(WorldSpaceCenter() + (vecUp * 12.0f));
+			DispatchSpawn(m_hFizzleEffect);
+			m_hFizzleEffect->Activate();
+		}
+		Ignite(10);
+	}
+	
+
 	return BaseClass::OnTakeDamage( info );
 }
 

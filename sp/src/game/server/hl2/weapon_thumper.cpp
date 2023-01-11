@@ -94,7 +94,7 @@ void CPortableThumper::ThumpThink( void )
 {
 	EmitSound( "PortableThumper.ThumpSound" );
 
-	UTIL_RotorWash( GetAbsOrigin() + Vector( 0, 0, 32 ), Vector( 0, 0, -1 ), 512 );	
+//	UTIL_RotorWash( GetAbsOrigin() + Vector( 0, 0, 32 ), Vector( 0, 0, -1 ), 512 );	
 
 	SetNextThink( gpGlobals->curtime + thumpFrequency.GetFloat() );
 
@@ -107,11 +107,6 @@ BEGIN_DATADESC( CPortableThumper )
 	DEFINE_FUNCTION( ThumperUse ),
 
 END_DATADESC()
-
-
-
-
-
 
 class CWeaponThumper: public CBaseHLCombatWeapon
 {

@@ -147,6 +147,7 @@ BEGIN_DATADESC( CNPC_FloorTurret )
 #endif
 	DEFINE_INPUTFUNC( FIELD_VOID, "SelfDestruct", InputSelfDestruct ),
 
+	DEFINE_OUTPUT( m_OnDeploy, "OnDeploy"),
 	DEFINE_OUTPUT( m_OnDeploy, "OnDeploy" ),
 	DEFINE_OUTPUT( m_OnRetire, "OnRetire" ),
 	DEFINE_OUTPUT( m_OnTipped, "OnTipped" ),
@@ -2187,7 +2188,7 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 //-----------------------------------------------------------------------------
 // Purpose: Make us explode
 //-----------------------------------------------------------------------------
-void CNPC_FloorTurret::InputSelfDestruct( inputdata_t &inputdata )
+void CNPC_FloorTurret::InputSelfDestruct( inputdata_t & inputdata )
 {
 	// Ka-boom!
 	m_flDestructStartTime = gpGlobals->curtime;

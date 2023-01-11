@@ -1099,7 +1099,6 @@ static ConCommand ent_create_portal_metal_sphere("ent_create_portal_metal_sphere
 		return 0.0f;
 	}
 
-
 #endif //} !CLIENT_DLL
 
 

@@ -413,6 +413,8 @@ LINK_ENTITY_TO_CLASS(item_ammo_crossbow, CItem_BoxXBowRounds);
 // ========================================================================
 //	>> FlareRound
 // ========================================================================
+#define SIZE_AMMO_FLAREROUND 1
+
 class CItem_FlareRound : public CItem
 {
 public:
@@ -430,23 +432,24 @@ public:
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, 1, "FlareRound"))
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_FLAREROUND, "FlareRound"))
 		{
 			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
 				UTIL_Remove(this);	
-			}
+			}	
 			return true;
 		}
 		return false;
 	}
 };
 LINK_ENTITY_TO_CLASS(item_flare_round, CItem_FlareRound);
+LINK_ENTITY_TO_CLASS(item_ammo_flareround, CItem_FlareRound);
 
 // ========================================================================
 //	>> BoxFlareRounds
 // ========================================================================
-#define SIZE_BOX_FLARE_ROUNDS 5
+#define SIZE_AMMO_FLAREROUND_LARGE 5
 
 class CItem_BoxFlareRounds : public CItem
 {
@@ -463,13 +466,13 @@ public:
 	{
 		PrecacheModel ("models/items/boxflares.mdl");
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch(CBasePlayer *pPlayer)
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_BOX_FLARE_ROUNDS, "FlareRound"))
+		if (ITEM_GiveAmmo(pPlayer, SIZE_AMMO_FLAREROUND_LARGE, "FlareRound"))
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_NO)
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove(this);
 			}
 			return true;
 		}
@@ -477,6 +480,7 @@ public:
 	}
 };
 LINK_ENTITY_TO_CLASS(item_box_flare_rounds, CItem_BoxFlareRounds);
+LINK_ENTITY_TO_CLASS(item_ammo_flareround_large, CItem_BoxFlareRounds);
 
 // ========================================================================
 // RPG Round
@@ -673,6 +677,8 @@ enum
 	AMMOCRATE_SLAM,
 	AMMOCRATE_EMPTY,
 #endif
+	AMMOCRATE_FLARE_SMALL_ROUNDS,
+	AMMOCRATE_FLARE_LARGE_ROUNDS,
 	NUM_AMMO_CRATE_TYPES,
 };
 
@@ -778,6 +784,7 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 	"models/items/ammocrate_slam.mdl",	    // slam
 	"models/items/ammocrate_empty.mdl",	    // empty
 #endif
+	"models/items/ammocrate_smg1.mdl",		// Flarerounds
 };
 
 // Ammo type names
@@ -797,6 +804,7 @@ const char *CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
 	"slam",
 	NULL,
 #endif
+	"FlareRound"
 };
 
 // Ammo amount given per +use
@@ -816,6 +824,7 @@ int CItem_AmmoCrate::m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES] =
 	5,		// SLAM
 	NULL,	// Empty
 #endif
+	5,
 };
 
 const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
@@ -834,6 +843,7 @@ const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 	"weapon_slam",		// SLAM
 	NULL,	// Empty
 #endif
+	NULL,	// FlareRound
 };
 
 #define	AMMO_CRATE_CLOSE_DELAY	1.5f

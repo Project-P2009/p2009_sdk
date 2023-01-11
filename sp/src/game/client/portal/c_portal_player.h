@@ -100,6 +100,8 @@ public:
 		return ((PortalEyeInterpolation.m_bEyePositionIsInterpolating) || (m_hPortalEnvironment.Get() != NULL));	
 	} 
 
+	bool	m_bHasLongJump;
+
 	bool	CanSprint( void );
 	void	StartSprinting( void );
 	void	StopSprinting( void );

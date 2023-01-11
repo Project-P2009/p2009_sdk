@@ -1,61 +1,60 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright  1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
-// $NoKeywords: $
-//
 //=============================================================================//
-/*
 
-===== item_longjump.cpp ========================================================
-
-  handling for the longjump module
-*/
 
 #include "cbase.h"
 #include "player.h"
-//#include "weapons.h"
 #include "gamerules.h"
 #include "items.h"
+#include "items.h"
+#include "portal_player.h"
+
 
 class CItemLongJump : public CItem
 {
 public:
-	DECLARE_CLASS( CItemLongJump, CItem );
+	DECLARE_CLASS(CItemLongJump, CItem);
 
-	void Spawn( void )
-	{ 
-		Precache( );
-		SetModel( "models/w_longjump.mdl" );
-		BaseClass::Spawn( );
-	}
-	void Precache( void )
+	void Spawn(void)
 	{
-		PrecacheModel ("models/w_longjump.mdl");
+		Precache();
+		SetModel("models/w_longjump.mdl");
+		BaseClass::Spawn();
+
+		CollisionProp()->UseTriggerBounds(true, 16.0f);
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	void Precache(void)
 	{
-		if ( pPlayer->m_fLongJump )
+		PrecacheModel("models/w_longjump.mdl");
+	}
+	bool MyTouch(CPortal_Player *pPlayer)
+	{
+		if (pPlayer->m_bHasLongJump == true)
 		{
-			return FALSE;
+			return false;
 		}
 
-		if ( pPlayer->IsSuitEquipped() )
+		if (pPlayer->IsSuitEquipped())
 		{
-			pPlayer->m_fLongJump = TRUE;// player now has longjump module
+			pPlayer->m_bHasLongJump = true;// player now has longjump module
 
-			CSingleUserRecipientFilter user( pPlayer );
+			CSingleUserRecipientFilter user(pPlayer);
 			user.MakeReliable();
 
-			UserMessageBegin( user, "ItemPickup" );
-				WRITE_STRING( STRING(pev->classname) );
+			UserMessageBegin(user, "ItemPickup");
+			WRITE_STRING(STRING(m_iClassname));
 			MessageEnd();
 
-			UTIL_EmitSoundSuit( pPlayer->edict(), "!HEV_A1" );	// Play the longjump sound UNDONE: Kelly? correct sound?
-			return true;		
+			UTIL_EmitSoundSuit(pPlayer->edict(), "!HEV_A1");	// Play the longjump sound UNDONE: Kelly? correct sound?
+			return true;
 		}
 		return false;
 	}
 };
 
-LINK_ENTITY_TO_CLASS( item_longjump, CItemLongJump );
+LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump);
+PRECACHE_REGISTER(item_longjump);
+
