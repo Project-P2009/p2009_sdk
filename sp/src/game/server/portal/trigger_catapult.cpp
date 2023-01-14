@@ -1,320 +1,413 @@
-//=========  ============//
+//========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Replica of Portal 2's entity by the same name.
-// Code taken from Bob's portal, credit ASBob (https://github.com/ACBob/bobportal/blob/master/sp/src/game/server/bobportal/trigger_catapult.cpp)
+// Purpose: 
 //
-//=============================================================================
+// $NoKeywords: $
+//=============================================================================//
 
 #include "cbase.h"
-#include "triggers.h"
+
+#include "trigger_catapult.h"
+
+#include "vcollide_parse.h"
+#include "props.h"
 #include "movevars_shared.h"
-#include "ai_basenpc.h" // provides VecCheckToss(), which is used when lobbing physics objects
-#include "player_pickup.h"
-#include "const.h"
+// #include "tf_player.h"
+#include "portal_player.h"
+#include "saverestore_utlvector.h"
 
-ConVar sv_debug_catapults( "sv_debug_catapults", "0", FCVAR_CHEAT | FCVAR_REPLICATED, "Display some debug information for catapults." );
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
 
-class CTriggerCatapult : public CBaseVPhysicsTrigger {
-    public:
-        DECLARE_CLASS(CTriggerCatapult, CBaseVPhysicsTrigger);
-        DECLARE_DATADESC();
+const char* CTriggerCatapult::s_szPlayerPassesTriggerFiltersThinkContext = "CTriggerCatapult::PlayerPassesTriggerFiltersThink";
 
-        CTriggerCatapult();
+extern ConVar catapult_physics_drag_boost;
 
-        void Spawn();
-        void StartTouch(CBaseEntity *pOther);
-        void BopIt(CBaseEntity *pOther);
-        
-        Vector CalcJumpLaunchVelocity(const Vector &startPos, const Vector &endPos, float flGravity, float *pminHeight, float maxHorzVelocity, Vector *pvecApex );
 
-        Vector GenerateVelocity(Vector vecOther, Vector vecTarget, IPhysicsObject *physObject);
+BEGIN_DATADESC(CTriggerCatapult)
 
-        bool VelocityThreshold(Vector velOther);
+DEFINE_THINKFUNC(LaunchThink),
+DEFINE_THINKFUNC(PlayerPassesTriggerFiltersThink),
 
-        void EnablePlayerMovement();
+DEFINE_KEYFIELD(m_flPlayerVelocity, FIELD_FLOAT, "playerSpeed"),
+DEFINE_KEYFIELD(m_flPhysicsVelocity, FIELD_FLOAT, "physicsSpeed"),
+DEFINE_KEYFIELD(m_vecLaunchAngles, FIELD_VECTOR, "launchDirection"),
+DEFINE_KEYFIELD(m_strLaunchTarget, FIELD_STRING, "launchTarget"),
+DEFINE_KEYFIELD(m_bUseThresholdCheck, FIELD_BOOLEAN, "useThresholdCheck"),
+DEFINE_KEYFIELD(m_bUseExactVelocity, FIELD_BOOLEAN, "useExactVelocity"),
+DEFINE_KEYFIELD(m_flLowerThreshold, FIELD_FLOAT, "lowerThreshold"),
+DEFINE_KEYFIELD(m_flUpperThreshold, FIELD_FLOAT, "upperThreshold"),
+DEFINE_KEYFIELD(m_ExactVelocityChoice, FIELD_INTEGER, "exactVelocityChoiceType"),
+DEFINE_KEYFIELD(m_bOnlyVelocityCheck, FIELD_BOOLEAN, "onlyVelocityCheck"),
+DEFINE_KEYFIELD(m_bApplyAngularImpulse, FIELD_BOOLEAN, "applyAngularImpulse"),
 
-    protected:
-        string_t m_jumpTarget;
+DEFINE_KEYFIELD(m_flEntryAngleTolerance, FIELD_FLOAT, "EntryAngleTolerance"),
+DEFINE_KEYFIELD(m_flAirControlSupressionTime, FIELD_FLOAT, "AirCtrlSupressionTime"),
+DEFINE_KEYFIELD(m_bDirectionSuppressAirControl, FIELD_BOOLEAN, "DirectionSuppressAirControl"),
 
-        float m_PlayerLaunchSpeed;
-        float m_PhysicsLaunchSpeed;
+DEFINE_FIELD(m_hLaunchTarget, FIELD_EHANDLE),
+DEFINE_ARRAY(m_flRefireDelay, FIELD_TIME, MAX_PLAYERS + 1),
 
-        float m_velThresholdLow;
-        float m_velThresholdHigh;
+DEFINE_UTLVECTOR(m_hAbortedLaunchees, FIELD_EHANDLE),
 
-        float m_flDisableMovementTime;
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPlayerSpeed", InputSetPlayerSpeed),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPhysicsSpeed", InputSetPhysicsSpeed),
+DEFINE_INPUTFUNC(FIELD_STRING, "SetLaunchTarget", InputSetLaunchTarget),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "SetExactVelocityChoiceType", InputSetExactVelocityChoiceType),
 
-        CBasePlayer *m_lastPlayerHit; // FIXME: will not work in multiplayer, as if the next player triggers us, we will never re-enable the other player's movement
-
-        COutputEvent m_OutputOnCatapulted;
-        
-        Vector m_vLaunchDirection;
-        QAngle m_LaunchDirection;
-
-        bool m_bLaunchByAngles;
-        bool m_bApplyRandomRotation;
-        bool m_bOnlyCheckVelocity;
-        bool m_bTestVelocity;
-};
-
-LINK_ENTITY_TO_CLASS(trigger_catapult, CTriggerCatapult)
-
-BEGIN_DATADESC( CTriggerCatapult )
-
-    DEFINE_KEYFIELD(m_jumpTarget, FIELD_STRING, "launchTarget"),
-    DEFINE_KEYFIELD(m_PlayerLaunchSpeed, FIELD_FLOAT, "playerSpeed"),
-    DEFINE_KEYFIELD(m_PhysicsLaunchSpeed, FIELD_FLOAT, "physicsSpeed"),
-    DEFINE_KEYFIELD(m_bApplyRandomRotation, FIELD_BOOLEAN, "applyAngularImpulse"),
-    DEFINE_KEYFIELD(m_bOnlyCheckVelocity, FIELD_BOOLEAN, "onlyVelocityCheck"),
-    DEFINE_KEYFIELD(m_vLaunchDirection, FIELD_VECTOR, "launchDirection"),
-    DEFINE_KEYFIELD(m_velThresholdLow, FIELD_FLOAT, "lowerThreshold"),
-    DEFINE_KEYFIELD(m_velThresholdHigh, FIELD_FLOAT, "upperThreshold"),
-    DEFINE_KEYFIELD(m_bTestVelocity, FIELD_BOOLEAN, "useThresholdCheck"),
-    DEFINE_KEYFIELD(m_flDisableMovementTime, FIELD_FLOAT, "AirCtrlSupressionTime"),
-
-    DEFINE_OUTPUT(m_OutputOnCatapulted, "OnCatapulted")
+DEFINE_OUTPUT(m_OnCatapulted, "OnCatapulted"),
 
 END_DATADESC()
 
-CTriggerCatapult::CTriggerCatapult(){}
+LINK_ENTITY_TO_CLASS(trigger_catapult, CTriggerCatapult);
 
-void CTriggerCatapult::Spawn() {
-    BaseClass::Spawn();
-
-    SetSolid(SOLID_VPHYSICS);
-    SetModel( STRING( GetModelName() ) );
-
-    m_bLaunchByAngles = (m_jumpTarget == NULL_STRING);
-
-    if (m_bLaunchByAngles) { // Copied from trigger_push
-        // Convert launch direction from angles to a vector
-        Vector vecAbsDir;
-        QAngle angPushDir = QAngle(m_vLaunchDirection.x, m_vLaunchDirection.y, m_vLaunchDirection.z);
-        AngleVectors(angPushDir, &vecAbsDir);
-
-        // Convert it to entity space
-        VectorIRotate( vecAbsDir, EntityToWorldTransform(), m_vLaunchDirection );
-    }
-
-    AddSolidFlags(FSOLID_NOT_SOLID | FSOLID_TRIGGER);
-
-    VPhysicsInitShadow( false, false );
-
-    if (m_flDisableMovementTime < 0) {
-        m_flDisableMovementTime = 0.25; // Quarter second default if below -1
-    }
-
-    RegisterThinkContext("enableMovementContext");
-}
-
-void CTriggerCatapult::StartTouch(CBaseEntity *pOther) { // FIXME: We only launch if they have just started to touch us, but is that the behaviour we want?
-    BaseClass::StartTouch(pOther);
-
-    if (PassesTriggerFilters(pOther)) {
-        if (!m_bOnlyCheckVelocity)
-            BopIt(pOther);
-        else {
-            // We only check the velocity, so do so
-            if (VelocityThreshold(pOther->GetAbsVelocity()))
-                m_OutputOnCatapulted.FireOutput(this, this);
-        }
-    }
-
-}
-
-bool CTriggerCatapult::VelocityThreshold(Vector velOther) {
-
-    if (!m_bTestVelocity) // If we're not set to test velocity, then we launch anyway.
-        return true;
-
-    // According to https://developer.valvesoftware.com/wiki/Faith_Plate#Tips, these aren't too simple - It also uses the player's speed!
-    // Lower threshold is 100% - whatever the value
-    // Upper threshold is 100 + whatever the value
-    // It's confusing, but I'm going for a recreation of portal 2's entity.
-    float speedLower = m_PlayerLaunchSpeed * (1.0 - m_velThresholdLow);
-    float speedHigher = m_PlayerLaunchSpeed * (1.0 + m_velThresholdHigh);
-
-    if (velOther.Length() >= speedLower && velOther.Length() <= speedHigher) {
-        return true;
-    }
-
-    return false;
-
-}
-
-void CTriggerCatapult::BopIt(CBaseEntity *pOther) {
-
-    if (!VelocityThreshold(pOther->GetAbsVelocity())) // Not going fast enough/too fast?
-        return;
-    
-    CBaseEntity *pJumpTarget = NULL;
-
-    // If we are willing to launch by target, we look for the target.
-    if (m_jumpTarget != NULL_STRING) {
-        // Get the entitiy
-        pJumpTarget = gEntList.FindEntityByName(pJumpTarget, m_jumpTarget);
-
-        // If we can't find it, we warn the stupid mapper and then choose to launch by angles anyway.
-        if (pJumpTarget == NULL) {
-            Warning("prop_catapult at %.0f %.0f %.0f has a target set, but we can't find a target by that name (%s).\nUsing angle launch instead...", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, m_jumpTarget);
-            m_bLaunchByAngles = true;
-        }
-    }
-    else {
-        m_bLaunchByAngles = true;
-    }
-
-    Vector velGoZoomZoom;
-
-    // If we don't want to launch by angles, we do the cool launch
-    if (!m_bLaunchByAngles) {
-        velGoZoomZoom = GenerateVelocity(pOther->GetAbsOrigin(), pJumpTarget->GetAbsOrigin(),
-            (!pOther->IsPlayer() ? pOther->VPhysicsGetObject() : NULL) ); // if we're not a player, send our vphysics object, else, send NULL
-        if (sv_debug_catapults.GetInt())
-            NDebugOverlay::Line( GetAbsOrigin(), pJumpTarget->GetAbsOrigin(), 0, 255, 0, 0, 5 ); // Green
-    }
-    // Else, we just launch by the angle.
-    else {
-        Vector LaunchDir;
-        float LaunchSpeed = pOther->IsPlayer() ? m_PlayerLaunchSpeed : m_PhysicsLaunchSpeed;
-	    VectorRotate( m_vLaunchDirection, EntityToWorldTransform(), LaunchDir ); // Convert our angle back to world space
-        velGoZoomZoom = LaunchSpeed * LaunchDir; // go!
-    }        
+//IMPLEMENT_SERVERCLASS_ST( CTriggerCatapult, DT_TriggerCatapult )
+//	SendPropArray3( SENDINFO_ARRAY3(m_flRefireDelay), SendPropFloat(SENDINFO_ARRAY(m_flRefireDelay)) ),
+//	SendPropFloat( SENDINFO( m_flPlayerVelocity ) ),
+//	SendPropFloat( SENDINFO( m_flPhysicsVelocity ) ),
+//	SendPropQAngles( SENDINFO( m_vecLaunchAngles ) ),
+//	//SendPropStringT( SENDINFO( m_strLaunchTarget ) ),
+//	SendPropInt( SENDINFO( m_ExactVelocityChoice ) ),
+//	SendPropBool( SENDINFO( m_bUseExactVelocity ) ),
+//	SendPropBool( SENDINFO( m_bUseThresholdCheck ) ),
+//	SendPropBool( SENDINFO( m_bOnlyVelocityCheck ) ),
+//	SendPropFloat( SENDINFO( m_flLowerThreshold ) ),
+//	SendPropFloat( SENDINFO( m_flUpperThreshold ) ),
+//	SendPropFloat( SENDINFO( m_flAirControlSupressionTime ) ),
+//	SendPropBool( SENDINFO( m_bApplyAngularImpulse ) ),
+//	SendPropFloat( SENDINFO( m_flEntryAngleTolerance ) ),
+//	SendPropEHandle( SENDINFO( m_hLaunchTarget ) ),
+//	SendPropBool( SENDINFO( m_bPlayersPassTriggerFilters ) ),
+//	SendPropBool( SENDINFO( m_bDirectionSuppressAirControl ) ),
+//END_SEND_TABLE()
 
 
-    pOther->SetGroundEntity(NULL); // Essential for allowing the stuff to yEET
-    Pickup_ForcePlayerToDropThisObject(pOther); // make the player drop it
-
-    // IF they're a player, AND we have a disable time, AND we aren't launching by angles
-    if (pOther->IsPlayer() && m_flDisableMovementTime > 0 && !m_bLaunchByAngles) {
-
-        pOther->AddFlag(FL_ATCONTROLS); // Disable this player's movement HACK: This flag disables the player moving, but not looking. There may be a better flag to use!
-        m_lastPlayerHit = (CBasePlayer*) pOther;
-        SetContextThink(&CTriggerCatapult::EnablePlayerMovement, gpGlobals->curtime + m_flDisableMovementTime, "enableMovementContext");
-    }
-
-
-    if (pOther->IsPlayer()) {
-        pOther->SetAbsVelocity(velGoZoomZoom);
-    }
-    else if (pOther->GetMoveType() == MOVETYPE_VPHYSICS && pOther->VPhysicsGetObject()) { // We launch physics objects here
-        IPhysicsObject *pPhysObject = pOther->VPhysicsGetObject();
-
-        AngularImpulse velRotZoomZoom = Vector();
-        if (m_bApplyRandomRotation) {
-            velRotZoomZoom = RandomAngularImpulse( -250 , 250 ) / pPhysObject->GetMass();
-        }
-        else {
-            velRotZoomZoom = RandomAngularImpulse( 0, 0 );
-        }
-
-        pPhysObject->SetVelocityInstantaneous(&velGoZoomZoom, &velRotZoomZoom);
-    }
-    // We have launched the thing!
-    m_OutputOnCatapulted.FireOutput(this, this);
-}
-
-Vector CTriggerCatapult::GenerateVelocity(Vector vecOther, Vector vecTarget, IPhysicsObject *physObject = NULL) {
-    /** Copied parts from the antlion, bodged the rest **/
-
-    bool isPlayer = (physObject == NULL);
-
-    float minJumpHeight;
-    if (vecOther.z > vecTarget.z)
-        minJumpHeight = GetAbsOrigin().z - vecTarget.z; // It must be ATLEAST high enough for our target
-    else if (vecOther.z < vecTarget.z)
-        minJumpHeight = GetAbsOrigin().z + vecTarget.z; // It must be ATLEAST high enough for our target
-
-    float maxHorzVel;
-    if (isPlayer)
-    	maxHorzVel = m_PlayerLaunchSpeed;
-    else
-        maxHorzVel = m_PhysicsLaunchSpeed;
-
-    Vector vecApex;
-    // Calculate it from the entity, doing it from OUR origin is silly.
-	Vector rawJumpVel = CalcJumpLaunchVelocity(vecOther, vecTarget, GetCurrentGravity(), &minJumpHeight, maxHorzVel, &vecApex ); 
-
-    // We're not done yet if we're a physics object!
-    if (!isPlayer) {
-        Vector filteredJumpVel = rawJumpVel;
-        Vector velUnit = filteredJumpVel;
-        VectorNormalize(velUnit); // Turn it into length(?)
-
-		float flTest = 1000 / filteredJumpVel.Length();
-
-        float flDrag = physObject->CalculateLinearDrag(filteredJumpVel);
-
-        // Add the drag squared to the velocity -
-        // Velocity += Direction * flDrag squared
-        filteredJumpVel = filteredJumpVel + ( velUnit * ( flDrag * flDrag ) ) / flTest;
-
-        // Set this to the velocity we'll use
-        rawJumpVel = filteredJumpVel;
-    }
-
-	if ( sv_debug_catapults.GetInt())
-	{
-		NDebugOverlay::Line( GetAbsOrigin(), vecApex, 255, 0, 255, 0, 5 ); // Magenta
-
-        // Draw the path we SHOULD take
-        // FIXME: Inaccurate if we're a phys object
-		NDebugOverlay::Line( GetAbsOrigin(), vecApex, 255, 0, 0, 0, 5 ); // Red
-		NDebugOverlay::Line( vecApex, vecTarget, 255, 0, 0, 0, 5 ); // Red
-
-        // Display the velocity
-        NDebugOverlay::Line( GetAbsOrigin(), rawJumpVel, 255, 255, 0, 0, 5 ); // Yellow
-	}
-
-    return rawJumpVel;
-}
-
-/** Copied from CAI_MoveProbe, TODO: Is there a better way of accessing this function? **/
-Vector CTriggerCatapult::CalcJumpLaunchVelocity(const Vector &startPos, const Vector &endPos, float flGravity, float *pminHeight, float maxHorzVelocity, Vector *pvecApex )
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CTriggerCatapult::CTriggerCatapult(void)
 {
-	// Get the height I have to jump to get to the target
-	float	stepHeight = endPos.z - startPos.z;
-
-	// get horizontal distance to target
-	Vector targetDir2D	= endPos - startPos;
-	targetDir2D.z = 0;
-	float distance = VectorNormalize(targetDir2D);
-
-	Assert( maxHorzVelocity > 0 );
-
-	// get minimum times and heights to meet ideal horz velocity
-	float minHorzTime = distance / maxHorzVelocity;
-	float minHorzHeight = 0.5 * flGravity * (minHorzTime * 0.5) * (minHorzTime * 0.5);
-
-	// jump height must be enough to hang in the air
-	*pminHeight = MAX( *pminHeight, minHorzHeight );
-	// jump height must be enough to cover the step up
-	*pminHeight = MAX( *pminHeight, stepHeight );
-
-	// time from start to apex
-	float t0 = sqrt( ( 2.0 * *pminHeight) / flGravity );
-	// time from apex to end
-	float t1 = sqrt( ( 2.0 * fabs( *pminHeight - stepHeight) ) / flGravity );
-
-	float velHorz = distance / (t0 + t1);
-
-	Vector jumpVel = targetDir2D * velHorz;
-
-	jumpVel.z = (float)sqrt(2.0f * flGravity * (*pminHeight));
-
-	if (pvecApex)
-	{
-		*pvecApex = startPos + targetDir2D * velHorz * t0 + Vector( 0, 0, *pminHeight );
-	}
-
-	// -----------------------------------------------------------
-	// Make the horizontal jump vector and add vertical component
-	// -----------------------------------------------------------
-
-	return jumpVel;
+	//Defaulting to true;
+	m_bApplyAngularImpulse = true;
+	m_flAirControlSupressionTime = -1.0f;
 }
 
-void CTriggerCatapult::EnablePlayerMovement() {
-    if (m_lastPlayerHit != NULL)
-        m_lastPlayerHit->RemoveFlag(FL_ATCONTROLS);
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::DrawDebugGeometryOverlays(void)
+{
+	BaseClass::DrawDebugGeometryOverlays();
+	CBaseEntity* pLaunchTarget = m_hLaunchTarget;
+	if (pLaunchTarget)
+	{
+		// Help us visualize the target
+		Vector vecSourcePos = GetAbsOrigin();
+		Vector vecTargetPos = pLaunchTarget->GetAbsOrigin();
+
+		float flSpeed = m_flPlayerVelocity;
+		float flGravity = sv_gravity.GetFloat();
+
+		Vector vecVelocity = (vecTargetPos - vecSourcePos);
+
+		// This is a hack to get around air resistance with weighted cubes -- this is not intended for all objects!
+		// float flDragCoefficient = (pVictim->IsPlayer()) ? 1.0f : ( 1.6f );
+		float flDragCoefficient = 0.0f;
+
+		// throw at a constant time
+		float time = vecVelocity.Length() / flSpeed;
+		vecVelocity = vecVelocity * (1.0 / time) * flDragCoefficient;
+
+		// adjust upward toss to compensate for gravity loss
+		vecVelocity.z += flGravity * time * 0.5;
+
+		Vector vecApex = vecSourcePos + (vecTargetPos - vecSourcePos) * 0.5;
+		vecApex.z += 0.5 * flGravity * (time * 0.5) * (time * 0.5);
+
+		// Visualize it!
+		if (!m_bUseExactVelocity)
+		{
+			NDebugOverlay::Box(vecSourcePos, -Vector(2, 2, 2), Vector(2, 2, 2), 0, 255, 0, 8.0f, 0.05f);
+			NDebugOverlay::Box(vecTargetPos, -Vector(2, 2, 2), Vector(2, 2, 2), 0, 255, 0, 8.0f, 0.05f);
+			NDebugOverlay::Box(vecApex, -Vector(2, 2, 2), Vector(2, 2, 2), 0, 255, 0, 8.0f, 0.05f);
+			NDebugOverlay::Line(vecSourcePos, vecApex, 0, 255, 0, false, 0.05f);
+			NDebugOverlay::Line(vecApex, vecTargetPos, 0, 255, 0, false, 0.05f);
+		}
+		else
+		{
+			Vector lastPos = vecSourcePos;
+			vecVelocity = (vecTargetPos - vecSourcePos);
+			vecVelocity = CalculateLaunchVectorPreserve(vecVelocity, this, pLaunchTarget, true);
+			for (int i = 0; i < 20; i++)
+			{
+				float flTime = 0.2f * (i + 1);
+
+				vecApex = vecSourcePos + vecVelocity * flTime;
+				vecApex.z -= 0.5 * flGravity * (flTime) * (flTime);
+				NDebugOverlay::Box(vecApex, -Vector(2, 2, 2), Vector(2, 2, 2), 0, 255, 0, 8.0f, 0.05f);
+				NDebugOverlay::Line(vecApex, lastPos, 0, 255, 0, false, 0.05f);
+				lastPos = vecApex;
+			}
+		}
+
+		// Physics!
+		flSpeed = m_flPhysicsVelocity;
+		vecVelocity = (vecTargetPos - vecSourcePos);
+
+		// This is a hack to get around air resistance with weighted cubes -- this is not intended for all objects!
+		flDragCoefficient = catapult_physics_drag_boost.GetFloat();
+
+		// throw at a constant time
+		time = vecVelocity.Length() / flSpeed;
+		vecVelocity = vecVelocity * (1.0 / time) * flDragCoefficient;
+
+		// adjust upward toss to compensate for gravity loss
+		vecVelocity.z += flGravity * time * 0.5;
+
+		vecApex = vecSourcePos + (vecTargetPos - vecSourcePos) * 0.5;
+		vecApex.z += 0.5 * flGravity * (time * 0.5) * (time * 0.5);
+
+		// Visualize it!
+		if (!m_bUseExactVelocity)
+		{
+			NDebugOverlay::Box(vecApex, -Vector(2, 2, 2), Vector(2, 2, 2), 255, 255, 0, 8.0f, 0.05f);
+			NDebugOverlay::Line(vecSourcePos, vecApex, 255, 255, 0, false, 0.05f);
+			NDebugOverlay::Line(vecApex, vecTargetPos, 255, 255, 0, false, 0.05f);
+		}
+		else
+		{
+			Vector lastPos = vecSourcePos;
+			vecVelocity = (vecTargetPos - vecSourcePos);
+			vecVelocity = CalculateLaunchVectorPreserve(vecVelocity, this, pLaunchTarget);
+			for (int i = 0; i < 20; i++)
+			{
+				float flTime = 0.2f * (i + 1);
+
+				vecApex = vecSourcePos + vecVelocity * flTime;
+				vecApex.z -= 0.5 * flGravity * (flTime) * (flTime);
+				NDebugOverlay::Box(vecApex, -Vector(2, 2, 2), Vector(2, 2, 2), 255, 255, 0, 8.0f, 0.05f);
+				NDebugOverlay::Line(vecApex, lastPos, 255, 255, 0, false, 0.05f);
+				lastPos = vecApex;
+			}
+		}
+	}
+	else
+	{
+		// Meh
+	}
+}
+//---------------------------------------------------------
+//---------------------------------------------------------
+int CTriggerCatapult::DrawDebugTextOverlays(void)
+{
+	int text_offset = BaseClass::DrawDebugTextOverlays();
+	if (m_debugOverlays & OVERLAY_TEXT_BIT)
+	{
+		char tempstr[512];
+		Q_snprintf(tempstr, sizeof(tempstr), "Launch target: %s", m_strLaunchTarget.ToCStr());
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+
+		if (m_bUseThresholdCheck)
+		{
+			Q_snprintf(tempstr, sizeof(tempstr), "Lower threshold velocity: %.2f", m_flLowerThreshold);
+			EntityText(text_offset, tempstr, 0);
+			text_offset++;
+
+			Q_snprintf(tempstr, sizeof(tempstr), "Upper threshold velocity: %.2f", m_flUpperThreshold);
+			EntityText(text_offset, tempstr, 0);
+			text_offset++;
+		}
+
+		Q_snprintf(tempstr, sizeof(tempstr), "Player velocity: %.2f", m_flPlayerVelocity);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+
+		Q_snprintf(tempstr, sizeof(tempstr), "Physics velocity: %.2f", m_flPhysicsVelocity);
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+
+		// Get the target
+		CBaseEntity* pLaunchTarget = m_hLaunchTarget;
+
+		// See if we're attempting to hit a target
+		if (pLaunchTarget)
+		{
+			Vector vecSourcePos = GetAbsOrigin();
+			float flGravity = sv_gravity.GetFloat();
+
+			{
+				Vector vecTargetPos = pLaunchTarget->GetAbsOrigin();
+				vecTargetPos.z -= 32.0f;
+
+				Vector vecVelocity = (vecTargetPos - vecSourcePos);
+
+				// throw at a constant time
+				float time = vecVelocity.Length() / m_flPlayerVelocity;
+				vecVelocity = vecVelocity * (1.0 / time);
+
+				// adjust upward toss to compensate for gravity loss
+				vecVelocity.z += flGravity * time * 0.5;
+
+				Q_snprintf(tempstr, sizeof(tempstr), "Adjusted Player velocity: %.2f", vecVelocity.Length());
+				EntityText(text_offset, tempstr, 0);
+				text_offset++;
+			}
+
+			{
+				Vector vecTargetPos = pLaunchTarget->GetAbsOrigin();
+				Vector vecVelocity = (vecTargetPos - vecSourcePos);
+
+				// throw at a constant time
+				float time = vecVelocity.Length() / m_flPhysicsVelocity;
+				vecVelocity = vecVelocity * (1.0 / time);
+
+				// adjust upward toss to compensate for gravity loss
+				vecVelocity.z += flGravity * time * 0.5;
+
+				Q_snprintf(tempstr, sizeof(tempstr), "Adjusted Physics velocity: %.2f", vecVelocity.Length());
+				EntityText(text_offset, tempstr, 0);
+				text_offset++;
+			}
+		}
+	}
+	return text_offset;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::Spawn(void)
+{
+	BaseClass::Spawn();
+
+	// Don't let the camera shoot through us!
+	InitTrigger();
+
+	for (int i = 0; i < MAX_PLAYERS + 1; ++i)
+	{
+		m_flRefireDelay[i] = 0.0f;
+	}
+
+	m_flLowerThreshold = clamp(m_flLowerThreshold, 0.0f, 1.0f);
+	m_flUpperThreshold = clamp(m_flUpperThreshold, 0.0f, 1.0f);
+
+	SetTransmitState(FL_EDICT_PVSCHECK);
+
+	m_hLaunchTarget = gEntList.FindEntityByName(NULL, m_strLaunchTarget);
+
+	SetContextThink(&CTriggerCatapult::PlayerPassesTriggerFiltersThink, gpGlobals->curtime + 1.0f, s_szPlayerPassesTriggerFiltersThinkContext);
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::InputSetPlayerSpeed(inputdata_t& in)
+{
+	m_flPlayerVelocity = in.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::InputSetPhysicsSpeed(inputdata_t& in)
+{
+	m_flPhysicsVelocity = in.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::InputSetLaunchTarget(inputdata_t& in)
+{
+	m_strLaunchTarget = in.value.StringID();
+
+	m_hLaunchTarget = gEntList.FindEntityByName(NULL, m_strLaunchTarget);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::InputSetExactVelocityChoiceType(inputdata_t& in)
+{
+	m_ExactVelocityChoice = in.value.Int();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::LaunchThink(void)
+{
+	for (int i = 0; i < m_hAbortedLaunchees.Count(); i++)
+	{
+		CBaseEntity* pOther = m_hAbortedLaunchees[i].Get();
+		bool bShouldRemove = true;
+
+		if (pOther)
+		{
+			if (pOther->IsPlayer())
+			{
+				// Time to get launched and stay in the list in case we're stuck under something again.
+				bShouldRemove = false;
+				StartTouch(pOther);
+			}
+			else if (pOther->VPhysicsGetObject())
+			{
+				if ((pOther->VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD))
+				{
+					// the sphere should stay in the list.
+					bShouldRemove = false;
+				}
+				else
+				{
+					// Time to get launched!
+					StartTouch(pOther);
+				}
+			}
+		}
+
+		if (bShouldRemove)
+		{
+			m_hAbortedLaunchees.Remove(i);
+			i--;
+		}
+	}
+
+	// see if we are still holding something in the catapult
+	if (m_hAbortedLaunchees.Count())
+	{
+		SetThink(&CTriggerCatapult::LaunchThink);
+		SetNextThink(gpGlobals->curtime + 0.05f);
+	}
+	else
+	{
+		SetThink(NULL);
+	}
+}
+
+//Think once a second, looking for a living player. Once one is found, evaluate if they pass our trigger filters and network that down to the client
+void CTriggerCatapult::PlayerPassesTriggerFiltersThink(void)
+{
+	for (int i = 1; i != gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer && pPlayer->IsAlive())
+		{
+			m_bPlayersPassTriggerFilters = PassesTriggerFilters(pPlayer);
+			SetContextThink(NULL, TICK_NEVER_THINK, s_szPlayerPassesTriggerFiltersThinkContext); //never test again
+			return;
+		}
+	}
+
+	SetContextThink(&CTriggerCatapult::PlayerPassesTriggerFiltersThink, gpGlobals->curtime + 1.0f, s_szPlayerPassesTriggerFiltersThinkContext);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTriggerCatapult::EndTouch(CBaseEntity* pOther)
+{
+	m_hAbortedLaunchees.FindAndFastRemove(pOther);
 }
