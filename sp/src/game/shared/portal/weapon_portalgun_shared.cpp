@@ -199,6 +199,7 @@ void CWeaponPortalgun::SetCanFirePortal2( bool bCanFire /*= true*/ )
 	EmitSound( "Weapon_Portalgun.powerup" );
 }
 
+ConVar portal_fast_fire("portal_fast_fire", "0");
 //-----------------------------------------------------------------------------
 // Purpose: 
 //
@@ -231,9 +232,14 @@ void CWeaponPortalgun::PrimaryAttack( void )
 	pPlayer->DoMuzzleFlash();
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
-
+	if (portal_fast_fire.GetBool() == false){
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
+	}
+	else{
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;//SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;//SequenceDuration();
+	}
 	// player "shoot" animation
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
@@ -271,8 +277,13 @@ void CWeaponPortalgun::SecondaryAttack( void )
 	pPlayer->DoMuzzleFlash();
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
+	if(!portal_fast_fire.GetBool()){
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
+	}else{
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;//SequenceDuration();
+		m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;//SequenceDuration();
+	}
 
 	// player "shoot" animation
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -282,7 +293,8 @@ void CWeaponPortalgun::SecondaryAttack( void )
 
 void CWeaponPortalgun::DelayAttack( float fDelay )
 {
-	m_flNextPrimaryAttack = gpGlobals->curtime + fDelay;
+	// m_flNextPrimaryAttack = gpGlobals->curtime + fDelay;
+	m_flNextPrimaryAttack = gpGlobals->curtime; // i dont know if this does anything -litevex
 }
 
 //-----------------------------------------------------------------------------
