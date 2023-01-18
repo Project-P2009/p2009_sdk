@@ -47,6 +47,10 @@ enum portalTurretState_e
 	PORTAL_TURRET_SHOTAT,
 	PORTAL_TURRET_DISSOLVED,
 
+	PORTAL_TURRET_START_BURNING,
+	PORTAL_TURRET_ON_FIRE,
+	PORTAL_TURRET_LAUNCHED,
+
 	PORTAL_TURRET_STATE_TOTAL
 };
 
@@ -80,7 +84,10 @@ const char *g_PortalTalkNames[ PORTAL_TURRET_STATE_TOTAL - TURRET_STATE_TOTAL ] 
 	"NPC_FloorTurret.TalkCollide",
 	"NPC_FloorTurret.TalkPickup",
 	"NPC_FloorTurret.TalkShotAt",
-	"NPC_FloorTurret.TalkDissolved"
+	"NPC_FloorTurret.TalkDissolved",
+	"NPC_FloorTurret.TalkStartBurning",
+	"NPC_FloorTurret.TalkBurning",
+	"NPC_FloorTurret.TalkLaunched",
 };
 
 
@@ -126,6 +133,8 @@ public:
 	virtual float	GetAttackDamageScale( CBaseEntity *pVictim );
 	virtual Vector	GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget );
 
+	virtual void	SelfDestructThink( void );
+
 	// Think functions
 	virtual void	Retire( void );
 	virtual void	Deploy( void );
@@ -152,6 +161,8 @@ public:
 	// Inputs
 	void	InputFireBullet( inputdata_t &inputdata );
 
+	virtual void	SelfDestruct( void );
+	virtual void	OnLaunched( void );
 private:
 
 	CHandle<CRopeKeyframe>	m_hRopes[ PORTAL_FLOOR_TURRET_NUM_ROPES ];
@@ -172,6 +183,7 @@ private:
 	float			m_fNextTalk;
 	bool			m_bDelayTippedTalk;
 
+	float			m_flSelfDestructTalkTime;
 };
 
 
@@ -1558,4 +1570,94 @@ void CNPC_Portal_FloorTurret::FireBullet( const char *pTargetName )
 void CNPC_Portal_FloorTurret::InputFireBullet( inputdata_t &inputdata )
 {
 	FireBullet( inputdata.value.String() );
+}
+
+void CNPC_Portal_FloorTurret::SelfDestruct(void)
+{
+	if (!m_bSelfDestructing) {
+		Deploy();
+		EmitSound(GetTurretTalkName(PORTAL_TURRET_START_BURNING));
+		m_flSelfDestructTalkTime = gpGlobals->curtime + 0.5f;
+		if (m_bEnabled) {
+			m_bEnabled = false;
+		}
+	}
+	BaseClass::SelfDestruct();
+}
+void CNPC_Portal_FloorTurret::OnLaunched(void)
+{
+	EmitSound(GetTurretTalkName(PORTAL_TURRET_LAUNCHED));
+}
+
+#define SELF_DESTRUCT_DURATION			3.0f
+
+#define SELF_DESTRUCT_BEEP_MIN_DELAY	0.1f
+#define SELF_DESTRUCT_BEEP_MAX_DELAY	0.75f
+
+#define SELF_DESTRUCT_TALK_MIN_DELAY	0.5f
+#define SELF_DESTRUCT_TALK_MAX_DELAY	0.5f
+
+#define SELF_DESTRUCT_BEEP_MIN_PITCH	100.0f
+#define SELF_DESTRUCT_BEEP_MAX_PITCH	100.0f
+
+//-----------------------------------------------------------------------------
+// Purpose: The countdown to destruction!
+//-----------------------------------------------------------------------------
+void CNPC_Portal_FloorTurret::SelfDestructThink( void )
+{
+	// Continue to animate
+	PreThink(TURRET_SELF_DESTRUCTING);
+
+	// If we're done, explode
+	if ((gpGlobals->curtime - m_flDestructStartTime) >= SELF_DESTRUCT_DURATION)
+	{
+		SetThink(&CNPC_FloorTurret::BreakThink);
+		SetNextThink(gpGlobals->curtime + 0.1f);
+		UTIL_Remove(m_hFizzleEffect);
+		m_hFizzleEffect = NULL;
+		return;
+	}
+
+	// Find out where we are in the cycle of our destruction
+	float flDestructPerc = clamp((gpGlobals->curtime - m_flDestructStartTime) / SELF_DESTRUCT_DURATION, 0.0f, 1.0f);
+
+	// Figure out when our next beep should occur
+	float flBeepTime = SELF_DESTRUCT_BEEP_MAX_DELAY + ((SELF_DESTRUCT_BEEP_MIN_DELAY - SELF_DESTRUCT_BEEP_MAX_DELAY) * flDestructPerc);
+
+	float flTalkTime = SELF_DESTRUCT_TALK_MAX_DELAY + ((SELF_DESTRUCT_TALK_MIN_DELAY - SELF_DESTRUCT_TALK_MAX_DELAY) * flDestructPerc);
+
+	if (gpGlobals->curtime > (m_flSelfDestructTalkTime + flTalkTime))
+	{
+		const char* sBurnTalk = GetTurretTalkName(PORTAL_TURRET_ON_FIRE);
+
+		StopSound(sBurnTalk);
+
+		// Play the beep
+		CPASAttenuationFilter filter(this, sBurnTalk);
+		EmitSound_t params;
+		params.m_pSoundName = sBurnTalk;
+		EmitSound(filter, entindex(), params);
+
+		// Save this as the last time we pinged
+		m_flSelfDestructTalkTime = gpGlobals->curtime;
+	}
+
+	// If it's time to beep again, do so
+	if (gpGlobals->curtime > (m_flPingTime + flBeepTime))
+	{
+		// Flash our eye
+		SetEyeState(TURRET_EYE_ALARM);
+
+		// Save this as the last time we pinged
+		m_flPingTime = gpGlobals->curtime;
+
+		// Randomly twitch
+		m_vecGoalAngles.x = GetAbsAngles().x + random->RandomFloat(-60 * flDestructPerc, 60 * flDestructPerc);
+		m_vecGoalAngles.y = GetAbsAngles().y + random->RandomFloat(-60 * flDestructPerc, 60 * flDestructPerc);
+	}
+
+	UpdateFacing();
+
+	// Think again!
+	SetNextThink(gpGlobals->curtime + 0.05f);
 }

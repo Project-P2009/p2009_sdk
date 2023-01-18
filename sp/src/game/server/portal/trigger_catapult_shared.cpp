@@ -17,6 +17,7 @@
 #include "portal_player.h"
 #include "vcollide_parse.h"
 #include "props.h"
+#include "npc_turret_floor.h"
 #else
 //#include "c_trigger_catapult.h"
 #endif
@@ -323,6 +324,13 @@ void CTriggerCatapult::OnLaunchedVictim(CBaseEntity* pVictim)
 	if (!GetPredictable() || !pVictim->GetPredictable())
 		return;
 #endif
+
+	if (Q_strcmp(pVictim->GetClassname(), "npc_portal_turret_floor") == 0) {
+		CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(pVictim);
+		if (pTurret) {
+			pTurret->OnLaunched(); // Make the turret play sound on launched
+		}
+	}
 
 #if defined( GAME_DLL )
 	m_OnCatapulted.FireOutput(pVictim, this);

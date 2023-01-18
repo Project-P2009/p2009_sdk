@@ -23,6 +23,9 @@
 #include "props.h"
 #include "particle_parse.h"
 
+#include "te.h"
+#include "explode.h"
+
 #ifdef PORTAL
 	#include "prop_portal_shared.h"
 	#include "portal_util_shared.h"
@@ -1880,6 +1883,35 @@ int CNPC_FloorTurret::VPhysicsTakeDamage( const CTakeDamageInfo &info )
 	return BaseClass::VPhysicsTakeDamage( info );
 }
 
+void CNPC_FloorTurret::SelfDestruct(void)
+{
+	if (!m_bSelfDestructing) {
+		// Ka-boom!
+		m_flDestructStartTime = gpGlobals->curtime;
+		m_flPingTime = gpGlobals->curtime;
+		m_bSelfDestructing = true;
+
+		SetThink(&CNPC_FloorTurret::SelfDestructThink);
+		SetNextThink(gpGlobals->curtime + 0.1f);
+
+		// Create the dust effect in place
+		m_hFizzleEffect = (CParticleSystem*)CreateEntityByName("info_particle_system");
+		if (m_hFizzleEffect != NULL)
+		{
+			Vector vecUp;
+			GetVectors(NULL, NULL, &vecUp);
+
+			// Setup our basic parameters
+			m_hFizzleEffect->KeyValue("start_active", "1");
+			m_hFizzleEffect->KeyValue("effect_name", "burning_engine_fire");
+			m_hFizzleEffect->SetParent(this);
+			m_hFizzleEffect->SetAbsOrigin(WorldSpaceCenter() + (vecUp * 12.0f));
+			DispatchSpawn(m_hFizzleEffect);
+			m_hFizzleEffect->Activate();
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : &info - 
@@ -2099,11 +2131,13 @@ void CNPC_FloorTurret::BreakThink( void )
 
 	// Our effect
 #ifdef HL2_EPISODIC
-	DispatchParticleEffect( "explosion_turret_break", vecOrigin, GetAbsAngles() );
+	// DispatchParticleEffect( "explosion_turret_break", vecOrigin, GetAbsAngles() );
 #endif // HL2_EPISODIC
+	ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), 
+		0.0f,  0.0f, SF_ENVEXPLOSION_NODAMAGE, 0.0f, this);
 
 	// K-boom
-	RadiusDamage( CTakeDamageInfo( this, this, 15.0f, DMG_BLAST ), vecOrigin, (10*12), CLASS_NONE, this );
+	// RadiusDamage( CTakeDamageInfo( this, this, 15.0f, DMG_BLAST ), vecOrigin, (10*12), CLASS_NONE, this );
 
 	EmitSound( "NPC_FloorTurret.Destruct" );
 
@@ -2190,29 +2224,7 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 //-----------------------------------------------------------------------------
 void CNPC_FloorTurret::InputSelfDestruct( inputdata_t & inputdata )
 {
-	// Ka-boom!
-	m_flDestructStartTime = gpGlobals->curtime;
-	m_flPingTime = gpGlobals->curtime;
-	m_bSelfDestructing = true;
-
-	SetThink( &CNPC_FloorTurret::SelfDestructThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
-
-	// Create the dust effect in place
-	m_hFizzleEffect = (CParticleSystem *) CreateEntityByName( "info_particle_system" );
-	if ( m_hFizzleEffect != NULL )
-	{
-		Vector vecUp;
-		GetVectors( NULL, NULL, &vecUp );
-
-		// Setup our basic parameters
-		m_hFizzleEffect->KeyValue( "start_active", "1" );
-		m_hFizzleEffect->KeyValue( "effect_name", "explosion_turret_fizzle" );
-		m_hFizzleEffect->SetParent( this );
-		m_hFizzleEffect->SetAbsOrigin( WorldSpaceCenter() + ( vecUp * 12.0f ) );
-		DispatchSpawn( m_hFizzleEffect );
-		m_hFizzleEffect->Activate();
-	}
+	SelfDestruct();
 }
 
 // 
