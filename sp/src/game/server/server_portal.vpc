@@ -347,6 +347,7 @@ $Project "Server (Portal)"
 			$File	"portal\prop_weightedcube.h"
 			$File	"portal\trigger_catapult.cpp"
 			$File	"portal\trigger_catapult_shared.cpp"
+			$File	"portal\prop_personality_core.cpp"
 			$Folder	"Weapons"
 			{
 				$File	"$SRCDIR\game\server\portal\weapon_physcannon.cpp"
