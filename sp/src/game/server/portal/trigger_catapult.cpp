@@ -25,37 +25,40 @@ extern ConVar catapult_physics_drag_boost;
 
 
 BEGIN_DATADESC(CTriggerCatapult)
+// Think fucntions
+	DEFINE_THINKFUNC(LaunchThink),
+	DEFINE_THINKFUNC(PlayerPassesTriggerFiltersThink),
+// Keyfields
+	DEFINE_KEYFIELD(m_flPlayerVelocity, FIELD_FLOAT, "playerSpeed"),
+	DEFINE_KEYFIELD(m_flPhysicsVelocity, FIELD_FLOAT, "physicsSpeed"),
+	DEFINE_KEYFIELD(m_vecLaunchAngles, FIELD_VECTOR, "launchDirection"),
+	DEFINE_KEYFIELD(m_strLaunchTarget, FIELD_STRING, "launchTarget"),
+	DEFINE_KEYFIELD(m_bUseThresholdCheck, FIELD_BOOLEAN, "useThresholdCheck"),
+	DEFINE_KEYFIELD(m_bUseExactVelocity, FIELD_BOOLEAN, "useExactVelocity"),
+	DEFINE_KEYFIELD(m_flLowerThreshold, FIELD_FLOAT, "lowerThreshold"),
+	DEFINE_KEYFIELD(m_flUpperThreshold, FIELD_FLOAT, "upperThreshold"),
+	DEFINE_KEYFIELD(m_ExactVelocityChoice, FIELD_INTEGER, "exactVelocityChoiceType"),
+	DEFINE_KEYFIELD(m_bOnlyVelocityCheck, FIELD_BOOLEAN, "onlyVelocityCheck"),
+	DEFINE_KEYFIELD(m_bApplyAngularImpulse, FIELD_BOOLEAN, "applyAngularImpulse"),
 
-DEFINE_THINKFUNC(LaunchThink),
-DEFINE_THINKFUNC(PlayerPassesTriggerFiltersThink),
+	DEFINE_KEYFIELD(m_flEntryAngleTolerance, FIELD_FLOAT, "EntryAngleTolerance"),
+	DEFINE_KEYFIELD(m_flAirControlSupressionTime, FIELD_FLOAT, "AirCtrlSupressionTime"),
+	DEFINE_KEYFIELD(m_bDirectionSuppressAirControl, FIELD_BOOLEAN, "DirectionSuppressAirControl"),
 
-DEFINE_KEYFIELD(m_flPlayerVelocity, FIELD_FLOAT, "playerSpeed"),
-DEFINE_KEYFIELD(m_flPhysicsVelocity, FIELD_FLOAT, "physicsSpeed"),
-DEFINE_KEYFIELD(m_vecLaunchAngles, FIELD_VECTOR, "launchDirection"),
-DEFINE_KEYFIELD(m_strLaunchTarget, FIELD_STRING, "launchTarget"),
-DEFINE_KEYFIELD(m_bUseThresholdCheck, FIELD_BOOLEAN, "useThresholdCheck"),
-DEFINE_KEYFIELD(m_bUseExactVelocity, FIELD_BOOLEAN, "useExactVelocity"),
-DEFINE_KEYFIELD(m_flLowerThreshold, FIELD_FLOAT, "lowerThreshold"),
-DEFINE_KEYFIELD(m_flUpperThreshold, FIELD_FLOAT, "upperThreshold"),
-DEFINE_KEYFIELD(m_ExactVelocityChoice, FIELD_INTEGER, "exactVelocityChoiceType"),
-DEFINE_KEYFIELD(m_bOnlyVelocityCheck, FIELD_BOOLEAN, "onlyVelocityCheck"),
-DEFINE_KEYFIELD(m_bApplyAngularImpulse, FIELD_BOOLEAN, "applyAngularImpulse"),
+	DEFINE_KEYFIELD(m_fMassMultiplier, FIELD_FLOAT, "physicsPropMassMultiplier"),
+// Fields
+	DEFINE_FIELD(m_hLaunchTarget, FIELD_EHANDLE),
+	DEFINE_ARRAY(m_flRefireDelay, FIELD_TIME, MAX_PLAYERS + 1),
 
-DEFINE_KEYFIELD(m_flEntryAngleTolerance, FIELD_FLOAT, "EntryAngleTolerance"),
-DEFINE_KEYFIELD(m_flAirControlSupressionTime, FIELD_FLOAT, "AirCtrlSupressionTime"),
-DEFINE_KEYFIELD(m_bDirectionSuppressAirControl, FIELD_BOOLEAN, "DirectionSuppressAirControl"),
-
-DEFINE_FIELD(m_hLaunchTarget, FIELD_EHANDLE),
-DEFINE_ARRAY(m_flRefireDelay, FIELD_TIME, MAX_PLAYERS + 1),
-
-DEFINE_UTLVECTOR(m_hAbortedLaunchees, FIELD_EHANDLE),
-
-DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPlayerSpeed", InputSetPlayerSpeed),
-DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPhysicsSpeed", InputSetPhysicsSpeed),
-DEFINE_INPUTFUNC(FIELD_STRING, "SetLaunchTarget", InputSetLaunchTarget),
-DEFINE_INPUTFUNC(FIELD_INTEGER, "SetExactVelocityChoiceType", InputSetExactVelocityChoiceType),
-
-DEFINE_OUTPUT(m_OnCatapulted, "OnCatapulted"),
+	DEFINE_UTLVECTOR(m_hAbortedLaunchees, FIELD_EHANDLE),
+// Inputs
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPlayerSpeed", InputSetPlayerSpeed),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPhysicsSpeed", InputSetPhysicsSpeed),
+	DEFINE_INPUTFUNC(FIELD_STRING, "SetLaunchTarget", InputSetLaunchTarget),
+	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetExactVelocityChoiceType", InputSetExactVelocityChoiceType),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetMassMultiplier", InputSetMassMultiplier),
+// Outputs
+	DEFINE_OUTPUT(m_OnCatapulted, "OnCatapulted"),
 
 END_DATADESC()
 
@@ -90,6 +93,7 @@ CTriggerCatapult::CTriggerCatapult(void)
 	//Defaulting to true;
 	m_bApplyAngularImpulse = true;
 	m_flAirControlSupressionTime = -1.0f;
+	m_fMassMultiplier = 1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -152,6 +156,7 @@ void CTriggerCatapult::DrawDebugGeometryOverlays(void)
 
 		// Physics!
 		flSpeed = m_flPhysicsVelocity;
+
 		vecVelocity = (vecTargetPos - vecSourcePos);
 
 		// This is a hack to get around air resistance with weighted cubes -- this is not intended for all objects!
@@ -333,6 +338,11 @@ void CTriggerCatapult::InputSetLaunchTarget(inputdata_t& in)
 void CTriggerCatapult::InputSetExactVelocityChoiceType(inputdata_t& in)
 {
 	m_ExactVelocityChoice = in.value.Int();
+}
+
+void CTriggerCatapult::InputSetMassMultiplier(inputdata_t& in)
+{
+	m_fMassMultiplier = in.value.Float();
 }
 
 //-----------------------------------------------------------------------------

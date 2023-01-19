@@ -26,7 +26,7 @@
 #include "tier0/memdbgon.h"
 
 ConVar catapult_physics_drag_boost("catapult_physics_drag_boost", "2.1", FCVAR_REPLICATED);
-
+// ConVar catapult_mass_multiplier("catapult_mass_multiplier", "1", FCVAR_CHEAT, "Mass multiplier used in velocity calculation.");
 
 //-----------------------------------------------------------------------------
 // Purpose: calculates the launch vector between the entity that touched the
@@ -60,7 +60,17 @@ Vector CTriggerCatapult::CalculateLaunchVector(CBaseEntity* pVictim, CBaseEntity
 
 	// adjust upward toss to compensate for gravity loss
 	vecVelocity.z += flGravity * time * 0.5;
+	if (pVictim->GetMoveType() == MOVETYPE_VPHYSICS) {
+		Msg("Launching physics object \"%s\"... Original velocity: (%f, %f, %f), Object mass: %f kg\n", 
+			pVictim->GetDebugName(),
+			vecVelocity.x, vecVelocity.y, vecVelocity.z,
+			pVictim->GetMass()
+		);
 
+		vecVelocity += vecVelocity.Normalized() * pVictim->GetMass() * m_fMassMultiplier;
+	}
+
+	Msg("Catapult velocity: (%f, %f, %f)\n", vecVelocity.x, vecVelocity.y, vecVelocity.z);
 	return vecVelocity;
 }
 
@@ -92,7 +102,6 @@ Vector CTriggerCatapult::CalculateLaunchVectorPreserve(Vector vecInitialVelocity
 	float flVelocity = (pVictim->IsPlayer() || bForcePlayer) ? (float)m_flPlayerVelocity : (float)m_flPhysicsVelocity;
 	float flGravity = -1.0f * GetCurrentGravity();
 
-
 	if (flDist == 0.f)
 	{
 		DevWarning("Bad location input for catapult!\n");
@@ -100,7 +109,15 @@ Vector CTriggerCatapult::CalculateLaunchVectorPreserve(Vector vecInitialVelocity
 	}
 
 	float flRadical = flVelocity * flVelocity * flVelocity * flVelocity - flGravity * (flGravity * flDist * flDist - 2.f * flHeight * flVelocity * flVelocity);
+	if (pVictim->GetMoveType() == MOVETYPE_VPHYSICS) {
+		Msg("Launching physics object \"%s\"... Original velocity: (%f, %f, %f), Object mass: %f kg\n",
+			pVictim->GetDebugName(),
+			vecDiff.x, vecDiff.y, vecDiff.z,
+			pVictim->GetMass()
+		);
 
+		vecDiff += vecDiff.Normalized() * pVictim->GetMass() * m_fMassMultiplier;
+	}
 	if (flRadical <= 0.f)
 	{
 		DevWarning("Catapult can't hit target! Add more speed!\n");
@@ -131,17 +148,21 @@ Vector CTriggerCatapult::CalculateLaunchVectorPreserve(Vector vecInitialVelocity
 
 	if (m_ExactVelocityChoice == 1)
 	{
+		Msg("Catapult velocity: (%f, %f, %f)\n", vecTestVelocity1.x, vecTestVelocity1.y, vecTestVelocity1.z);
 		return vecTestVelocity1;
 	}
 	else if (m_ExactVelocityChoice == 2)
 	{
+		Msg("Catapult velocity: (%f, %f, %f)\n", vecTestVelocity2.x, vecTestVelocity2.y, vecTestVelocity2.z);
 		return vecTestVelocity2;
 	}
 
 	if (vecInitialVelocity.Dot(vecTestVelocity1) > vecInitialVelocity.Dot(vecTestVelocity2))
 	{
+		Msg("Catapult velocity: (%f, %f, %f)\n", vecTestVelocity1.x, vecTestVelocity1.y, vecTestVelocity1.z);
 		return vecTestVelocity1;
 	}
+	Msg("Catapult velocity: (%f, %f, %f)\n", vecTestVelocity2.x, vecTestVelocity2.y, vecTestVelocity2.z);
 	return vecTestVelocity2;
 }
 
@@ -181,7 +202,6 @@ void CTriggerCatapult::LaunchByTarget(CBaseEntity* pVictim, CBaseEntity* pTarget
 			pVictim->SetGroundChangeTime(gpGlobals->curtime + 0.5f);
 		}
 
-		//CTFPlayer* pPlayer = ToTFPlayer(pVictim);
 		CPortal_Player* pPlayer = ToPortalPlayer(pVictim);
 		if (pPlayer)
 		{

@@ -43,6 +43,7 @@ private:
 	void			InputSetPhysicsSpeed(inputdata_t& in);
 	void			InputSetLaunchTarget(inputdata_t& in);
 	void			InputSetExactVelocityChoiceType(inputdata_t& in);
+	void			InputSetMassMultiplier(inputdata_t& in);
 
 	void			LaunchByTarget(CBaseEntity* pVictim, CBaseEntity* pTarget);
 	Vector			CalculateLaunchVector(CBaseEntity* pVictim, CBaseEntity* pTarget);
@@ -68,6 +69,8 @@ private:
 	bool m_bPlayersPassTriggerFilters;
 	float m_flAirControlSupressionTime;
 	bool m_bDirectionSuppressAirControl;
+
+	float m_fMassMultiplier;
 
 	//CNetworkArray( float, m_flRefireDelay, MAX_PLAYERS + 1 ); // 0 for physics object the rest for each player userid
 	//CNetworkVar( float, m_flPlayerVelocity );
