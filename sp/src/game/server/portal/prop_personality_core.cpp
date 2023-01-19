@@ -328,6 +328,29 @@ void CPropPersonalityCore::SetupVOList(void)
 	break;
 	default:
 	{
+		switch (m_iVoMode)
+		{
+		case HELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("common/null.wav"));
+		}
+		break;
+		case NOTHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("common/null.wav"));
+		}
+		break;
+		case UNHELD:
+		{
+			m_speechEvents.Purge();
+			m_speechEvents.AddToTail(AllocPooledString("common/null.wav"));
+		}
+		break;
+		}
+
+		m_iszGruntSoundScriptName = AllocPooledString("common/null.wav");
 		m_iszLookAnimationName = AllocPooledString(SPHERE01_LOOK_ANINAME);
 		m_nSkin = SPHERE01_SKIN;
 	}
