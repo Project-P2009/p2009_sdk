@@ -2715,6 +2715,7 @@ private:
 	};
 
 	string_t	m_iszPressedSound;
+	string_t	m_iszResetSound;
 	string_t	m_iszLockedSound;
 
 	string_t	m_iszInSequence;
@@ -2735,6 +2736,7 @@ BEGIN_DATADESC( CInteractableProp )
 	DEFINE_FIELD( m_iCurSequence, FIELD_INTEGER ),
 
 	DEFINE_KEYFIELD( m_iszPressedSound, FIELD_STRING, "PressedSound" ),
+	DEFINE_KEYFIELD( m_iszResetSound, FIELD_STRING, "ResetSound" ),
 	DEFINE_KEYFIELD( m_iszLockedSound, FIELD_STRING, "LockedSound" ),
 	DEFINE_KEYFIELD( m_iszInSequence, FIELD_STRING, "InSequence" ),
 	DEFINE_KEYFIELD( m_iszOutSequence, FIELD_STRING, "OutSequence" ),
@@ -2787,6 +2789,8 @@ void CInteractableProp::Precache( void )
 
 	if (m_iszPressedSound != NULL_STRING)
 		PrecacheScriptSound( STRING(m_iszPressedSound) );
+	if (m_iszResetSound != NULL_STRING)
+		PrecacheScriptSound( STRING(m_iszResetSound) );
 	if (m_iszLockedSound != NULL_STRING)
 		PrecacheScriptSound( STRING(m_iszLockedSound) );
 }
@@ -2975,6 +2979,10 @@ void CInteractableProp::PushThink()
 			else
 			{
 				m_iCurSequence = INTERACTSEQ_NONE;
+			}
+
+			if (m_iszResetSound != NULL_STRING) {
+				EmitSound(STRING(m_iszResetSound));
 			}
 		}
 

@@ -92,9 +92,9 @@ public:
 	void					PlacePortal( const Vector &vOrigin, const QAngle &qAngles, float fPlacementSuccess, bool bDelay = false );
 	void					NewLocation( const Vector &vOrigin, const QAngle &qAngles );
 
-	void					ResetModel( void ); //sets the model and bounding box
-	void					DoFizzleEffect( int iEffect, bool bDelayedPos = true ); //display cool visual effect
-	void					Fizzle( void ); //go inactive
+	virtual void			ResetModel( void ); //sets the model and bounding box
+	virtual void			DoFizzleEffect( int iEffect, bool bDelayedPos = true ); //display cool visual effect
+	virtual void			Fizzle( void ); //go inactive
 	void					PunchPenetratingPlayer( CBaseEntity *pPlayer ); // adds outward force to player intersecting the portal plane
 	void					PunchAllPenetratingPlayers( void ); // adds outward force to player intersecting the portal plane
 
@@ -141,6 +141,12 @@ public:
 	//find a portal with the designated attributes, or creates one with them, favors active portals over inactive
 	static CProp_Portal		*FindPortal( unsigned char iLinkageGroupID, bool bPortal2, bool bCreateIfNothingFound = false );
 	static const CUtlVector<CProp_Portal *> *GetPortalLinkageGroup( unsigned char iLinkageGroupID );
+
+	virtual Vector GetMins();
+	virtual Vector GetMaxs();
+
+	virtual float GetWidth();
+	virtual float GetHeight();
 };
 
 

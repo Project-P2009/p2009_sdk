@@ -48,6 +48,9 @@ ConVar sv_portal_debug_touch("sv_portal_debug_touch", "0", FCVAR_REPLICATED );
 ConVar sv_portal_placement_never_fail("sv_portal_placement_never_fail", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 ConVar sv_portal_new_velocity_check("sv_portal_new_velocity_check", "1", FCVAR_CHEAT );
 
+ConVar portal_width("portal_width", "32", FCVAR_REPLICATED | FCVAR_CHEAT);
+ConVar portal_height("portal_height", "54", FCVAR_REPLICATED | FCVAR_CHEAT);
+
 ConVar sv_instant_portal("sv_instant_portal", "0", FCVAR_REPLICATED ); // for slowfield -litevex
 static CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
 
@@ -121,32 +124,32 @@ CProp_Portal::CProp_Portal( void )
 	fPlanes[(0*4) + 0] = 1.0f;
 	fPlanes[(0*4) + 1] = 0.0f;
 	fPlanes[(0*4) + 2] = 0.0f;
-	fPlanes[(0*4) + 3] = CProp_Portal_Shared::vLocalMaxs.x;
+	fPlanes[(0*4) + 3] = GetMaxs().x;
 
 	fPlanes[(1*4) + 0] = -1.0f;
 	fPlanes[(1*4) + 1] = 0.0f;
 	fPlanes[(1*4) + 2] = 0.0f;
-	fPlanes[(1*4) + 3] = -CProp_Portal_Shared::vLocalMins.x;
+	fPlanes[(1*4) + 3] = -GetMins().x;
 
 	fPlanes[(2*4) + 0] = 0.0f;
 	fPlanes[(2*4) + 1] = 1.0f;
 	fPlanes[(2*4) + 2] = 0.0f;
-	fPlanes[(2*4) + 3] = CProp_Portal_Shared::vLocalMaxs.y;
+	fPlanes[(2*4) + 3] = GetMaxs().y;
 
 	fPlanes[(3*4) + 0] = 0.0f;
 	fPlanes[(3*4) + 1] = -1.0f;
 	fPlanes[(3*4) + 2] = 0.0f;
-	fPlanes[(3*4) + 3] = -CProp_Portal_Shared::vLocalMins.y;
+	fPlanes[(3*4) + 3] = -GetMins().y;
 
 	fPlanes[(4*4) + 0] = 0.0f;
 	fPlanes[(4*4) + 1] = 0.0f;
 	fPlanes[(4*4) + 2] = 1.0f;
-	fPlanes[(4*4) + 3] = CProp_Portal_Shared::vLocalMaxs.z;
+	fPlanes[(4*4) + 3] = GetMaxs().z;
 
 	fPlanes[(5*4) + 0] = 0.0f;
 	fPlanes[(5*4) + 1] = 0.0f;
 	fPlanes[(5*4) + 2] = -1.0f;
-	fPlanes[(5*4) + 3] = -CProp_Portal_Shared::vLocalMins.z;
+	fPlanes[(5*4) + 3] = -GetMins().z;
 
 	CPolyhedron *pPolyhedron = GeneratePolyhedronFromPlanes( fPlanes, 6, 0.00001f, true );
 	Assert( pPolyhedron != NULL );
@@ -274,7 +277,7 @@ void CProp_Portal::Spawn( void )
 	//VPhysicsInitNormal( SOLID_VPHYSICS, FSOLID_TRIGGER, false );
 	//CreateVPhysics();
 	ResetModel();	
-	SetSize( CProp_Portal_Shared::vLocalMins, CProp_Portal_Shared::vLocalMaxs );
+	SetSize( GetMins(), GetMaxs() );
 
 	UpdateCorners();
 
@@ -398,14 +401,14 @@ void CProp_Portal::TestRestingSurfaceThink( void )
 		Vector vCorner = vOrigin;
 
 		if ( iCorner % 2 == 0 )
-			vCorner += vRight * ( PORTAL_HALF_WIDTH - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += vRight * ( portal_width.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 		else
-			vCorner += -vRight * ( PORTAL_HALF_WIDTH - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += -vRight * ( portal_width.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 
 		if ( iCorner < 2 )
-			vCorner += vUp * ( PORTAL_HALF_HEIGHT - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += vUp * ( portal_height.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 		else
-			vCorner += -vUp * ( PORTAL_HALF_HEIGHT - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += -vUp * ( portal_height.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 
 		Ray_t ray;
 		ray.Init( vCorner, vCorner - vForward );
@@ -450,7 +453,7 @@ void CProp_Portal::ResetModel( void )
 	else
 		SetModel( "models/portals/portal2.mdl" );
 
-	SetSize( CProp_Portal_Shared::vLocalMins, CProp_Portal_Shared::vLocalMaxs );
+	SetSize( GetMins(), GetMaxs() );
 
 	SetSolid( SOLID_OBB );
 	SetSolidFlags( FSOLID_TRIGGER | FSOLID_NOT_SOLID | FSOLID_CUSTOMBOXTEST | FSOLID_CUSTOMRAYTEST );
@@ -1581,14 +1584,14 @@ void CProp_Portal::WakeNearbyEntities( void )
 	QAngle qAngles = GetAbsAngles();
 
 	Vector ptOBBStart = ptOrigin;
-	ptOBBStart += vForward * CProp_Portal_Shared::vLocalMins.x;
-	ptOBBStart += vRight * CProp_Portal_Shared::vLocalMins.y;
-	ptOBBStart += vUp * CProp_Portal_Shared::vLocalMins.z;
+	ptOBBStart += vForward * GetMins().x;
+	ptOBBStart += vRight * GetMins().y;
+	ptOBBStart += vUp * GetMins().z;
 
 
-	vForward *= CProp_Portal_Shared::vLocalMaxs.x - CProp_Portal_Shared::vLocalMins.x;
-	vRight *= CProp_Portal_Shared::vLocalMaxs.y - CProp_Portal_Shared::vLocalMins.y;
-	vUp *= CProp_Portal_Shared::vLocalMaxs.z - CProp_Portal_Shared::vLocalMins.z;
+	vForward *= GetMaxs().x - GetMins().x;
+	vRight *= GetMaxs().y - GetMins().y;
+	vUp *= GetMaxs().z - GetMins().z;
 
 
 	Vector vAABBMins, vAABBMaxs;
@@ -1622,7 +1625,7 @@ void CProp_Portal::WakeNearbyEntities( void )
 			Vector ptEntityCenter = pEntCollision->GetCollisionOrigin();
 
 			//double check intersection at the OBB vs OBB level, we don't want to affect large piles of physics objects if we don't have to. It gets slow
-			if( IsOBBIntersectingOBB( ptOrigin, qAngles, CProp_Portal_Shared::vLocalMins, CProp_Portal_Shared::vLocalMaxs, 
+			if( IsOBBIntersectingOBB( ptOrigin, qAngles, GetMins(), GetMaxs(), 
 				ptEntityCenter, pEntCollision->GetCollisionAngles(), pEntCollision->OBBMins(), pEntCollision->OBBMaxs() ) )
 			{
 				if( FClassnameIs( pEntity, "func_portal_detector" ) )
@@ -2252,8 +2255,8 @@ void CProp_Portal::UpdateCorners()
 	{
 		Vector vAddPoint = vOrigin;
 
-		vAddPoint += vRight * ((i & (1<<0))?(PORTAL_HALF_WIDTH):(-PORTAL_HALF_WIDTH));
-		vAddPoint += vUp * ((i & (1<<1))?(PORTAL_HALF_HEIGHT):(-PORTAL_HALF_HEIGHT));
+		vAddPoint += vRight * ((i & (1<<0))?(portal_width.GetFloat()):(-portal_width.GetFloat()));
+		vAddPoint += vUp * ((i & (1<<1))?(portal_height.GetFloat()):(-portal_height.GetFloat()));
 
 		m_vPortalCorners[i] = vAddPoint;
 	}
@@ -2312,5 +2315,20 @@ const CUtlVector<CProp_Portal *> *CProp_Portal::GetPortalLinkageGroup( unsigned 
 	return &s_PortalLinkageGroups[iLinkageGroupID];
 }
 
+Vector CProp_Portal::GetMins() {
+	return Vector(0.0f, -GetWidth(), -GetHeight());
+}
+
+Vector CProp_Portal::GetMaxs() {
+	return Vector(64.0f, GetWidth(), GetHeight());
+}
+
+float CProp_Portal::GetWidth() {
+	return portal_width.GetFloat();
+}
+
+float CProp_Portal::GetHeight() {
+	return portal_height.GetFloat();
+}
 
 
