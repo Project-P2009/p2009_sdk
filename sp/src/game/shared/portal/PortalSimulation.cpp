@@ -45,6 +45,9 @@ static ConVar sv_portal_collision_sim_bounds_x( "sv_portal_collision_sim_bounds_
 static ConVar sv_portal_collision_sim_bounds_y( "sv_portal_collision_sim_bounds_y", "200", FCVAR_REPLICATED, "Size of box used to grab collision geometry around placed portals. These should be at the default size or larger only!" );
 static ConVar sv_portal_collision_sim_bounds_z( "sv_portal_collision_sim_bounds_z", "252", FCVAR_REPLICATED, "Size of box used to grab collision geometry around placed portals. These should be at the default size or larger only!" );
 
+extern ConVar portal_width;
+extern ConVar portal_height;
+
 //#define DEBUG_PORTAL_SIMULATION_CREATION_TIMES //define to output creation timings to developer 2
 //#define DEBUG_PORTAL_COLLISION_ENVIRONMENTS //define this to allow for glview collision dumps of portal simulators
 
@@ -92,8 +95,8 @@ static int s_iPortalSimulatorGUID = 0; //used in standalone function that have n
 #define TABSPACING
 #endif
 
-#define PORTAL_HOLE_HALF_HEIGHT (PORTAL_HALF_HEIGHT + 0.1f)
-#define PORTAL_HOLE_HALF_WIDTH (PORTAL_HALF_WIDTH + 0.1f)
+#define PORTAL_HOLE_HALF_HEIGHT (GetHeight() + 0.1f)
+#define PORTAL_HOLE_HALF_WIDTH (GetWidth() + 0.1f)
 
 
 static void ConvertBrushListToClippedPolyhedronList( const int *pBrushes, int iBrushCount, const float *pOutwardFacingClipPlanes, int iClipPlaneCount, float fClipEpsilon, CUtlVector<CPolyhedron *> *pPolyhedronList );
@@ -274,22 +277,22 @@ void CPortalSimulator::MoveTo( const Vector &ptCenter, const QAngle &angles )
 		fHolePlanes[(2*4) + 0] = m_InternalData.Placement.vUp.x;
 		fHolePlanes[(2*4) + 1] = m_InternalData.Placement.vUp.y;
 		fHolePlanes[(2*4) + 2] = m_InternalData.Placement.vUp.z;
-		fHolePlanes[(2*4) + 3] = m_InternalData.Placement.vUp.Dot( m_InternalData.Placement.ptCenter + (m_InternalData.Placement.vUp * (PORTAL_HALF_HEIGHT * 0.98f)) );
+		fHolePlanes[(2*4) + 3] = m_InternalData.Placement.vUp.Dot( m_InternalData.Placement.ptCenter + (m_InternalData.Placement.vUp * (GetHeight() * 0.98f)) );
 
 		fHolePlanes[(3*4) + 0] = -m_InternalData.Placement.vUp.x;
 		fHolePlanes[(3*4) + 1] = -m_InternalData.Placement.vUp.y;
 		fHolePlanes[(3*4) + 2] = -m_InternalData.Placement.vUp.z;
-		fHolePlanes[(3*4) + 3] = -m_InternalData.Placement.vUp.Dot( m_InternalData.Placement.ptCenter - (m_InternalData.Placement.vUp * (PORTAL_HALF_HEIGHT * 0.98f)) );
+		fHolePlanes[(3*4) + 3] = -m_InternalData.Placement.vUp.Dot( m_InternalData.Placement.ptCenter - (m_InternalData.Placement.vUp * (GetHeight() * 0.98f)) );
 
 		fHolePlanes[(4*4) + 0] = -m_InternalData.Placement.vRight.x;
 		fHolePlanes[(4*4) + 1] = -m_InternalData.Placement.vRight.y;
 		fHolePlanes[(4*4) + 2] = -m_InternalData.Placement.vRight.z;
-		fHolePlanes[(4*4) + 3] = -m_InternalData.Placement.vRight.Dot( m_InternalData.Placement.ptCenter - (m_InternalData.Placement.vRight * (PORTAL_HALF_WIDTH * 0.98f)) );
+		fHolePlanes[(4*4) + 3] = -m_InternalData.Placement.vRight.Dot( m_InternalData.Placement.ptCenter - (m_InternalData.Placement.vRight * (GetWidth() * 0.98f)) );
 
 		fHolePlanes[(5*4) + 0] = m_InternalData.Placement.vRight.x;
 		fHolePlanes[(5*4) + 1] = m_InternalData.Placement.vRight.y;
 		fHolePlanes[(5*4) + 2] = m_InternalData.Placement.vRight.z;
-		fHolePlanes[(5*4) + 3] = m_InternalData.Placement.vRight.Dot( m_InternalData.Placement.ptCenter + (m_InternalData.Placement.vRight * (PORTAL_HALF_WIDTH * 0.98f)) );
+		fHolePlanes[(5*4) + 3] = m_InternalData.Placement.vRight.Dot( m_InternalData.Placement.ptCenter + (m_InternalData.Placement.vRight * (GetWidth() * 0.98f)) );
 
 		CPolyhedron *pPolyhedron = GeneratePolyhedronFromPlanes( fHolePlanes, 6, PORTAL_POLYHEDRON_CUT_EPSILON, true );
 		Assert( pPolyhedron != NULL );
@@ -588,6 +591,15 @@ bool CPortalSimulator::RayIsInPortalHole( const Ray_t &ray ) const
 	trace_t Trace;
 	physcollision->TraceBox( ray, m_InternalData.Placement.pHoleShapeCollideable, vec3_origin, vec3_angle, &Trace );
 	return Trace.DidHit();
+}
+bool CPortalSimulator::IsWorldPortal() {
+	return false;
+}
+float CPortalSimulator::GetWidth() {
+	return portal_width.GetFloat();
+}
+float CPortalSimulator::GetHeight() {
+	return portal_height.GetFloat();
 }
 
 void CPortalSimulator::ClearEverything( void )

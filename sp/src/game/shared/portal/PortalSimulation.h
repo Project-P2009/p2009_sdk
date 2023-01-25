@@ -303,6 +303,11 @@ public:
 
 	bool				RayIsInPortalHole( const Ray_t &ray ) const; //traces a ray against the same detector for EntityIsInPortalHole(), bias is towards false positives
 
+	virtual bool		IsWorldPortal();
+
+	virtual float		GetWidth();
+	virtual float		GetHeight();
+
 #ifndef CLIENT_DLL
 	int				GetMoveableOwnedEntities( CBaseEntity **pEntsOut, int iEntOutLimit ); //gets owned entities that aren't either world or static props. Excludes fake portal ents such as physics clones
 
