@@ -39,6 +39,8 @@ public:
 	VMatrix					m_matrixThisToLinked; //the matrix that will transform a point relative to this portal, to a point relative to the linked portal
 	CNetworkVar( bool, m_bActivated ); //a portal can exist and not be active
 	CNetworkVar( bool, m_bIsPortal2 ); //For teleportation, this doesn't matter, but for drawing and moving, it matters
+	CNetworkVar( float, m_fWidth );
+	CNetworkVar( float, m_fHeight );
 	Vector	m_vPrevForward; //used for the indecisive push in find closest passable spaces when portal is moved
 
 	bool	m_bSharedEnvironmentConfiguration; //this will be set by an instance of CPortal_Environment when two environments are in close proximity

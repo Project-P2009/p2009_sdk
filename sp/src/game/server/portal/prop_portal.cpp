@@ -62,6 +62,8 @@ BEGIN_DATADESC( CProp_Portal )
 	DEFINE_FIELD( m_matrixThisToLinked, FIELD_VMATRIX ),
 	DEFINE_KEYFIELD( m_bActivated,		FIELD_BOOLEAN,		"Activated" ),
 	DEFINE_KEYFIELD( m_bIsPortal2,		FIELD_BOOLEAN,		"PortalTwo" ),
+	DEFINE_KEYFIELD( m_fWidth,			FIELD_FLOAT,		"width" ),
+	DEFINE_KEYFIELD( m_fHeight,			FIELD_FLOAT,		"height" ),
 	DEFINE_FIELD( m_vPrevForward,		FIELD_VECTOR ),
 	DEFINE_FIELD( m_hMicrophone,		FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hSpeaker,			FIELD_EHANDLE ),
@@ -99,6 +101,8 @@ IMPLEMENT_SERVERCLASS_ST( CProp_Portal, DT_Prop_Portal )
 	SendPropEHandle( SENDINFO(m_hLinkedPortal) ),
 	SendPropBool( SENDINFO(m_bActivated) ),
 	SendPropBool( SENDINFO(m_bIsPortal2) ),
+	SendPropFloat( SENDINFO(m_fWidth) ),
+	SendPropFloat( SENDINFO(m_fHeight) ),
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( prop_portal, CProp_Portal );
@@ -112,6 +116,11 @@ CProp_Portal::CProp_Portal( void )
 {
 	m_vPrevForward = Vector( 0.0f, 0.0f, 0.0f );
 	m_PortalSimulator.SetPortalSimulatorCallbacks( this );
+	m_fWidth = portal_width.GetFloat();
+	m_fHeight = portal_height.GetFloat();
+
+	m_PortalSimulator.SetWidth(m_fWidth);
+	m_PortalSimulator.SetHeight(m_fHeight);
 
 	// Init to something safe
 	for ( int i = 0; i < 4; ++i )
@@ -499,7 +508,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 	{
 		case PORTAL_FIZZLE_CANT_FIT:
 			//DispatchEffect( "PortalFizzleCantFit", fxData );
-			//ep.m_pSoundName = "Portal.fizzle_invalid_surface";
+			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
 			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_nofit" ) : ( "portal_1_nofit" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
 			break;
@@ -2070,6 +2079,14 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 	m_PortalSimulator.ReleaseAllEntityOwnership();
 	Vector vOldForward;
 	GetVectors( &vOldForward, 0, 0 );
+
+	m_fHeight = portal_height.GetFloat();
+	m_fWidth = portal_width.GetFloat();
+
+	m_PortalSimulator.SetHeight(m_fHeight);
+	m_PortalSimulator.SetWidth(m_fWidth);
+
+	Msg("Portal %i size: %f %f\n", m_bIsPortal2 ? 2 : 1, m_fWidth.Get(), m_fHeight.Get());
 
 	m_vPrevForward = vOldForward;
 

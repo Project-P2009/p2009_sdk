@@ -130,7 +130,9 @@ CPortalSimulator::CPortalSimulator( void )
 	m_pLinkedPortal(NULL),
 	m_bInCrossLinkedFunction(false),
 	m_pCallbacks(&s_DummyPortalSimulatorCallback),
-	m_DataAccess(m_InternalData)
+	m_DataAccess(m_InternalData),
+	m_fWidth(PORTAL_HALF_WIDTH),
+	m_fHeight(PORTAL_HALF_HEIGHT)
 {
 	s_PortalSimulators.AddToTail( this );
 
@@ -596,10 +598,19 @@ bool CPortalSimulator::IsWorldPortal() {
 	return false;
 }
 float CPortalSimulator::GetWidth() {
-	return portal_width.GetFloat();
+	return m_fWidth; // portal_width.GetFloat();
 }
 float CPortalSimulator::GetHeight() {
-	return portal_height.GetFloat();
+	return m_fHeight; // portal_height.GetFloat();
+}
+
+void CPortalSimulator::SetWidth(float value)
+{
+	m_fWidth = value;
+}
+void CPortalSimulator::SetHeight(float value)
+{
+	m_fHeight = value;
 }
 
 void CPortalSimulator::ClearEverything( void )

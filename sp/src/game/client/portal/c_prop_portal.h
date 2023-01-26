@@ -89,6 +89,7 @@ private:
 
 	friend void __MsgFunc_EntityPortalled(bf_read &msg);
 
+	float m_fWidth, m_fHeight;
 };
 
 typedef C_Prop_Portal CProp_Portal;

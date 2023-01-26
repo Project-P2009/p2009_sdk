@@ -48,6 +48,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_Prop_Portal, DT_Prop_Portal, CProp_Portal )
 	RecvPropEHandle( RECVINFO(m_hLinkedPortal) ),
 	RecvPropBool( RECVINFO(m_bActivated) ),
 	RecvPropBool( RECVINFO(m_bIsPortal2) ),
+	RecvPropFloat( RECVINFO(m_fWidth) ),
+	RecvPropFloat( RECVINFO(m_fHeight) ),
 END_RECV_TABLE()
 
 
@@ -290,7 +292,7 @@ void C_Prop_Portal::Simulate()
 	C_BaseViewModel *pLocalPlayerViewModel = pLocalPlayer->GetViewModel();
 
 	CBaseEntity *pEntsNearPortal[1024];
-	int iEntsNearPortal = UTIL_EntitiesInSphere( pEntsNearPortal, 1024, GetNetworkOrigin(), PORTAL_HALF_HEIGHT, 0, PARTITION_CLIENT_NON_STATIC_EDICTS );
+	int iEntsNearPortal = UTIL_EntitiesInSphere( pEntsNearPortal, 1024, GetNetworkOrigin(), m_fHeight, 0, PARTITION_CLIENT_NON_STATIC_EDICTS );
 
 	if( iEntsNearPortal != 0 )
 	{
@@ -578,15 +580,18 @@ void C_Prop_Portal::OnDataChanged( DataUpdateType_t updateType )
 		if( bPortalMoved )
 		{			
 			Vector ptForwardOrigin = m_ptOrigin + m_vForward;// * 3.0f;
-			Vector vScaledRight = m_vRight * (PORTAL_HALF_WIDTH * 0.95f);
-			Vector vScaledUp = m_vUp * (PORTAL_HALF_HEIGHT  * 0.95f);
+			Vector vScaledRight = m_vRight * (m_fWidth * 0.95f);
+			Vector vScaledUp = m_vUp * (m_fHeight  * 0.95f);
 
 			m_PortalSimulator.MoveTo( GetNetworkOrigin(), GetNetworkAngles() );
 
 			//update our associated portal environment
 			//CPortal_PhysicsEnvironmentMgr::CreateEnvironment( this );
-
-			m_fOpenAmount = 0.0f;
+			try {
+				m_fOpenAmount = 0.0f;
+			} catch (std::exception) {
+				Assert(0);
+			}
 			//m_fStaticAmount = 1.0f; // This will cause the portal we are opening to show the static effect
 			SetNextClientThink( CLIENT_THINK_ALWAYS ); //we need this to help open up
 

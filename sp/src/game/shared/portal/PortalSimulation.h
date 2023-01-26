@@ -308,6 +308,9 @@ public:
 	virtual float		GetWidth();
 	virtual float		GetHeight();
 
+	virtual void		SetWidth(float value);
+	virtual void		SetHeight(float value);
+
 #ifndef CLIENT_DLL
 	int				GetMoveableOwnedEntities( CBaseEntity **pEntsOut, int iEntOutLimit ); //gets owned entities that aren't either world or static props. Excludes fake portal ents such as physics clones
 
@@ -350,6 +353,8 @@ protected:
 #ifdef PORTAL_SIMULATORS_EMBED_GUID
 	int					m_iPortalSimulatorGUID;
 #endif
+
+	float m_fWidth, m_fHeight;
 
 	struct
 	{
