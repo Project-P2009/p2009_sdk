@@ -10,6 +10,8 @@ class CFuncLaserDetector : public CBaseEntity {
 public:
 	DECLARE_CLASS(CFuncLaserDetector, CBaseEntity);
 
+	~CFuncLaserDetector();
+
 	virtual void Precache();
 	virtual void Spawn();
 
@@ -40,7 +42,7 @@ private:
 
 	CSoundPatch* m_pActiveSound;
 
-	std::set<CBaseEntity*> m_LaserList;
+	CUtlVector<CBaseEntity*> m_LaserList;
 	DECLARE_DATADESC();
 };
 

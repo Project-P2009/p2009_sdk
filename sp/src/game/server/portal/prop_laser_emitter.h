@@ -38,7 +38,8 @@ public:
 private:
 	CBeam* m_pBeam;
 	CBeam* m_pBeamAfterPortal;
-	bool m_bStatus, m_bStartActive;
+	bool m_bStartActive;
+	bool m_bStatus;
 
 	CSoundPatch* m_pLaserSound;
 

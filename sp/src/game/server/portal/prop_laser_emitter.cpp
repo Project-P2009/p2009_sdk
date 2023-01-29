@@ -58,6 +58,11 @@ LINK_ENTITY_TO_CLASS(env_portal_laser, CEnvPortalLaser)
 BEGIN_DATADESC(CEnvPortalLaser)
 // Fields
 	DEFINE_SOUNDPATCH(m_pLaserSound),
+	DEFINE_FIELD(m_bStatus, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_pBeamAfterPortal, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_pCatcher, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_iSprite, FIELD_INTEGER),
 // Key fields
 	DEFINE_KEYFIELD(m_bStartActive, FIELD_BOOLEAN, "startactive"),
 	DEFINE_KEYFIELD(m_fPlayerDamage, FIELD_FLOAT, "playerdamage"),
@@ -84,6 +89,7 @@ CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_
 
 void CEnvPortalLaser::Precache() {
 	PrecacheScriptSound(LASER_ACTIVATION_SOUND);
+	PrecacheScriptSound("Player.BurnPain");
 	PrecacheSound(LASER_AMBIENCE_SOUND);
 
 	BaseClass::Precache();
@@ -116,11 +122,8 @@ void CEnvPortalLaser::LaserThink() {
 		NDebugOverlay::Axis(GetAbsOrigin(), angDir, 16, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 	}
 
-	// Turn on the laser if beam has not been created successfully.
-	if (m_pBeam == NULL && m_bStatus) {
-		TurnOn();
-	}
-	if (m_pBeamAfterPortal == NULL && m_bStatus) {
+	// Try to turn on the lasers again if the beam failed to be created.
+	if ((m_pBeam == NULL && m_bStatus) || (m_pBeamAfterPortal == NULL && m_bStatus)) {
 		TurnOn();
 	}
 
@@ -185,7 +188,7 @@ void CEnvPortalLaser::LaserThink() {
 				m_pCatcher->RemoveEmitter(this);
 				m_pCatcher = NULL;
 			}
-			
+
 			// Check if we hit a turret
 			if (FClassnameIs(tr.m_pEnt, "npc_turret_floor") || FClassnameIs(tr.m_pEnt, "npc_portal_turret_floor")) {
 				CNPC_FloorTurret* pTurret = dynamic_cast<CNPC_FloorTurret*>(tr.m_pEnt);
@@ -349,7 +352,7 @@ void CEnvPortalLaser::InputToggle(inputdata_t& data) {
 	Toggle();
 }
 
-#define LASER_PLAYER_PUSHER_TRACE_COUNT 6
+#define LASER_PLAYER_PUSHER_TRACE_COUNT 8
 
 void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart) {
 	QAngle angDir;
@@ -363,12 +366,15 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 
 	// Precalculate trace origins
 	Vector vecOrigins[LASER_PLAYER_PUSHER_TRACE_COUNT] = {
-		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()),
-		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()),
-		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()),
-		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()),
-		vecStart + (vecUp * portal_laser_push_radius.GetFloat()) + vecUp,
-		vecStart - (vecUp * portal_laser_push_radius.GetFloat()) - vecUp
+		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()), // Top-right
+		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()), // Bottom-right
+		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()), // Top-left
+		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()), // Bottom-left
+
+		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Top-right
+		vecStart + (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Bottom-right
+		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Top-left
+		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Bottom-left
 	};
 	// Precalculate push directions
 	Vector vecPushDir[LASER_PLAYER_PUSHER_TRACE_COUNT] = {
@@ -376,8 +382,11 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 		vecRight - vecUp,
 		-vecRight + vecUp,
 		-vecRight - vecUp,
-		vecRight,
-		vecRight,
+
+		vecRight + vecUp,
+		vecRight - vecUp,
+		-vecRight + vecUp,
+		-vecRight - vecUp,
 	};
 
 	// Iterate though traces

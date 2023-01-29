@@ -20,6 +20,8 @@ ConVar portal_laser_catcher_detector_size("portal_laser_catcher_detector_size", 
 LINK_ENTITY_TO_CLASS(func_laser_detect, CFuncLaserDetector)
 
 BEGIN_DATADESC(CFuncLaserDetector)
+// Fields
+	DEFINE_FIELD(m_pProp, FIELD_EHANDLE),
 // Key fields
 	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
 	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
@@ -47,6 +49,10 @@ void CFuncLaserDetector::Spawn() {
 	SetNextThink(gpGlobals->curtime);
 }
 
+CFuncLaserDetector::~CFuncLaserDetector() {
+	m_LaserList.Purge();
+}
+
 void CFuncLaserDetector::Precache() {
 	PrecacheScriptSound(CATCHER_ACTIVATE_SOUND);
 	PrecacheScriptSound(CATCHER_DEACTIVATE_SOUND);
@@ -57,16 +63,16 @@ void CFuncLaserDetector::Precache() {
 
 void CFuncLaserDetector::AddEmitter(CBaseEntity* emitter) {
 	// Store previous list count
-	int oldCount = m_LaserList.size();
+	int oldCount = m_LaserList.Count();
 
 	// Check if the emitter has not been added already.
-	if (m_LaserList.find(emitter) == m_LaserList.end()) {
+	if (!m_LaserList.HasElement(emitter)) {
 		// Add laser emitter
-		m_LaserList.insert(emitter);
+		m_LaserList.AddToTail(emitter);
 	}
 
 	// Check if we added any laser emitters
-	if (oldCount == 0 && m_LaserList.size() > 0) {
+	if (oldCount == 0 && m_LaserList.Count() > 0) {
 		// Play activated sound
 		EmitSound(CATCHER_ACTIVATE_SOUND);
 		// Fire output event
@@ -87,12 +93,11 @@ void CFuncLaserDetector::AddEmitter(CBaseEntity* emitter) {
 
 void CFuncLaserDetector::RemoveEmitter(CBaseEntity* emitter) {
 	// Check if the emitter is on the list, then remove it.
-	std::set<CBaseEntity*>::iterator it = m_LaserList.find(emitter);
-	if (it != m_LaserList.end()) {
-		m_LaserList.erase(it);
+	if (m_LaserList.HasElement(emitter)) {
+		m_LaserList.FindAndRemove(emitter);
 	}
 
-	if (m_LaserList.size() == 0) {
+	if (m_LaserList.Count() == 0) {
 		EmitSound(CATCHER_DEACTIVATE_SOUND);
 		m_OnUnpowered.FireOutput(NULL, NULL);
 		// Check if the detector has a parent catcher.
@@ -166,10 +171,13 @@ void CFuncLaserDetector::DebugThink() {
 LINK_ENTITY_TO_CLASS(prop_laser_catcher, CPropLaserCatcher);
 
 BEGIN_DATADESC(CPropLaserCatcher)
-	// Key fields
+// Fields
+	DEFINE_FIELD(m_pLaserDetector, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_pActivatedSprite, FIELD_CLASSPTR),
+// Key fields
 	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
 	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
-	// Outputs
+// Outputs
 	DEFINE_OUTPUT(m_OnPowered, "OnPowered"),
 	DEFINE_OUTPUT(m_OnUnpowered, "OnUnpowered"),
 END_DATADESC()
