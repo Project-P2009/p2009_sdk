@@ -706,7 +706,13 @@ void CC_UpgradePortalGun( void )
 
 static ConCommand upgrade_portal("upgrade_portalgun", CC_UpgradePortalGun, "Equips the player with a single portal portalgun. Use twice for a dual portal portalgun.\n\tArguments:   	none ", FCVAR_CHEAT);
 
+void CC_GivePortalGun( void )
+{
+	CPortal_Player* pPlayer = ToPortalPlayer(UTIL_GetCommandClient());
+	pPlayer->GiveNamedItem("weapon_portalgun");
+}
 
+static ConCommand give_portalgun("give_portalgun", CC_GivePortalGun, "Gives a portalgun to the player.\n\tArguments:   	none ", FCVAR_CHEAT);
 
 
 static void change_portalgun_linkage_id_f( const CCommand &args )
