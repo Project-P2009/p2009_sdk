@@ -225,33 +225,33 @@ void CPropWeightedCube::Spawn()
 
 void CPropWeightedCube::ToggleLaser(bool state)
 {
-	if (m_cubeType != Reflective) return;
+	//if (m_cubeType != Reflective) return;
 
-	if (m_pLaser == nullptr) {
-		m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
-		m_pLaser->KeyValue("damage", "100");
-		m_pLaser->KeyValue("width", "2");
-		m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");
-		m_pLaser->KeyValue("renderamt", "100");
-		m_pLaser->KeyValue("TextureScroll", "35");
-		m_pLaser->SetParent(this);
-		m_pLaser->SetParentAttachment("SetLaserAttachmentParent", "focus", false);
-		DispatchSpawn(m_pLaser);
-		m_pLaser->Activate();
-		m_pLaser->TurnOff();
-	}
+	//if (m_pLaser == nullptr) {
+	//	m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
+	//	m_pLaser->KeyValue("damage", "100");
+	//	m_pLaser->KeyValue("width", "2");
+	//	m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");
+	//	m_pLaser->KeyValue("renderamt", "100");
+	//	m_pLaser->KeyValue("TextureScroll", "35");
+	//	m_pLaser->SetParent(this);
+	//	m_pLaser->SetParentAttachment("SetLaserAttachmentParent", "focus", false);
+	//	DispatchSpawn(m_pLaser);
+	//	m_pLaser->Activate();
+	//	m_pLaser->TurnOff();
+	//}
 
-	if (state == true) {
-		m_pLaser->TurnOn();
-	}
-	else if (state == false) {
-		m_pLaser->TurnOff();
-		if (dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject) != nullptr) {
-			CEnvLaserTarget* pTarget = dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject);
-			CPropLaserCatcher* pCatcher = dynamic_cast<CPropLaserCatcher*>(pTarget->GetParent());
-			pCatcher->TurnOff(m_pLaser);
-		}
-	}
+	//if (state == true) {
+	//	m_pLaser->TurnOn();
+	//}
+	//else if (state == false) {
+	//	m_pLaser->TurnOff();
+	//	if (dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject) != nullptr) {
+	//		CEnvLaserTarget* pTarget = dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject);
+	//		CPropLaserCatcher* pCatcher = dynamic_cast<CPropLaserCatcher*>(pTarget->GetParent());
+	//		pCatcher->TurnOff(m_pLaser);
+	//	}
+	//}
 }
 
 void CPropWeightedCube::InputPreDissolveJoke(inputdata_t& data)

@@ -100,6 +100,11 @@ void CEnvPortalLaser::Spawn() {
 }
 
 void CEnvPortalLaser::LaserThink() {
+	if (!m_bStatus) {
+		TurnOff();
+		return;
+	}
+
 	Vector vecStart, vecEnd;
 	Vector vecPortalIn, vecPortalOut;
 	Vector vecDir, traceDir;
@@ -109,6 +114,14 @@ void CEnvPortalLaser::LaserThink() {
 
 	if (portal_laser_debug.GetBool()) {
 		NDebugOverlay::Axis(GetAbsOrigin(), angDir, 16, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+	}
+
+	// Turn on the laser if beam has not been created successfully.
+	if (m_pBeam == NULL && m_bStatus) {
+		TurnOn();
+	}
+	if (m_pBeamAfterPortal == NULL && m_bStatus) {
+		TurnOn();
 	}
 
 	m_pBeam->PointsInit(GetAbsOrigin(), GetAbsOrigin() + vecDir * MAX_TRACE_LENGTH);
@@ -280,6 +293,9 @@ void CEnvPortalLaser::TurnOff() {
 	if (m_bStatus) {
 		if (m_pBeam) {
 			m_pBeam->AddEffects(EF_NODRAW);
+		}
+		if (m_pBeamAfterPortal) {
+			m_pBeamAfterPortal->AddEffects(EF_NODRAW);
 		}
 
 		if (m_pCatcher) {

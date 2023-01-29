@@ -10,7 +10,7 @@
 #include "particle_parse.h"
 #include "particle_system.h"
 #include "player_pickup.h"
-#include "env_portal_laser.h"
+//#include "env_portal_laser.h"
 
 // resource file names
 #define IMPACT_DECAL_NAME	"decals/smscorch1model"
@@ -69,7 +69,7 @@ private:
 	bool m_useNewSkins;
 	bool m_allowFunnel;
 
-	CEnvPortalLaser* m_pLaser;
+	//CEnvPortalLaser* m_pLaser;
 
 	CHandle<CBasePlayer> m_hPhysicsAttacker;
 
