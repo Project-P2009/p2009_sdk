@@ -39,7 +39,7 @@ extern ConVar portal_laser_debug;
 void CFuncLaserDetector::Spawn() {
 	BaseClass::Spawn();
 
-	SetSolid(SOLID_BBOX);
+	SetSolid(SOLID_OBB);
 
 	if (m_szPropEntity != NULL) {
 		m_pProp = gEntList.FindEntityByName(NULL, m_szPropEntity);

@@ -2368,6 +2368,7 @@ void CDynamicProp::AnimThink( void )
 
 		// Fire output
 		m_pOutputAnimBegun.FireOutput( NULL,this );
+		AnimBegun();
 
 		m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
 	}
@@ -2383,6 +2384,7 @@ void CDynamicProp::AnimThink( void )
 		{
 			// Fire output
 			m_pOutputAnimOver.FireOutput(NULL,this);
+			AnimOver();
 
 			// If I'm a random animator, think again when it's time to change sequence
 			if ( m_bRandomAnimator )
@@ -2450,6 +2452,7 @@ void CDynamicProp::PropSetAnim( const char *szAnim )
 
 		// Fire output
 		m_pOutputAnimBegun.FireOutput( NULL,this );
+		AnimBegun();
 	}
 	else
 	{

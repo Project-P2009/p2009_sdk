@@ -182,6 +182,8 @@ $Project "Client (Portal)"
 			$File	"portal\hud_devtag.cpp"
 			$File	"portal\hud_maptag.h"
 			$File	"portal\hud_maptag.cpp"
+			$File	"portal\c_linked_portal_door.h"
+			$File	"portal\c_linked_portal_door.cpp"
 			$Folder	"Weapons"
 			{
 				$File	"portal\c_weapon_physcannon.cpp"

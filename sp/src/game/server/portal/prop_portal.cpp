@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -52,7 +52,7 @@ ConVar portal_width("portal_width", "32", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar portal_height("portal_height", "54", FCVAR_REPLICATED | FCVAR_CHEAT);
 
 ConVar sv_instant_portal("sv_instant_portal", "0", FCVAR_REPLICATED ); // for slowfield -litevex
-static CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
+CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
 
 
 BEGIN_DATADESC( CProp_Portal )
@@ -80,7 +80,7 @@ BEGIN_DATADESC( CProp_Portal )
 	// DEFINE_FIELD( m_pAttachedCloningArea, CPhysicsCloneArea ),
 	// DEFINE_FIELD( m_PortalSimulator, CPortalSimulator ),
 	// DEFINE_FIELD( m_pCollisionShape, CPhysCollide ),
-	
+
 	DEFINE_FIELD( m_bSharedEnvironmentConfiguration, FIELD_BOOLEAN ),
 	DEFINE_ARRAY( m_vPortalCorners, FIELD_POSITION_VECTOR, 4 ),
 
@@ -173,7 +173,7 @@ CProp_Portal::CProp_Portal( void )
 CProp_Portal::~CProp_Portal( void )
 {
 	CProp_Portal_Shared::AllPortals.FindAndRemove( this );
-	s_PortalLinkageGroups[m_iLinkageGroupID].FindAndRemove( this );
+	GetPortalLinkageGroups()[m_iLinkageGroupID].FindAndRemove( this );
 }
 
 
@@ -198,7 +198,7 @@ void CProp_Portal::UpdateOnRemove( void )
 		UTIL_Remove( m_pAttachedCloningArea );
 		m_pAttachedCloningArea = NULL;
 	}
-	
+
 
 	BaseClass::UpdateOnRemove();
 }
@@ -271,11 +271,11 @@ void CProp_Portal::Spawn( void )
 {
 	Precache();
 
-	Assert( s_PortalLinkageGroups[m_iLinkageGroupID].Find( this ) == -1 );
-	s_PortalLinkageGroups[m_iLinkageGroupID].AddToTail( this );
+	Assert( GetPortalLinkageGroups()[m_iLinkageGroupID].Find( this ) == -1 );
+	GetPortalLinkageGroups()[m_iLinkageGroupID].AddToTail( this );
 
 	m_matrixThisToLinked.Identity(); //don't accidentally teleport objects to zero space
-	
+
 	AddEffects( EF_NORECEIVESHADOW | EF_NOSHADOW );
 
 	SetSolid( SOLID_OBB );
@@ -285,7 +285,7 @@ void CProp_Portal::Spawn( void )
 
 	//VPhysicsInitNormal( SOLID_VPHYSICS, FSOLID_TRIGGER, false );
 	//CreateVPhysics();
-	ResetModel();	
+	ResetModel();
 	SetSize( GetMins(), GetMaxs() );
 
 	UpdateCorners();
@@ -492,7 +492,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 	// Rumble effects on the firing player (if one exists)
 	CWeaponPortalgun *pPortalGun = dynamic_cast<CWeaponPortalgun*>( m_hPlacedBy.Get() );
 
-	if ( pPortalGun && (iEffect != PORTAL_FIZZLE_CLOSE ) 
+	if ( pPortalGun && (iEffect != PORTAL_FIZZLE_CLOSE )
 				    && (iEffect != PORTAL_FIZZLE_SUCCESS )
 				    && (iEffect != PORTAL_FIZZLE_NONE )		)
 	{
@@ -502,7 +502,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			pPlayer->RumbleEffect( RUMBLE_PORTAL_PLACEMENT_FAILURE, 0, RUMBLE_FLAGS_NONE );
 		}
 	}
-	
+
 	// Pick a fizzle effect
 	switch ( iEffect )
 	{
@@ -671,7 +671,7 @@ void CProp_Portal::Fizzle( void )
 //-----------------------------------------------------------------------------
 // Purpose: Removes the portal microphone and speakers. This is done in two places
 //			(fizzle and UpdateOnRemove) so the code is consolidated here.
-// Input  :  - 
+// Input  :  -
 //-----------------------------------------------------------------------------
 void CProp_Portal::RemovePortalMicAndSpeaker()
 {
@@ -752,14 +752,14 @@ void CProp_Portal::PunchAllPenetratingPlayers( void )
 
 void CProp_Portal::Activate( void )
 {
-	if( s_PortalLinkageGroups[m_iLinkageGroupID].Find( this ) == -1 )
-		s_PortalLinkageGroups[m_iLinkageGroupID].AddToTail( this );
+	if( GetPortalLinkageGroups()[m_iLinkageGroupID].Find( this ) == -1 )
+		GetPortalLinkageGroups()[m_iLinkageGroupID].AddToTail( this );
 
 	if( m_pAttachedCloningArea == NULL )
 		m_pAttachedCloningArea = CPhysicsCloneArea::CreatePhysicsCloneArea( this );
 
 	UpdatePortalTeleportMatrix();
-	
+
 	UpdatePortalLinkage();
 
 	BaseClass::Activate();
@@ -793,7 +793,7 @@ void CProp_Portal::Activate( void )
 						//we should be interacting with this object, add it to our environment
 						if( SharedEnvironmentCheck( pOther ) )
 						{
-							Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) || 
+							Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) ||
 								(m_PortalSimulator.GetLinkedPortalSimulator() == &m_hLinkedPortal->m_PortalSimulator) ); //make sure this entity is linked to the same portal as our simulator
 
 							CPortalSimulator *pOwningSimulator = CPortalSimulator::GetSimulatorThatOwnsEntity( pOther );
@@ -828,7 +828,7 @@ bool CProp_Portal::ShouldTeleportTouchingEntity( CBaseEntity *pOther )
 
 	if( !CProp_Portal_Shared::IsEntityTeleportable( pOther ) )
 		return false;
-	
+
 	if( m_hLinkedPortal.Get() == NULL )
 	{
 #if !defined ( DISABLE_DEBUG_HISTORY )
@@ -951,7 +951,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 	QAngle qPlayerEyeAngles;
 	CPortal_Player *pOtherAsPlayer;
 
-	
+
 	if( bPlayer )
 	{
 		//NDebugOverlay::EntityBounds( pOther, 255, 0, 0, 128, 60.0f );
@@ -967,8 +967,8 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 
 	bool bNonPhysical = false; //special case handling for non-physical objects such as the energy ball and player
 
-	
-	
+
+
 	QAngle qOtherAngles;
 	Vector vOtherVelocity;
 
@@ -1012,7 +1012,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 	const PS_InternalData_t &RemotePortalDataAccess = m_hLinkedPortal->m_PortalSimulator.m_DataAccess;
 	const PS_InternalData_t &LocalPortalDataAccess = m_PortalSimulator.m_DataAccess;
 
-	
+
 	if( bPlayer )
 	{
 		qOtherAngles = pOtherAsPlayer->EyeAngles();
@@ -1024,16 +1024,16 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 		if( fabs( LocalPortalDataAccess.Placement.vForward.z ) > 0.0f )
 		{
 			//we may have to compensate for the fact that AABB's don't rotate ever
-			
+
 			float fAbsLocalZ = fabs( LocalPortalDataAccess.Placement.vForward.z );
 			float fAbsRemoteZ = fabs( RemotePortalDataAccess.Placement.vForward.z );
-			
+
 			if( (fabs(fAbsLocalZ - 1.0f) < 0.01f) &&
 				(fabs(fAbsRemoteZ - 1.0f) < 0.01f) )
 				//(fabs( LocalPortalDataAccess.Placement.vForward.z + RemotePortalDataAccess.Placement.vForward.z ) < 0.01f) )
 			{
 				//portals are both aligned on the z axis, no need to shrink the player
-				
+
 			}
 			else
 			{
@@ -1050,7 +1050,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 					else
 						ptOtherCenter.z += 16.0f; //portal facing down, shrink upwards
 				}
-			}			
+			}
 		}
 	}
 	else
@@ -1059,7 +1059,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 		bNonPhysical = FClassnameIs( pOther, "prop_energy_ball" );
 	}
 
-	
+
 	Vector ptNewOrigin;
 	QAngle qNewAngles;
 	Vector vNewVelocity;
@@ -1068,13 +1068,13 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 		if( bPlayer )
 		{
 			ptNewOrigin = m_matrixThisToLinked * ptOtherCenter;
-			ptNewOrigin += ptOtherOrigin - ptOtherCenter;	
+			ptNewOrigin += ptOtherOrigin - ptOtherCenter;
 		}
 		else
 		{
 			ptNewOrigin = m_matrixThisToLinked * ptOtherOrigin;
 		}
-		
+
 		// Reorient object angles, originally we did a transformation on the angles, but that doesn't quite work right for gimbal lock cases
 		qNewAngles = TransformAnglesToWorldSpace( qOtherAngles, m_matrixThisToLinked.As3x4() );
 
@@ -1082,7 +1082,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 		qNewAngles.y = AngleNormalizePositive( qNewAngles.y );
 		qNewAngles.z = AngleNormalizePositive( qNewAngles.z );
 
-		// Reorient the velocity		
+		// Reorient the velocity
 		vNewVelocity = m_matrixThisToLinked.ApplyRotation( vOtherVelocity );
 	}
 
@@ -1121,7 +1121,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 			pOtherAsPlayer->m_bPitchReorientation = true;
 		}
 		else if ( ( LocalPortalDataAccess.Placement.vForward.z > 0.99f || LocalPortalDataAccess.Placement.vForward.z < -0.99f ) &&	// entering floor or ceiling portal
-				  ( RemotePortalDataAccess.Placement.vForward.z > 0.99f || RemotePortalDataAccess.Placement.vForward.z < -0.99f ) && // exiting floor or ceiling portal 
+				  ( RemotePortalDataAccess.Placement.vForward.z > 0.99f || RemotePortalDataAccess.Placement.vForward.z < -0.99f ) && // exiting floor or ceiling portal
 				  (	fPlayerForwardZ < -0.5f || fPlayerForwardZ > 0.5f )		// facing mustly up or down
 				)
 		{
@@ -1146,14 +1146,14 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 		{
 			if ( bPlayer )
 			{
-				if( vNewVelocity.z < MINIMUM_FLOOR_PORTAL_EXIT_VELOCITY_PLAYER ) 
+				if( vNewVelocity.z < MINIMUM_FLOOR_PORTAL_EXIT_VELOCITY_PLAYER )
 					vNewVelocity.z = MINIMUM_FLOOR_PORTAL_EXIT_VELOCITY_PLAYER;
 			}
 			else
 			{
 				if( LocalPortalDataAccess.Placement.vForward.z > 0.7071f )
 				{
-					if( vNewVelocity.z < MINIMUM_FLOOR_TO_FLOOR_PORTAL_EXIT_VELOCITY ) 
+					if( vNewVelocity.z < MINIMUM_FLOOR_TO_FLOOR_PORTAL_EXIT_VELOCITY )
 						vNewVelocity.z = MINIMUM_FLOOR_TO_FLOOR_PORTAL_EXIT_VELOCITY;
 				}
 				else
@@ -1202,7 +1202,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 			qTransformedEyeAngles.x = AngleNormalizePositive( qTransformedEyeAngles.x );
 			qTransformedEyeAngles.y = AngleNormalizePositive( qTransformedEyeAngles.y );
 			qTransformedEyeAngles.z = AngleNormalizePositive( qTransformedEyeAngles.z );
-			
+
 			pOtherAsPlayer->pl.v_angle = qTransformedEyeAngles;
 			pOtherAsPlayer->pl.fixangle = FIXANGLE_ABSOLUTE;
 			pOtherAsPlayer->UpdateVPhysicsPosition( ptNewOrigin, vNewVelocity, 0.0f );
@@ -1262,7 +1262,7 @@ void CProp_Portal::TeleportTouchingEntity( CBaseEntity *pOther )
 				FindClosestPassableSpace( pHeldEntity, RemotePortalDataAccess.Placement.vForward );
 			}
 		}
-		
+
 		//we haven't found a good way of fixing the problem of "how do you reorient an AABB". So we just move the player so that they fit
 		//m_hLinkedPortal->ForceEntityToFitInPortalWall( pOtherAsPlayer );
 	}
@@ -1335,13 +1335,13 @@ void CProp_Portal::Touch( CBaseEntity *pOther )
 	{
 		Assert( !m_PortalSimulator.OwnsEntity( pOther ) );
 		Assert( !pOther->IsPlayer() || (((CPortal_Player *)pOther)->m_hPortalEnvironment.Get() != this) );
-		
+
 		//I'd really like to fix the root cause, but this will keep the game going
 		m_PortalSimulator.ReleaseOwnershipOfEntity( pOther );
 		return;
 	}
 
-	Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) || 
+	Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) ||
 		(m_PortalSimulator.GetLinkedPortalSimulator() == &m_hLinkedPortal->m_PortalSimulator) ); //make sure this entity is linked to the same portal as our simulator
 
 	// Fizzle portal with any moving brush
@@ -1395,7 +1395,7 @@ void CProp_Portal::Touch( CBaseEntity *pOther )
 			}
 		}
 	}
-	
+
 	if( m_hLinkedPortal == NULL )
 		return;
 
@@ -1478,7 +1478,7 @@ void CProp_Portal::StartTouch( CBaseEntity *pOther )
 			//we should be interacting with this object, add it to our environment
 			if( SharedEnvironmentCheck( pOther ) )
 			{
-				Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) || 
+				Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) ||
 					(m_PortalSimulator.GetLinkedPortalSimulator() == &m_hLinkedPortal->m_PortalSimulator) ); //make sure this entity is linked to the same portal as our simulator
 
 				CPortalSimulator *pOwningSimulator = CPortalSimulator::GetSimulatorThatOwnsEntity( pOther );
@@ -1488,7 +1488,7 @@ void CProp_Portal::StartTouch( CBaseEntity *pOther )
 				m_PortalSimulator.TakeOwnershipOfEntity( pOther );
 			}
 		}
-	}	
+	}
 }
 
 void CProp_Portal::EndTouch( CBaseEntity *pOther )
@@ -1512,7 +1512,7 @@ void CProp_Portal::EndTouch( CBaseEntity *pOther )
 			(((CPortal_Player *)pOther)->m_Local.m_bInDuckJump) ) //while ducking
 	{
 		//player has pulled their feet up (moving their center instantaneously) while falling downward out of the portal, send them back (probably only for a frame)
-		
+
 		DevMsg( "Player pulled feet above the portal they fell out of, postponing Releasing ownership\n" );
 		//TeleportTouchingEntity( pOther );
 	}
@@ -1546,7 +1546,7 @@ void CProp_Portal::PortalSimulator_ReleasedOwnershipOfEntity( CBaseEntity *pEnti
 
 bool CProp_Portal::SharedEnvironmentCheck( CBaseEntity *pEntity )
 {
-	Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) || 
+	Assert( ((m_PortalSimulator.GetLinkedPortalSimulator() == NULL) && (m_hLinkedPortal.Get() == NULL)) ||
 		(m_PortalSimulator.GetLinkedPortalSimulator() == &m_hLinkedPortal->m_PortalSimulator) ); //make sure this entity is linked to the same portal as our simulator
 
 	CPortalSimulator *pOwningSimulator = CPortalSimulator::GetSimulatorThatOwnsEntity( pEntity );
@@ -1620,7 +1620,7 @@ void CProp_Portal::WakeNearbyEntities( void )
 		if( ptTest.y > vAABBMaxs.y ) vAABBMaxs.y = ptTest.y;
 		if( ptTest.z > vAABBMaxs.z ) vAABBMaxs.z = ptTest.z;
 	}
-	
+
 	int count = UTIL_EntitiesInBox( pList, 1024, vAABBMins, vAABBMaxs, 0 );
 
 	//Iterate over all the possible targets
@@ -1634,7 +1634,7 @@ void CProp_Portal::WakeNearbyEntities( void )
 			Vector ptEntityCenter = pEntCollision->GetCollisionOrigin();
 
 			//double check intersection at the OBB vs OBB level, we don't want to affect large piles of physics objects if we don't have to. It gets slow
-			if( IsOBBIntersectingOBB( ptOrigin, qAngles, GetMins(), GetMaxs(), 
+			if( IsOBBIntersectingOBB( ptOrigin, qAngles, GetMins(), GetMaxs(),
 				ptEntityCenter, pEntCollision->GetCollisionAngles(), pEntCollision->OBBMins(), pEntCollision->OBBMaxs() ) )
 			{
 				if( FClassnameIs( pEntity, "func_portal_detector" ) )
@@ -1772,7 +1772,7 @@ void CProp_Portal::ForceEntityToFitInPortalWall( CBaseEntity *pEntity )
 			}
 			//pEntity->SetAbsOrigin( ShortestTrace.endpos + vEntityCenterToOrigin );
 		}
-	}	
+	}
 }
 
 void CProp_Portal::UpdatePortalTeleportMatrix( void )
@@ -1859,11 +1859,11 @@ void CProp_Portal::UpdatePortalLinkage( void )
 				pLink = NULL;
 			}
 
-			int iPortalCount = s_PortalLinkageGroups[m_iLinkageGroupID].Count();
+			int iPortalCount = GetPortalLinkageGroups()[m_iLinkageGroupID].Count();
 
 			if( iPortalCount != 0 )
 			{
-				CProp_Portal **pPortals = s_PortalLinkageGroups[m_iLinkageGroupID].Base();
+				CProp_Portal **pPortals = GetPortalLinkageGroups()[m_iLinkageGroupID].Base();
 				for( int i = 0; i != iPortalCount; ++i )
 				{
 					CProp_Portal *pCurrentPortal = pPortals[i];
@@ -2069,7 +2069,7 @@ void CProp_Portal::PlacePortal( const Vector &vOrigin, const QAngle &qAngles, fl
 		{
 			g_PortalGameStats.Event_PortalPlacement( pFiringPlayer->GetAbsOrigin(), vOrigin, m_iDelayedFailure );
 		}
-	}	
+	}
 }
 
 void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
@@ -2085,8 +2085,6 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 
 	m_PortalSimulator.SetHeight(m_fHeight);
 	m_PortalSimulator.SetWidth(m_fWidth);
-
-	Msg("Portal %i size: %f %f\n", m_bIsPortal2 ? 2 : 1, m_fWidth.Get(), m_fHeight.Get());
 
 	m_vPrevForward = vOldForward;
 
@@ -2139,7 +2137,7 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 	if ( m_hLinkedPortal )
 	{
 		m_hLinkedPortal->WakeNearbyEntities();
-		if( !bOtherShouldBeStatic ) 
+		if( !bOtherShouldBeStatic )
 		{
 			m_hLinkedPortal->PunchAllPenetratingPlayers();
 		}
@@ -2242,7 +2240,7 @@ void CProp_Portal::InputNewLocation( inputdata_t &inputdata )
 
 	// first 3 are location of new origin
 	Vector vNewOrigin;
-	char* pTok = strtok( sLocationStats, " " ); 
+	char* pTok = strtok( sLocationStats, " " );
 	vNewOrigin.x = atof(pTok);
 	pTok = strtok( NULL, " " );
 	vNewOrigin.y = atof(pTok);
@@ -2284,15 +2282,15 @@ void CProp_Portal::UpdateCorners()
 
 void CProp_Portal::ChangeLinkageGroup( unsigned char iLinkageGroupID )
 {
-	Assert( s_PortalLinkageGroups[m_iLinkageGroupID].Find( this ) != -1 );
-	s_PortalLinkageGroups[m_iLinkageGroupID].FindAndRemove( this );
-	s_PortalLinkageGroups[iLinkageGroupID].AddToTail( this );
+	Assert( GetPortalLinkageGroups()[m_iLinkageGroupID].Find( this ) != -1 );
+	GetPortalLinkageGroups()[m_iLinkageGroupID].FindAndRemove( this );
+	GetPortalLinkageGroups()[iLinkageGroupID].AddToTail( this );
 	m_iLinkageGroupID = iLinkageGroupID;
 }
 
 
 
-CProp_Portal *CProp_Portal::FindPortal( unsigned char iLinkageGroupID, bool bPortal2, bool bCreateIfNothingFound /*= false*/ )
+CProp_Portal *CProp_Portal::FindPortal( unsigned char iLinkageGroupID, bool bPortal2, bool bCreateIfNothingFound /*= false*/, bool isWorldPortal /*= false*/ )
 {
 	int iPortalCount = s_PortalLinkageGroups[iLinkageGroupID].Count();
 
@@ -2330,6 +2328,11 @@ CProp_Portal *CProp_Portal::FindPortal( unsigned char iLinkageGroupID, bool bPor
 const CUtlVector<CProp_Portal *> *CProp_Portal::GetPortalLinkageGroup( unsigned char iLinkageGroupID )
 {
 	return &s_PortalLinkageGroups[iLinkageGroupID];
+}
+
+CUtlVector<CProp_Portal*>* CProp_Portal::GetPortalLinkageGroups()
+{
+	return s_PortalLinkageGroups;
 }
 
 Vector CProp_Portal::GetMins() {

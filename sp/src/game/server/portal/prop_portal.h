@@ -81,9 +81,9 @@ public:
 
 	virtual void			UpdateOnRemove( void );
 
-	void					DelayedPlacementThink( void );
-	void					TestRestingSurfaceThink ( void );
-	void					FizzleThink( void );
+	virtual void			DelayedPlacementThink( void );
+	virtual void			TestRestingSurfaceThink ( void );
+	virtual void			FizzleThink( void );
 
 	bool					IsActivedAndLinked( void ) const;
 
@@ -91,8 +91,8 @@ public:
 
 	void					ForceEntityToFitInPortalWall( CBaseEntity *pEntity ); //projects an object's center into the middle of the portal wall hall, and traces back to where it wants to be
 
-	void					PlacePortal( const Vector &vOrigin, const QAngle &qAngles, float fPlacementSuccess, bool bDelay = false );
-	void					NewLocation( const Vector &vOrigin, const QAngle &qAngles );
+	virtual void			PlacePortal( const Vector &vOrigin, const QAngle &qAngles, float fPlacementSuccess, bool bDelay = false );
+	virtual void			NewLocation( const Vector &vOrigin, const QAngle &qAngles );
 
 	virtual void			ResetModel( void ); //sets the model and bounding box
 	virtual void			DoFizzleEffect( int iEffect, bool bDelayedPos = true ); //display cool visual effect
@@ -105,12 +105,12 @@ public:
 	virtual void			EndTouch( CBaseEntity *pOther );
 	bool					ShouldTeleportTouchingEntity( CBaseEntity *pOther ); //assuming the entity is or was just touching the portal, check for teleportation conditions
 	void					TeleportTouchingEntity( CBaseEntity *pOther );
-	void					InputSetActivatedState( inputdata_t &inputdata );
+	virtual void			InputSetActivatedState( inputdata_t &inputdata );
 	void					InputFizzle( inputdata_t &inputdata );
 	void					InputNewLocation( inputdata_t &inputdata );
 
-	void					UpdatePortalLinkage( void );
-	void					UpdatePortalTeleportMatrix( void ); //computes the transformation from this portal to the linked portal, and will update the remote matrix as well
+	virtual void			UpdatePortalLinkage( void );
+	virtual void			UpdatePortalTeleportMatrix( void ); //computes the transformation from this portal to the linked portal, and will update the remote matrix as well
 
 	//void					SendInteractionMessage( CBaseEntity *pEntity, bool bEntering ); //informs clients that the entity is interacting with a portal (mostly used for clip planes)
 
@@ -129,20 +129,24 @@ public:
 	virtual void			PortalSimulator_TookOwnershipOfEntity( CBaseEntity *pEntity );
 	virtual void			PortalSimulator_ReleasedOwnershipOfEntity( CBaseEntity *pEntity );
 
-private:
+	virtual bool			IsWorldPortal() const { return false; }
+
+protected:
 	unsigned char			m_iLinkageGroupID; //a group ID specifying which portals this one can possibly link to
 
 	CPhysCollide			*m_pCollisionShape;
 	void					RemovePortalMicAndSpeaker();	// Cleans up the portal's internal audio members
-	void					UpdateCorners( void );			// Updates the four corners of this portal on spawn and placement
+	virtual void			UpdateCorners( void );			// Updates the four corners of this portal on spawn and placement
 
 public:
 	inline unsigned char	GetLinkageGroup( void ) const { return m_iLinkageGroupID; };
 	void					ChangeLinkageGroup( unsigned char iLinkageGroupID );
 
 	//find a portal with the designated attributes, or creates one with them, favors active portals over inactive
-	static CProp_Portal		*FindPortal( unsigned char iLinkageGroupID, bool bPortal2, bool bCreateIfNothingFound = false );
+	static CProp_Portal		*FindPortal( unsigned char iLinkageGroupID, bool bPortal2, bool bCreateIfNothingFound = false, bool isWorldPortal = false);
 	static const CUtlVector<CProp_Portal *> *GetPortalLinkageGroup( unsigned char iLinkageGroupID );
+
+	CUtlVector<CProp_Portal*>* GetPortalLinkageGroups();
 
 	virtual Vector GetMins();
 	virtual Vector GetMaxs();

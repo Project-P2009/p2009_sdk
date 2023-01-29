@@ -327,6 +327,9 @@ public:
 	// IPositionWatcher
 	virtual void NotifyPositionChanged( CBaseEntity *pEntity );
 
+	virtual void AnimBegun() { }
+	virtual void AnimOver() { }
+
 	// Input handlers
 	void InputSetAnimation( inputdata_t &inputdata );
 #ifdef MAPBASE // From Alien Swarm SDK

@@ -4,8 +4,6 @@
 #include "props.h"
 #include "Sprite.h"
 
-#include <set>
-
 class CFuncLaserDetector : public CBaseEntity {
 public:
 	DECLARE_CLASS(CFuncLaserDetector, CBaseEntity);

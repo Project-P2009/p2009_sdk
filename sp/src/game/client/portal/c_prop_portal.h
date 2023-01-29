@@ -88,7 +88,7 @@ private:
 
 
 	friend void __MsgFunc_EntityPortalled(bf_read &msg);
-
+protected:
 	float m_fWidth, m_fHeight;
 };
 
