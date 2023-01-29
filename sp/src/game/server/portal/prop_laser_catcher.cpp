@@ -1,258 +1,280 @@
 #include "cbase.h"
-#include "dbg.h"
-#include "props.h"
-#include "baseanimating.h"
 #include "prop_laser_catcher.h"
+#include "soundenvelope.h"
 
-#include "tier0/memdbgon.h"
+#define CATCHER_ACTIVATE_SOUND "LaserCatcher.Activate"
+#define CATCHER_DEACTIVATE_SOUND "LaserCatcher.Deactivate"
+#define CATCHER_AMBIENCE_SOUND "world/laser_node_lp_01.wav"
 
-// LASER TARGET
-class CLaserTargetList : public CAutoGameSystem
-{
-public:
-	CLaserTargetList(char const* name) : CAutoGameSystem(name)
-	{
-	}
+#define LASER_EMITTER_DEFAULT_SPRITE "sprites/light_glow02_add.vmt"//"sprites/purpleglow1.vmt"
+#define LASER_SPRITE_COLOUR 255, 64, 64
 
-	virtual void LevelShutdownPostEntity()
-	{
-		Clear();
-	}
+// CVar for visuals
+// TODO: Finialize visuals and use macros/constants instead!
+extern ConVar portal_laser_glow_sprite_colour;
+extern ConVar portal_laser_glow_sprite;
+extern ConVar portal_laser_glow_sprite_scale;
 
-	void Clear()
-	{
-		m_list.Purge();
-	}
+ConVar portal_laser_catcher_detector_size("portal_laser_catcher_detector_size", "12", FCVAR_CHEAT, "Set the laser catcher's detector size.");
 
-	void AddToList(CEnvLaserTarget* pLaserTarget);
-	void RemoveFromList(CEnvLaserTarget* pLaserTarget);
+LINK_ENTITY_TO_CLASS(func_laser_detect, CFuncLaserDetector)
 
-	CUtlVector<CEnvLaserTarget* >	m_list;
-};
-
-void CLaserTargetList::AddToList(CEnvLaserTarget* pLaserTarget)
-{
-	m_list.AddToTail(pLaserTarget);
-}
-
-void CLaserTargetList::RemoveFromList(CEnvLaserTarget* pLaserTarget)
-{
-	int index = m_list.Find(pLaserTarget);
-	if (index != m_list.InvalidIndex())
-	{
-		m_list.FastRemove(index);
-	}
-}
-
-CLaserTargetList g_LaserTargetList("CLaserTargetList");
-
-BEGIN_DATADESC(CEnvLaserTarget)
-
-DEFINE_OUTPUT(m_OnPowered, "OnPowered"),
-DEFINE_OUTPUT(m_OnUnpowered, "OnUnpowered"),
-
-END_DATADESC()
-
-LINK_ENTITY_TO_CLASS(env_laser_target, CEnvLaserTarget);
-
-
-
-//-----------------------------------------------------------------------------
-// Purpose: Constructor
-//-----------------------------------------------------------------------------
-CEnvLaserTarget::CEnvLaserTarget(void)
-{
-	g_LaserTargetList.AddToList(this);
-}
-
-CEnvLaserTarget::~CEnvLaserTarget(void)
-{
-	g_LaserTargetList.RemoveFromList(this);
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CEnvLaserTarget::Precache(void)
-{
-	BaseClass::Precache();
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CEnvLaserTarget::Spawn(void)
-{
-	Precache();
-
-	// This is a dummy model that is never used!
-	UTIL_SetSize(this, Vector(-14, -14, -14), Vector(14, 14, 14));
-
-	SetNextThink(gpGlobals->curtime + 0.1f);
-
-	SetSolid(SOLID_BBOX);
-	AddSolidFlags(FSOLID_NOT_STANDABLE);
-
-	AddEffects(EF_NODRAW);
-
-	//Check our water level
-	PhysicsCheckWater();
-
-	m_iMaxHealth = GetHealth();
-}
-
-void CEnvLaserTarget::TurnOn(CBaseEntity* pLaser)
-{
-	m_OnPowered.FireOutput(pLaser, this);
-}
-
-void CEnvLaserTarget::TurnOff(CBaseEntity* pLaser)
-{
-	m_OnUnpowered.FireOutput(pLaser, this);
-}
-
-enum CatcherType {
-	STANDARD = 0,
-	RETAIL = 1
-};
-
-// CATCHER
-LINK_ENTITY_TO_CLASS(prop_laser_catcher, CPropLaserCatcher);
-
-#define CATCHER_RETAIL_MODEL "models/props/laser_catcher_center.mdl"
-#define CATCHER_MODEL "models/props/combine_laser_catcher.mdl"
-#define CATCHER_ENERGY_GLOW "materials/sprites/glow01.vmt"
-#define CATCHER_ENERGY_GLOW2 "materials/sprites/physring1.vmt"
-#define CATCHER_ON_SND "Portal.button_down"
-#define CATCHER_OFF_SND "coast.combine_apc_shutdown"
-
-BEGIN_DATADESC(CPropLaserCatcher)
-	DEFINE_KEYFIELD(m_nCatcherType, FIELD_INTEGER, "CatcherType"),
-
-	DEFINE_THINKFUNC(AnimateThink),
-
+BEGIN_DATADESC(CFuncLaserDetector)
+// Key fields
+	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
+	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
+	DEFINE_KEYFIELD(m_bAnimateOnActive, FIELD_BOOLEAN, "animate_active"),
+	DEFINE_KEYFIELD(m_szPropEntity, FIELD_STRING, "connected_prop"),
+// Think functions
+	DEFINE_THINKFUNC(DebugThink),
+// Outputs
 	DEFINE_OUTPUT(m_OnPowered, "OnPowered"),
 	DEFINE_OUTPUT(m_OnUnpowered, "OnUnpowered"),
 END_DATADESC()
 
-CPropLaserCatcher::CPropLaserCatcher(void)
-{
+extern ConVar portal_laser_debug;
 
+void CFuncLaserDetector::Spawn() {
+	BaseClass::Spawn();
+
+	SetSolid(SOLID_BBOX);
+
+	if (m_szPropEntity != NULL) {
+		m_pProp = gEntList.FindEntityByName(NULL, m_szPropEntity);
+	}
+
+	SetThink(&CFuncLaserDetector::DebugThink);
+	SetNextThink(gpGlobals->curtime);
 }
 
-void CPropLaserCatcher::Precache(void)
-{
-	PrecacheModel(CATCHER_MODEL);
-	PrecacheModel(CATCHER_RETAIL_MODEL);
-	PrecacheMaterial(CATCHER_ENERGY_GLOW);
-	PrecacheMaterial(CATCHER_ENERGY_GLOW2);
-	PrecacheScriptSound(CATCHER_ON_SND);
-	PrecacheScriptSound(CATCHER_OFF_SND);
+void CFuncLaserDetector::Precache() {
+	PrecacheScriptSound(CATCHER_ACTIVATE_SOUND);
+	PrecacheScriptSound(CATCHER_DEACTIVATE_SOUND);
+	PrecacheSound(CATCHER_AMBIENCE_SOUND);
 
 	BaseClass::Precache();
 }
 
-void CPropLaserCatcher::Spawn(void)
-{
-	Precache();
-	switch (m_nCatcherType) {
-	case STANDARD:
-		SetModel(CATCHER_MODEL);
-		break;
-	case RETAIL:
-		SetModel(CATCHER_RETAIL_MODEL);
-		break;
+void CFuncLaserDetector::AddEmitter(CBaseEntity* emitter) {
+	// Store previous list count
+	int oldCount = m_LaserList.size();
+
+	// Check if the emitter has not been added already.
+	if (m_LaserList.find(emitter) == m_LaserList.end()) {
+		// Add laser emitter
+		m_LaserList.insert(emitter);
 	}
+
+	// Check if we added any laser emitters
+	if (oldCount == 0 && m_LaserList.size() > 0) {
+		// Play activated sound
+		EmitSound(CATCHER_ACTIVATE_SOUND);
+		// Fire output event
+		m_OnPowered.FireOutput(NULL, NULL);
+
+		// Check if the detector has a parent catcher.
+		if (m_pProp != NULL && FClassnameIs(m_pProp, "prop_laser_catcher")) {
+			CPropLaserCatcher* catcher = dynamic_cast<CPropLaserCatcher*>(m_pProp.Get());
+			if (catcher) {
+				// Fire "PowerOn" output of the parent prop.
+				catcher->FirePowerOnOutput();
+			}
+		}
+		// Create looping "active" sound
+		CreateSounds();
+	}
+}
+
+void CFuncLaserDetector::RemoveEmitter(CBaseEntity* emitter) {
+	// Check if the emitter is on the list, then remove it.
+	std::set<CBaseEntity*>::iterator it = m_LaserList.find(emitter);
+	if (it != m_LaserList.end()) {
+		m_LaserList.erase(it);
+	}
+
+	if (m_LaserList.size() == 0) {
+		EmitSound(CATCHER_DEACTIVATE_SOUND);
+		m_OnUnpowered.FireOutput(NULL, NULL);
+		// Check if the detector has a parent catcher.
+		if (m_pProp != NULL && FClassnameIs(m_pProp, "prop_laser_catcher")) {
+			CPropLaserCatcher* catcher = dynamic_cast<CPropLaserCatcher*>(m_pProp.Get());
+			if (catcher) {
+				// Fire "PowerOff" output of the parent prop.
+				catcher->FirePowerOffOutput();
+			}
+		}
+		// Stop looping "active" sound
+		DestroySounds();
+	}
+}
+
+void CFuncLaserDetector::CreateSounds() {
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+
+	CPASAttenuationFilter filter(this);
+	if (!m_pActiveSound) {
+		m_pActiveSound = controller.SoundCreate(filter, entindex(), CATCHER_AMBIENCE_SOUND);
+	}
+
+	controller.Play(m_pActiveSound, 1, 100);
+}
+
+void CFuncLaserDetector::DestroySounds() {
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+
+	controller.SoundDestroy(m_pActiveSound);
+	m_pActiveSound = NULL;
+}
+
+bool CFuncLaserDetector::IsActivated() const {
+	return m_bActivated;
+}
+
+CFuncLaserDetector* CFuncLaserDetector::Create(const Vector& origin, const QAngle& angles, const Vector& mins, const Vector& maxs, CBaseEntity* owner) {
+	// Create detector entity
+	CFuncLaserDetector* pEnt = dynamic_cast<CFuncLaserDetector*>(CreateEntityByName("func_laser_detect"));
+	if (pEnt == NULL) {
+		return NULL;
+	}
+
+	// Set detector bounds
+	UTIL_SetSize(pEnt, mins, maxs);
+	// Set parent
+	pEnt->m_pProp = owner;
+	pEnt->SetParent(owner);
+	DispatchSpawn(pEnt);
+
+	// Set location and rotation
+	pEnt->SetAbsOrigin(origin);
+	pEnt->SetAbsAngles(angles);
+
+	return pEnt;
+}
+
+void CFuncLaserDetector::DebugThink() {
+	if (portal_laser_debug.GetBool()) {
+		DrawBBoxOverlay(1);
+
+		NDebugOverlay::Axis(GetAbsOrigin(), GetAbsAngles(), 16, false, 1);
+	}
+
+	SetNextThink(gpGlobals->curtime + 1);
+}
+
+// ==== Catcher ====
+
+LINK_ENTITY_TO_CLASS(prop_laser_catcher, CPropLaserCatcher);
+
+BEGIN_DATADESC(CPropLaserCatcher)
+	// Key fields
+	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
+	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
+	// Outputs
+	DEFINE_OUTPUT(m_OnPowered, "OnPowered"),
+	DEFINE_OUTPUT(m_OnUnpowered, "OnUnpowered"),
+END_DATADESC()
+
+void CPropLaserCatcher::Precache() {
+	PrecacheScriptSound(CATCHER_ACTIVATE_SOUND);
+	PrecacheScriptSound(CATCHER_DEACTIVATE_SOUND);
+	PrecacheSound(CATCHER_AMBIENCE_SOUND);
+
+	BaseClass::Precache();
+}
+
+CPropLaserCatcher::CPropLaserCatcher(): BaseClass() { }
+
+void CPropLaserCatcher::Spawn() {
+	BaseClass::Spawn();
+
+	Vector vecOrigin;
+	QAngle angDir;
+
+	if (!GetAttachment("laser_target", vecOrigin, angDir)) {
+		vecOrigin = GetAbsOrigin();
+	}
+	angDir = GetAbsAngles();
+
+	Vector vecDir;
+	AngleVectors(angDir, &vecDir);
+
+	m_bHoldAnimation = true;
+
+	m_pLaserDetector = CFuncLaserDetector::Create(
+		vecOrigin - vecDir * portal_laser_catcher_detector_size.GetFloat() * 0.5f, angDir,
+		Vector(-portal_laser_catcher_detector_size.GetFloat()), Vector(portal_laser_catcher_detector_size.GetFloat()),
+		this
+	);
+
+	m_pActivatedSprite = dynamic_cast<CSprite*>(CreateEntityByName("env_sprite"));
+	if (m_pActivatedSprite != NULL) {
+		if (!GetAttachment("laser_target", vecOrigin, angDir)) {
+			vecOrigin = GetAbsOrigin();
+		}
+		Vector vecDir;
+		AngleVectors(GetAbsAngles(), &vecDir);
+		vecOrigin += vecDir * 6; // Adjust position, so the sprite is not clipping into the model.
+
+		const char* szSprite = portal_laser_glow_sprite.GetString();
+		if (szSprite == NULL || Q_strlen(szSprite) == 0) {
+			szSprite = LASER_EMITTER_DEFAULT_SPRITE;
+		}
+		m_pActivatedSprite->KeyValue("model", szSprite);
+		m_pActivatedSprite->Precache();
+		m_pActivatedSprite->SetParent(this);
+		DispatchSpawn(m_pActivatedSprite);
+		m_pActivatedSprite->SetAbsOrigin(vecOrigin);
+		m_pActivatedSprite->SetRenderMode(kRenderWorldGlow);
+
+		const char* szColor = portal_laser_glow_sprite_colour.GetString();
+		if (szColor != NULL && Q_strlen(szColor) > 0) {
+			int r, g, b;
+			sscanf(szColor, "%i%i%i", &r, &g, &b);
+			m_pActivatedSprite->SetRenderColor(r, g, b);
+		} else {
+			m_pActivatedSprite->SetRenderColor(LASER_SPRITE_COLOUR);
+		}
+		m_pActivatedSprite->SetScale(portal_laser_glow_sprite_scale.GetFloat());
+		m_pActivatedSprite->TurnOff();
+	}
+
+	// Setup default animations if not specified
+	if (m_szIdleAnimation == NULL) {
+		m_szIdleAnimation = "idle";
+	}
+	if (m_szActiveAnimation == NULL) {
+		m_szActiveAnimation = "spin";
+	}
+
 	SetSolid(SOLID_VPHYSICS);
 
-	SetPlaybackRate(0.5);
-	ResetSequence(LookupSequence("idle"));
-
-	m_nLaserTarget = LookupAttachment("laser_target");
-
-	Vector laserTargetVec;
-	QAngle laserTargetAng;
-	GetAttachment(m_nLaserTarget, laserTargetVec, laserTargetAng);
-
-	Msg("Creating env_laser_target at %.2f %.2f %.2f \n", laserTargetVec.x, laserTargetVec.y, laserTargetVec.z);
-	m_pLaserTarget = (CEnvLaserTarget*)Create("env_laser_target", laserTargetVec, laserTargetAng);
-	m_pLaserTarget->SetParent(this);
-	
-	if (m_nCatcherType == STANDARD) {
-		m_pGlowSprite1 = (CSprite*)Create("env_sprite", laserTargetVec, laserTargetAng);
-		m_pGlowSprite2 = (CSprite*)Create("env_sprite", laserTargetVec, laserTargetAng);
-		
-		m_pGlowSprite1->SetModel(CATCHER_ENERGY_GLOW);
-		m_pGlowSprite1->SetRenderMode((RenderMode_t)7);
-		m_pGlowSprite1->m_nRenderFX = 15;
-		m_pGlowSprite1->SetScale(1);
-		m_pGlowSprite1->m_flSpriteFramerate = 30;
-		m_pGlowSprite1->SetParent(this);
-
-		m_pGlowSprite2->SetModel(CATCHER_ENERGY_GLOW2);
-		m_pGlowSprite2->SetRenderMode((RenderMode_t)9);
-		m_pGlowSprite2->m_nRenderFX = 15;
-		m_pGlowSprite2->SetScale(1);
-		m_pGlowSprite2->m_flSpriteFramerate = 30;
-		m_pGlowSprite2->SetParent(this);
-
-		m_pGlowSprite1->TurnOff();
-		m_pGlowSprite2->TurnOff();
-
-		SetModelScale(0.65);
-	}
-
-	this->m_bIsPowered = false;
-	Msg("Laser Catcher Spawned\n");
-
-	BaseClass::Spawn();
+	CreateVPhysics();
 }
 
-void CPropLaserCatcher::Activate(void)
-{
-	BaseClass::Activate();
+void CPropLaserCatcher::FirePowerOnOutput() {
+	if (m_szActiveAnimation != NULL) {
+		inputdata_t input;
+		input.value.SetString(MAKE_STRING(m_szActiveAnimation));
+		InputSetAnimation(input);
+	}
 
-	SetThink(&CPropLaserCatcher::AnimateThink);
-	SetNextThink(gpGlobals->curtime + 0.1f);
+	if (m_pActivatedSprite != NULL) {
+		m_pActivatedSprite->TurnOn();
+	}
+	m_nSkin = 1;
+	m_OnPowered.FireOutput(NULL, NULL);
 }
 
-void CPropLaserCatcher::AnimateThink(void)
-{
-	// Update our animation
-	StudioFrameAdvance();
-	DispatchAnimEvents(this);
-	m_BoneFollowerManager.UpdateBoneFollowers(this);
-
-	SetNextThink(gpGlobals->curtime + 0.1f);
-}
-
-void CPropLaserCatcher::TurnOn(CBaseEntity* pLaser)
-{
-	EmitSound(CATCHER_ON_SND);
-
-	if (m_nCatcherType == RETAIL) {
-		SetSkin(1);
-		ResetSequence(LookupSequence("spin"));
-	}
-	else {
-		m_pGlowSprite1->TurnOn();
-		m_pGlowSprite2->TurnOn();
+void CPropLaserCatcher::FirePowerOffOutput() {
+	if (m_szIdleAnimation != NULL) {
+		inputdata_t input;
+		input.value.SetString(MAKE_STRING(m_szIdleAnimation));
+		InputSetAnimation(input);
 	}
 
-	m_OnPowered.FireOutput(pLaser, this);
-}
-
-void CPropLaserCatcher::TurnOff(CBaseEntity* pLaser)
-{
-	EmitSound(CATCHER_OFF_SND);
-	if (m_nCatcherType == RETAIL) {
-		SetSkin(0);
-		ResetSequence(LookupSequence("idle"));
+	if (m_pActivatedSprite != NULL) {
+		m_pActivatedSprite->TurnOff();
 	}
-	else {
-		m_pGlowSprite1->TurnOff();
-		m_pGlowSprite2->TurnOff();
-	}
-	m_OnUnpowered.FireOutput(pLaser, this);
+	m_nSkin = 0;
+	m_OnUnpowered.FireOutput(NULL, NULL);
 }

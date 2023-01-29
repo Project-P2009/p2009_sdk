@@ -1,61 +1,68 @@
-#ifndef PROP_LASER_CATCHER_H
-#define PROP_LASER_CATCHER_H
-#ifdef _WIN32
 #pragma once
-#endif
 
-#include "baseentity.h"
-#include "env_portal_laser.h"
-#include "Sprite.h"
+#include "cbase.h"
 #include "props.h"
+#include "Sprite.h"
 
-class CEnvLaserTarget : public CBaseAnimating
-{
+#include <set>
+
+class CFuncLaserDetector : public CBaseEntity {
 public:
-	DECLARE_CLASS(CEnvLaserTarget, CBaseAnimating);
-	DECLARE_DATADESC();
+	DECLARE_CLASS(CFuncLaserDetector, CBaseEntity);
 
-	CEnvLaserTarget(void);
-	~CEnvLaserTarget();
+	virtual void Precache();
+	virtual void Spawn();
 
-	void Spawn(void);
-	void Precache(void);
+	virtual void AddEmitter(CBaseEntity* emitter);
+	virtual void RemoveEmitter(CBaseEntity* emitter);
 
-	void TurnOn(CBaseEntity* pLaser);
-	void TurnOff(CBaseEntity* pLaser);
+	virtual void CreateSounds();
+	void DestroySounds();
 
+	bool IsActivated() const;
+
+	static CFuncLaserDetector* Create(const Vector& origin, const QAngle& angles, const Vector& mins, const Vector& maxs, CBaseEntity* owner);
+
+	void DebugThink();
 private:
 	COutputEvent m_OnPowered;
 	COutputEvent m_OnUnpowered;
+
+	EHANDLE m_pProp;
+
+	const char* m_szIdleAnimation;
+	const char* m_szActiveAnimation;
+	const char* m_szPropEntity;
+
+	bool m_bAnimateOnActive;
+
+	bool m_bActivated;
+
+	CSoundPatch* m_pActiveSound;
+
+	std::set<CBaseEntity*> m_LaserList;
+	DECLARE_DATADESC();
 };
 
-class CPropLaserCatcher : public CDynamicProp
-{
+class CPropLaserCatcher : public CDynamicProp {
 public:
 	DECLARE_CLASS(CPropLaserCatcher, CDynamicProp);
 
-	CPropLaserCatcher(void);
+	CPropLaserCatcher();
 
-	void Spawn(void);
-	void Precache(void);
-	virtual void Activate(void);
-	virtual void AnimateThink(void);
-	void TurnOn(CBaseEntity* pLaser);
-	void TurnOff(CBaseEntity* pLaser);
+	virtual void Precache();
+	virtual void Spawn();
 
-
-
-	DECLARE_DATADESC();
+	void FirePowerOnOutput();
+	void FirePowerOffOutput();
 private:
-	int m_nCatcherType;
-	int m_nLaserTarget;
-	CEnvLaserTarget* m_pLaserTarget;
-	CSprite* m_pGlowSprite1;
-	CSprite* m_pGlowSprite2;
-	bool m_bIsPowered;
-	// Inputs / Outputs
+	CFuncLaserDetector* m_pLaserDetector;
+	CSprite* m_pActivatedSprite;
+
+	const char* m_szIdleAnimation;
+	const char* m_szActiveAnimation;
+
 	COutputEvent m_OnPowered;
 	COutputEvent m_OnUnpowered;
+	DECLARE_DATADESC();
 };
-
-#endif //PROP_LASER_CATCHER_H
