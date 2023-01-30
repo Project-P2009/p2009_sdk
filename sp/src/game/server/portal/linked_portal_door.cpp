@@ -250,3 +250,14 @@ void CLinkedPortalDoor::ResetModel()
 	SetSolid(SOLID_OBB);
 	SetSolidFlags(FSOLID_TRIGGER | FSOLID_NOT_SOLID | FSOLID_CUSTOMBOXTEST | FSOLID_CUSTOMRAYTEST);
 }
+
+void CLinkedPortalDoor::SetPortalSize(float fWidth, float fHeight)
+{
+	m_fWidth = fWidth;
+	m_fHeight = fHeight;
+}
+
+void CLinkedPortalDoor::SetLinkageGroup(int iLinkageGroup)
+{
+	m_iLinkageGroupID = iLinkageGroup;
+}

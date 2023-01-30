@@ -26,6 +26,9 @@ class CLinkedPortalDoor : public CProp_Portal
 		virtual void ResetModel() override;
 
 		virtual void CreateSounds(void) override { /* Do nothing! */ }
+
+		void SetPortalSize(float fWidth, float fHeight);
+		void SetLinkageGroup(int iLinkageGroup);
 	private:
 		
 };

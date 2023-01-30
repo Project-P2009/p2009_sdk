@@ -36,8 +36,8 @@ BEGIN_DATADESC(CPropTestchamberDoor)
 // Fields
 	DEFINE_FIELD(m_bIsOpen, FIELD_BOOLEAN),
 // Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "open", InputOpen),
-	DEFINE_INPUTFUNC(FIELD_VOID, "close", InputClose),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Open", InputOpen),
+	DEFINE_INPUTFUNC(FIELD_VOID, "Close", InputClose),
 // Outputs
 	DEFINE_OUTPUT(m_OnOpen, "OnOpen"),
 	DEFINE_OUTPUT(m_OnFullyOpen, "OnFullyOpen"),
@@ -126,11 +126,14 @@ public:
 	virtual void StartClose() override;
 private:
 	CLinkedPortalDoor* m_pPortal;
+	int m_iLinkGroup;
 };
 LINK_ENTITY_TO_CLASS(prop_linked_portal_door, CPropLinkedPortalDoor);
 
 BEGIN_DATADESC(CPropLinkedPortalDoor)
 	DEFINE_FIELD(m_pPortal, FIELD_CLASSPTR),
+// Keyfield
+	DEFINE_KEYFIELD(m_iLinkGroup, FIELD_INTEGER, "LinkageGroupID")
 END_DATADESC()
 
 CPropLinkedPortalDoor::~CPropLinkedPortalDoor() {
@@ -142,6 +145,13 @@ CPropLinkedPortalDoor::~CPropLinkedPortalDoor() {
 void CPropLinkedPortalDoor::Spawn()
 {
 	m_pPortal = dynamic_cast<CLinkedPortalDoor*>(CreateEntityByName("linked_portal_door"));
+	if (m_pPortal != nullptr) {
+		inputdata_t value;
+		value.value.SetBool(false);
+		m_pPortal->InputSetActivatedState(value);
+		m_pPortal->SetLinkageGroup(m_iLinkGroup);
+		m_pPortal->SetPortalSize(56.0f, 50.0f);
+	}
 }
 
 void CPropLinkedPortalDoor::OnFullyOpen()
@@ -152,10 +162,15 @@ void CPropLinkedPortalDoor::OnFullyOpen()
 void CPropLinkedPortalDoor::OnFullyClose()
 {
 	BaseClass::OnFullyClose();
+	if (m_pPortal == nullptr) {
+		m_pPortal = dynamic_cast<CLinkedPortalDoor*>(CreateEntityByName("linked_portal_door"));
+	}
 	if (m_pPortal != nullptr) {
 		inputdata_t value;
 		value.value.SetBool(false);
 		m_pPortal->InputSetActivatedState(value);
+		m_pPortal->SetLinkageGroup(m_iLinkGroup);
+		m_pPortal->SetPortalSize(56.0f, 50.0f);
 	}
 }
 
