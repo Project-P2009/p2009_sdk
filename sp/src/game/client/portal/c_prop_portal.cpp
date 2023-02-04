@@ -626,8 +626,6 @@ void C_Prop_Portal::OnDataChanged( DataUpdateType_t updateType )
 				TransformedLighting.m_LightShadowHandle = CLIENTSHADOW_INVALID_HANDLE;
 			}
 
-			
-
 
 			if( pFakeLight != NULL )
 			{

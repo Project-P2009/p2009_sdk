@@ -51,6 +51,8 @@ ConVar sv_portal_new_velocity_check("sv_portal_new_velocity_check", "1", FCVAR_C
 ConVar portal_width("portal_width", "32", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar portal_height("portal_height", "54", FCVAR_REPLICATED | FCVAR_CHEAT);
 
+ConVar portal_dummy("portal_dummy", "0", FCVAR_REPLICATED);
+
 ConVar sv_instant_portal("sv_instant_portal", "0", FCVAR_REPLICATED ); // for slowfield -litevex
 CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
 
@@ -129,43 +131,45 @@ CProp_Portal::CProp_Portal( void )
 	}
 
 	//create the collision shape.... TODO: consider having one shared collideable between all portals
-	float fPlanes[6*4];
-	fPlanes[(0*4) + 0] = 1.0f;
-	fPlanes[(0*4) + 1] = 0.0f;
-	fPlanes[(0*4) + 2] = 0.0f;
-	fPlanes[(0*4) + 3] = GetMaxs().x;
+	//float fPlanes[6*4];
+	//fPlanes[(0*4) + 0] = 1.0f;
+	//fPlanes[(0*4) + 1] = 0.0f;
+	//fPlanes[(0*4) + 2] = 0.0f;
+	//fPlanes[(0*4) + 3] = GetMaxs().x;
 
-	fPlanes[(1*4) + 0] = -1.0f;
-	fPlanes[(1*4) + 1] = 0.0f;
-	fPlanes[(1*4) + 2] = 0.0f;
-	fPlanes[(1*4) + 3] = -GetMins().x;
+	//fPlanes[(1*4) + 0] = -1.0f;
+	//fPlanes[(1*4) + 1] = 0.0f;
+	//fPlanes[(1*4) + 2] = 0.0f;
+	//fPlanes[(1*4) + 3] = -GetMins().x;
 
-	fPlanes[(2*4) + 0] = 0.0f;
-	fPlanes[(2*4) + 1] = 1.0f;
-	fPlanes[(2*4) + 2] = 0.0f;
-	fPlanes[(2*4) + 3] = GetMaxs().y;
+	//fPlanes[(2*4) + 0] = 0.0f;
+	//fPlanes[(2*4) + 1] = 1.0f;
+	//fPlanes[(2*4) + 2] = 0.0f;
+	//fPlanes[(2*4) + 3] = GetMaxs().y;
 
-	fPlanes[(3*4) + 0] = 0.0f;
-	fPlanes[(3*4) + 1] = -1.0f;
-	fPlanes[(3*4) + 2] = 0.0f;
-	fPlanes[(3*4) + 3] = -GetMins().y;
+	//fPlanes[(3*4) + 0] = 0.0f;
+	//fPlanes[(3*4) + 1] = -1.0f;
+	//fPlanes[(3*4) + 2] = 0.0f;
+	//fPlanes[(3*4) + 3] = -GetMins().y;
 
-	fPlanes[(4*4) + 0] = 0.0f;
-	fPlanes[(4*4) + 1] = 0.0f;
-	fPlanes[(4*4) + 2] = 1.0f;
-	fPlanes[(4*4) + 3] = GetMaxs().z;
+	//fPlanes[(4*4) + 0] = 0.0f;
+	//fPlanes[(4*4) + 1] = 0.0f;
+	//fPlanes[(4*4) + 2] = 1.0f;
+	//fPlanes[(4*4) + 3] = GetMaxs().z;
 
-	fPlanes[(5*4) + 0] = 0.0f;
-	fPlanes[(5*4) + 1] = 0.0f;
-	fPlanes[(5*4) + 2] = -1.0f;
-	fPlanes[(5*4) + 3] = -GetMins().z;
+	//fPlanes[(5*4) + 0] = 0.0f;
+	//fPlanes[(5*4) + 1] = 0.0f;
+	//fPlanes[(5*4) + 2] = -1.0f;
+	//fPlanes[(5*4) + 3] = -GetMins().z;
 
-	CPolyhedron *pPolyhedron = GeneratePolyhedronFromPlanes( fPlanes, 6, 0.00001f, true );
-	Assert( pPolyhedron != NULL );
-	CPhysConvex *pConvex = physcollision->ConvexFromConvexPolyhedron( *pPolyhedron );
-	pPolyhedron->Release();
-	Assert( pConvex != NULL );
-	m_pCollisionShape = physcollision->ConvertConvexToCollide( &pConvex, 1 );
+	//CPolyhedron *pPolyhedron = GeneratePolyhedronFromPlanes( fPlanes, 6, 0.00001f, true );
+	//Assert( pPolyhedron != NULL );
+	//CPhysConvex *pConvex = physcollision->ConvexFromConvexPolyhedron( *pPolyhedron );
+	//pPolyhedron->Release();
+	//Assert( pConvex != NULL );
+	//m_pCollisionShape = physcollision->ConvertConvexToCollide( &pConvex, 1 );
+
+	UpdateCollision();
 
 	CProp_Portal_Shared::AllPortals.AddToTail( this );
 }
@@ -174,6 +178,9 @@ CProp_Portal::~CProp_Portal( void )
 {
 	CProp_Portal_Shared::AllPortals.FindAndRemove( this );
 	GetPortalLinkageGroups()[m_iLinkageGroupID].FindAndRemove( this );
+	if (m_pDummy) {
+		UTIL_Remove(m_pDummy);
+	}
 }
 
 
@@ -293,6 +300,9 @@ void CProp_Portal::Spawn( void )
 	BaseClass::Spawn();
 
 	m_pAttachedCloningArea = CPhysicsCloneArea::CreatePhysicsCloneArea( this );
+	if (!IsWorldPortal() && portal_dummy.GetBool()) {
+		m_pDummy = CPropPortalDummy::Create(this, m_bIsPortal2 ? 1 : 0, GetMins(), GetMaxs());
+	}
 }
 
 void CProp_Portal::OnRestore()
@@ -656,7 +666,54 @@ void CProp_Portal::FizzleThink( void )
 		pRemotePortal->UpdatePortalLinkage();
 	}
 
+	if (m_pDummy) {
+		UTIL_Remove(m_pDummy);
+		m_pDummy = NULL;
+	}
+
 	SetContextThink( NULL, TICK_NEVER_THINK, s_pFizzleThink );
+}
+
+void CProp_Portal::UpdateCollision()
+{
+	//create the collision shape.... TODO: consider having one shared collideable between all portals
+	float fPlanes[6 * 4];
+	fPlanes[(0 * 4) + 0] = 1.0f;
+	fPlanes[(0 * 4) + 1] = 0.0f;
+	fPlanes[(0 * 4) + 2] = 0.0f;
+	fPlanes[(0 * 4) + 3] = GetMaxs().x;
+
+	fPlanes[(1 * 4) + 0] = -1.0f;
+	fPlanes[(1 * 4) + 1] = 0.0f;
+	fPlanes[(1 * 4) + 2] = 0.0f;
+	fPlanes[(1 * 4) + 3] = -GetMins().x;
+
+	fPlanes[(2 * 4) + 0] = 0.0f;
+	fPlanes[(2 * 4) + 1] = 1.0f;
+	fPlanes[(2 * 4) + 2] = 0.0f;
+	fPlanes[(2 * 4) + 3] = GetMaxs().y;
+
+	fPlanes[(3 * 4) + 0] = 0.0f;
+	fPlanes[(3 * 4) + 1] = -1.0f;
+	fPlanes[(3 * 4) + 2] = 0.0f;
+	fPlanes[(3 * 4) + 3] = -GetMins().y;
+
+	fPlanes[(4 * 4) + 0] = 0.0f;
+	fPlanes[(4 * 4) + 1] = 0.0f;
+	fPlanes[(4 * 4) + 2] = 1.0f;
+	fPlanes[(4 * 4) + 3] = GetMaxs().z;
+
+	fPlanes[(5 * 4) + 0] = 0.0f;
+	fPlanes[(5 * 4) + 1] = 0.0f;
+	fPlanes[(5 * 4) + 2] = -1.0f;
+	fPlanes[(5 * 4) + 3] = -GetMins().z;
+
+	CPolyhedron* pPolyhedron = GeneratePolyhedronFromPlanes(fPlanes, 6, 0.00001f, true);
+	Assert(pPolyhedron != NULL);
+	CPhysConvex* pConvex = physcollision->ConvexFromConvexPolyhedron(*pPolyhedron);
+	pPolyhedron->Release();
+	Assert(pConvex != NULL);
+	m_pCollisionShape = physcollision->ConvertConvexToCollide(&pConvex, 1);
 }
 
 
@@ -2086,6 +2143,31 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 	m_PortalSimulator.SetHeight(m_fHeight);
 	m_PortalSimulator.SetWidth(m_fWidth);
 
+	if (!IsWorldPortal())
+	{
+		if (portal_dummy.GetBool())
+		{
+			if (!m_pDummy)
+			{
+				m_pDummy = CPropPortalDummy::Create(this, m_bIsPortal2 ? 1 : 0, GetMins(), GetMaxs());
+			}
+			else
+			{
+				m_pDummy->SetAbsOrigin(GetAbsOrigin());
+				m_pDummy->SetAbsAngles(GetAbsAngles());
+				m_pDummy->m_nSkin = m_bIsPortal2 ? 1 : 0;
+				UTIL_SetSize(m_pDummy, GetMins(), GetMaxs());
+			}
+		}
+		else
+		{
+			if (m_pDummy)
+			{
+				UTIL_Remove(m_pDummy);
+				m_pDummy = NULL;
+			}
+		}
+	}
 	m_vPrevForward = vOldForward;
 
 	WakeNearbyEntities();
@@ -2344,11 +2426,11 @@ Vector CProp_Portal::GetMaxs() {
 }
 
 float CProp_Portal::GetWidth() {
-	return portal_width.GetFloat();
+	return m_fWidth;//portal_width.GetFloat();
 }
 
 float CProp_Portal::GetHeight() {
-	return portal_height.GetFloat();
+	return m_fHeight;//portal_height.GetFloat();
 }
 
 

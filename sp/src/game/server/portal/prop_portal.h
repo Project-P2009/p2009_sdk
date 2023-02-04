@@ -14,6 +14,8 @@
 #include "baseanimating.h"
 #include "PortalSimulation.h"
 
+#include "prop_portal_dummy.h"
+
 // FIX ME
 #include "portal_shareddefs.h"
 
@@ -85,6 +87,8 @@ public:
 	virtual void			TestRestingSurfaceThink ( void );
 	virtual void			FizzleThink( void );
 
+	void					UpdateCollision();
+
 	bool					IsActivedAndLinked( void ) const;
 
     void					WakeNearbyEntities( void ); //wakes all nearby entities in-case there's been a significant change in how they can rest near a portal
@@ -137,6 +141,8 @@ protected:
 	CPhysCollide			*m_pCollisionShape;
 	void					RemovePortalMicAndSpeaker();	// Cleans up the portal's internal audio members
 	virtual void			UpdateCorners( void );			// Updates the four corners of this portal on spawn and placement
+
+	CPropPortalDummy*		m_pDummy;
 
 public:
 	inline unsigned char	GetLinkageGroup( void ) const { return m_iLinkageGroupID; };

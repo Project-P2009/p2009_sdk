@@ -27,6 +27,8 @@ class CLinkedPortalDoor : public CProp_Portal
 
 		virtual void CreateSounds(void) override { /* Do nothing! */ }
 
+		virtual bool IsWorldPortal() const override { return true; }
+
 		void SetPortalSize(float fWidth, float fHeight);
 		void SetLinkageGroup(int iLinkageGroup);
 	private:

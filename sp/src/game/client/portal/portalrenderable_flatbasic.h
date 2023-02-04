@@ -116,6 +116,7 @@ public:
 	float			m_fSecondaryStaticAmount; // used to help kludge the end of our recursive rendering chain
 	float			m_fOpenAmount;	
 	bool			m_bIsPortal2; //for any set of portals, one must be portal 1, and the other portal 2. Uses different render targets
+	float			m_fWidth, m_fHeight;
 };
 
 #endif //#ifndef PORTALRENDERABLE_FLATBASIC_H

@@ -44,6 +44,47 @@ void CLinkedPortalDoor::Spawn()
 #ifdef DEBUG
 	Msg("---> World portal (%s) size -> (%f %f)\n", GetDebugName(), m_PortalSimulator.GetWidth(), m_PortalSimulator.GetHeight());
 #endif
+
+	//create the collision shape.... TODO: consider having one shared collideable between all portals
+	float fPlanes[6 * 4];
+	fPlanes[(0 * 4) + 0] = 1.0f;
+	fPlanes[(0 * 4) + 1] = 0.0f;
+	fPlanes[(0 * 4) + 2] = 0.0f;
+	fPlanes[(0 * 4) + 3] = GetMaxs().x;
+
+	fPlanes[(1 * 4) + 0] = -1.0f;
+	fPlanes[(1 * 4) + 1] = 0.0f;
+	fPlanes[(1 * 4) + 2] = 0.0f;
+	fPlanes[(1 * 4) + 3] = -GetMins().x;
+
+	fPlanes[(2 * 4) + 0] = 0.0f;
+	fPlanes[(2 * 4) + 1] = 1.0f;
+	fPlanes[(2 * 4) + 2] = 0.0f;
+	fPlanes[(2 * 4) + 3] = GetMaxs().y;
+
+	fPlanes[(3 * 4) + 0] = 0.0f;
+	fPlanes[(3 * 4) + 1] = -1.0f;
+	fPlanes[(3 * 4) + 2] = 0.0f;
+	fPlanes[(3 * 4) + 3] = -GetMins().y;
+
+	fPlanes[(4 * 4) + 0] = 0.0f;
+	fPlanes[(4 * 4) + 1] = 0.0f;
+	fPlanes[(4 * 4) + 2] = 1.0f;
+	fPlanes[(4 * 4) + 3] = GetMaxs().z;
+
+	fPlanes[(5 * 4) + 0] = 0.0f;
+	fPlanes[(5 * 4) + 1] = 0.0f;
+	fPlanes[(5 * 4) + 2] = -1.0f;
+	fPlanes[(5 * 4) + 3] = -GetMins().z;
+
+	CPolyhedron* pPolyhedron = GeneratePolyhedronFromPlanes(fPlanes, 6, 0.00001f, true);
+	Assert(pPolyhedron != NULL);
+	CPhysConvex* pConvex = physcollision->ConvexFromConvexPolyhedron(*pPolyhedron);
+	pPolyhedron->Release();
+	Assert(pConvex != NULL);
+	m_pCollisionShape = physcollision->ConvertConvexToCollide(&pConvex, 1);
+
+	CProp_Portal_Shared::AllPortals.AddToTail(this);
 }
 
 bool CLinkedPortalDoor::TestCollision(const Ray_t &ray, unsigned int fContentsMask, trace_t &tr)
@@ -120,6 +161,8 @@ void CLinkedPortalDoor::NewLocation( const Vector &vOrigin, const QAngle &qAngle
 			m_hLinkedPortal->PunchAllPenetratingPlayers();
 		}
 	}
+
+	UpdateCollision();
 }
 
 void CLinkedPortalDoor::InputSetActivatedState( inputdata_t &inputdata )
