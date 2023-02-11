@@ -11,12 +11,17 @@
 
 #ifdef CLIENT_DLL
 #include "c_basedoor.h"
+#include "prop_portal_shared.h"
+#include "prop_portal_shared.h"
 #endif
 
 CUtlVector<CProp_Portal *> CProp_Portal_Shared::AllPortals;
 
-const Vector CProp_Portal_Shared::vLocalMins( 0.0f, -PORTAL_HALF_WIDTH, -PORTAL_HALF_HEIGHT );
-const Vector CProp_Portal_Shared::vLocalMaxs( 64.0f, PORTAL_HALF_WIDTH, PORTAL_HALF_HEIGHT );
+extern ConVar portal_width;
+extern ConVar portal_height;
+
+// const Vector CProp_Portal_Shared::vLocalMins( 0.0f, -PORTAL_HALF_WIDTH, -PORTAL_HALF_HEIGHT );
+// const Vector CProp_Portal_Shared::vLocalMaxs( 64.0f, PORTAL_HALF_WIDTH, PORTAL_HALF_HEIGHT );
 
 void CProp_Portal_Shared::UpdatePortalTransformationMatrix( const matrix3x4_t &localToWorld, const matrix3x4_t &remoteToWorld, VMatrix *pMatrix )
 {
@@ -75,6 +80,15 @@ bool CProp_Portal_Shared::IsEntityTeleportable( CBaseEntity *pEntity )
 	return true;
 }
 
+namespace PortalShared
+{
+	Vector GetPortalDefaultMins()
+	{
+		return Vector(0.0f, -portal_width.GetFloat(), -portal_height.GetFloat());
+	}
 
-
-
+	Vector GetPortalDefaultMaxs()
+	{
+		return Vector(64.0f, portal_width.GetFloat(), portal_height.GetFloat());
+	}
+}

@@ -16,9 +16,6 @@ class C_LinkedPortalDoor : public C_Prop_Portal
 		virtual ~C_LinkedPortalDoor() override;
 
 		virtual void DrawSimplePortalMesh(const IMaterial *pMaterialOverride = NULL, float fForwardOffsetModifier = 0.25f) override;
-
-	private:
-		
 };
 
 #endif

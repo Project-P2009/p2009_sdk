@@ -131,8 +131,8 @@ CPortalSimulator::CPortalSimulator( void )
 	m_bInCrossLinkedFunction(false),
 	m_pCallbacks(&s_DummyPortalSimulatorCallback),
 	m_DataAccess(m_InternalData),
-	m_fWidth(PORTAL_HALF_WIDTH),
-	m_fHeight(PORTAL_HALF_HEIGHT)
+	m_fWidth(PORTAL_DEFAULT_HALF_WIDTH),
+	m_fHeight(PORTAL_DEFAULT_HALF_HEIGHT)
 {
 	s_PortalSimulators.AddToTail( this );
 

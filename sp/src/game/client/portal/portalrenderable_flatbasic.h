@@ -117,6 +117,9 @@ public:
 	float			m_fOpenAmount;	
 	bool			m_bIsPortal2; //for any set of portals, one must be portal 1, and the other portal 2. Uses different render targets
 	float			m_fWidth, m_fHeight;
+
+	virtual float GetWidth() const { return m_fWidth; }
+	virtual float GetHeight() const { return m_fHeight; }
 };
 
 #endif //#ifndef PORTALRENDERABLE_FLATBASIC_H

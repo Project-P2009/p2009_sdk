@@ -795,7 +795,7 @@ void CPortal_Player::UpdatePortalPlaneSounds(void)
 			{
 				vDiagonal *= 0.25f;
 
-				if (UTIL_IsBoxIntersectingPortal(vEarCenter, vDiagonal, pPortal))
+				if (UTIL_IsBoxIntersectingPortal(vEarCenter, vDiagonal, pPortal) && !pPortal->IsWorldPortal())
 				{
 					m_bIntersectingPortalPlane = true;
 
@@ -815,7 +815,7 @@ void CPortal_Player::UpdatePortalPlaneSounds(void)
 			{
 				vDiagonal *= 0.30f;
 
-				if (!UTIL_IsBoxIntersectingPortal(vEarCenter, vDiagonal, pPortal))
+				if (!UTIL_IsBoxIntersectingPortal(vEarCenter, vDiagonal, pPortal) && !pPortal->IsWorldPortal())
 				{
 					m_bIntersectingPortalPlane = false;
 
@@ -2083,9 +2083,9 @@ void AddPortalCornersToEnginePVS(CProp_Portal* pPortal)
 	Vector ptOrigin = pPortal->GetAbsOrigin();
 
 	// Distance offsets to the different edges of the portal... Used in the placement checks
-	Vector vToTopEdge = vUp * (PORTAL_HALF_HEIGHT - PORTAL_BUMP_FORGIVENESS);
+	Vector vToTopEdge = vUp * (/*PORTAL_HALF_HEIGHT*/pPortal->GetHeight() - PORTAL_BUMP_FORGIVENESS);
 	Vector vToBottomEdge = -vToTopEdge;
-	Vector vToRightEdge = vRight * (PORTAL_HALF_WIDTH - PORTAL_BUMP_FORGIVENESS);
+	Vector vToRightEdge = vRight * (/*PORTAL_HALF_WIDTH*/pPortal->GetWidth() - PORTAL_BUMP_FORGIVENESS);
 	Vector vToLeftEdge = -vToRightEdge;
 
 	// Distance to place PVS points away from portal, to avoid being in solid

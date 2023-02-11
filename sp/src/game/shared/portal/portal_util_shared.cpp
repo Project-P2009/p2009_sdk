@@ -1141,15 +1141,15 @@ void UTIL_Portal_PlaneTransform(const VMatrix matThisToLinked, const VPlane& pla
 	planeTransformed.Init(vTranformedNormal, fTransformedDist);
 }
 
-void UTIL_Portal_Triangles(const Vector& ptPortalCenter, const QAngle& qPortalAngles, Vector pvTri1[3], Vector pvTri2[3])
+void UTIL_Portal_Triangles(const Vector& ptPortalCenter, const QAngle& qPortalAngles, float fWidth, float fHeight, Vector pvTri1[3], Vector pvTri2[3])
 {
 	// Get points to make triangles
 	Vector vRight, vUp;
 	AngleVectors(qPortalAngles, NULL, &vRight, &vUp);
 
-	Vector vTopEdge = vUp * PORTAL_HALF_HEIGHT;
+	Vector vTopEdge = vUp * fHeight;
 	Vector vBottomEdge = -vTopEdge;
-	Vector vRightEdge = vRight * PORTAL_HALF_WIDTH;
+	Vector vRightEdge = vRight * fWidth;
 	Vector vLeftEdge = -vRightEdge;
 
 	Vector vTopLeft = ptPortalCenter + vTopEdge + vLeftEdge;
@@ -1169,7 +1169,7 @@ void UTIL_Portal_Triangles(const Vector& ptPortalCenter, const QAngle& qPortalAn
 
 void UTIL_Portal_Triangles(const CProp_Portal* pPortal, Vector pvTri1[3], Vector pvTri2[3])
 {
-	UTIL_Portal_Triangles(pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), pvTri1, pvTri2);
+	UTIL_Portal_Triangles(pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), pPortal->GetWidth(), pPortal->GetHeight(), pvTri1, pvTri2);
 }
 
 float UTIL_Portal_DistanceThroughPortal(const CProp_Portal* pPortal, const Vector& vPoint1, const Vector& vPoint2)
@@ -1255,8 +1255,8 @@ float UTIL_Portal_ShortestDistanceSqr(const Vector& vPoint1, const Vector& vPoin
 
 						float fAbsRight = fabs(fRight);
 						float fAbsUp = fabs(fUp);
-						if ((fAbsRight > PORTAL_HALF_WIDTH) ||
-							(fAbsUp > PORTAL_HALF_HEIGHT))
+						if ((fAbsRight > pLinkedPortal->GetWidth()) ||
+							(fAbsUp > pLinkedPortal->GetHeight()))
 							bStraightLine = false;
 
 						if (bStraightLine == false)
@@ -1266,19 +1266,19 @@ float UTIL_Portal_ShortestDistanceSqr(const Vector& vPoint1, const Vector& vPoin
 
 							//find the offending extent and shorten both extents to bring it into the portal quad
 							float fNormalizer;
-							if (fAbsRight > PORTAL_HALF_WIDTH)
+							if (fAbsRight > pLinkedPortal->GetWidth())
 							{
-								fNormalizer = fAbsRight / PORTAL_HALF_WIDTH;
+								fNormalizer = fAbsRight / pLinkedPortal->GetWidth();
 
-								if (fAbsUp > PORTAL_HALF_HEIGHT)
+								if (fAbsUp > pLinkedPortal->GetHeight())
 								{
-									float fUpNormalizer = fAbsUp / PORTAL_HALF_HEIGHT;
+									float fUpNormalizer = fAbsUp / pLinkedPortal->GetHeight();
 									if (fUpNormalizer > fNormalizer)
 										fNormalizer = fUpNormalizer;
 								}
 							} else
 							{
-								fNormalizer = fAbsUp / PORTAL_HALF_HEIGHT;
+								fNormalizer = fAbsUp / pLinkedPortal->GetHeight();
 							}
 
 							vCenterToIntersection *= (1.0f / fNormalizer);
@@ -1332,8 +1332,8 @@ void UTIL_Portal_AABB(const CProp_Portal* pPortal, Vector& vMin, Vector& vMax)
 
 	//scale the extents to usable sizes
 	vOBBForward *= PORTAL_HALF_DEPTH;
-	vOBBRight *= PORTAL_HALF_WIDTH;
-	vOBBUp *= PORTAL_HALF_HEIGHT;
+	vOBBRight *= pPortal->GetWidth();
+	vOBBUp *= pPortal->GetHeight();
 
 	vOrigin -= vOBBForward + vOBBRight + vOBBUp;
 
@@ -1395,7 +1395,7 @@ float UTIL_IntersectRayWithPortal(const Ray_t& ray, const CProp_Portal* pPortal)
 
 bool UTIL_IntersectRayWithPortalOBB(const CProp_Portal* pPortal, const Ray_t& ray, trace_t* pTrace)
 {
-	return IntersectRayWithOBB(ray, pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), CProp_Portal_Shared::vLocalMins, CProp_Portal_Shared::vLocalMaxs, 0.0f, pTrace);
+	return IntersectRayWithOBB(ray, pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), pPortal->GetMins(), pPortal->GetMaxs(), 0.0f, pTrace);
 }
 
 bool UTIL_IntersectRayWithPortalOBBAsAABB(const CProp_Portal* pPortal, const Ray_t& ray, trace_t* pTrace)
@@ -1407,11 +1407,11 @@ bool UTIL_IntersectRayWithPortalOBBAsAABB(const CProp_Portal* pPortal, const Ray
 	return IntersectRayWithBox(ray, vAABBMins, vAABBMaxs, 0.0f, pTrace);
 }
 
-bool UTIL_IsBoxIntersectingPortal(const Vector& vecBoxCenter, const Vector& vecBoxExtents, const Vector& ptPortalCenter, const QAngle& qPortalAngles, float flTolerance)
+bool UTIL_IsBoxIntersectingPortal(const Vector& vecBoxCenter, const Vector& vecBoxExtents, const Vector& ptPortalCenter, const QAngle& qPortalAngles, float fWidth, float fHeight, float flTolerance)
 {
 	Vector pvTri1[3], pvTri2[3];
 
-	UTIL_Portal_Triangles(ptPortalCenter, qPortalAngles, pvTri1, pvTri2);
+	UTIL_Portal_Triangles(ptPortalCenter, qPortalAngles, fWidth, fHeight, pvTri1, pvTri2);
 
 	cplane_t plane;
 
@@ -1436,7 +1436,7 @@ bool UTIL_IsBoxIntersectingPortal(const Vector& vecBoxCenter, const Vector& vecB
 	if (pPortal == NULL)
 		return false;
 
-	return UTIL_IsBoxIntersectingPortal(vecBoxCenter, vecBoxExtents, pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), flTolerance);
+	return UTIL_IsBoxIntersectingPortal(vecBoxCenter, vecBoxExtents, pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), pPortal->GetWidth(), pPortal->GetHeight(), flTolerance);
 }
 
 CProp_Portal* UTIL_IntersectEntityExtentsWithPortal(const CBaseEntity* pEntity)
@@ -1465,12 +1465,12 @@ CProp_Portal* UTIL_IntersectEntityExtentsWithPortal(const CBaseEntity* pEntity)
 	return NULL;
 }
 
-void UTIL_Portal_NDebugOverlay(const Vector& ptPortalCenter, const QAngle& qPortalAngles, int r, int g, int b, int a, bool noDepthTest, float duration)
+void UTIL_Portal_NDebugOverlay(const Vector& ptPortalCenter, const QAngle& qPortalAngles, float fWidth, float fHeight, int r, int g, int b, int a, bool noDepthTest, float duration)
 {
 #ifndef CLIENT_DLL
 	Vector pvTri1[3], pvTri2[3];
 
-	UTIL_Portal_Triangles(ptPortalCenter, qPortalAngles, pvTri1, pvTri2);
+	UTIL_Portal_Triangles(ptPortalCenter, qPortalAngles, fWidth, fHeight, pvTri1, pvTri2);
 
 	NDebugOverlay::Triangle(pvTri1[0], pvTri1[1], pvTri1[2], r, g, b, a, noDepthTest, duration);
 	NDebugOverlay::Triangle(pvTri2[0], pvTri2[1], pvTri2[2], r, g, b, a, noDepthTest, duration);
@@ -1480,7 +1480,7 @@ void UTIL_Portal_NDebugOverlay(const Vector& ptPortalCenter, const QAngle& qPort
 void UTIL_Portal_NDebugOverlay(const CProp_Portal* pPortal, int r, int g, int b, int a, bool noDepthTest, float duration)
 {
 #ifndef CLIENT_DLL
-	UTIL_Portal_NDebugOverlay(pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), r, g, b, a, noDepthTest, duration);
+	UTIL_Portal_NDebugOverlay(pPortal->GetAbsOrigin(), pPortal->GetAbsAngles(), pPortal->GetWidth(), pPortal->GetHealth(), r, g, b, a, noDepthTest, duration);
 #endif //#ifndef CLIENT_DLL
 }
 
@@ -1673,7 +1673,7 @@ bool UTIL_Portal_EntityIsInPortalHole(const CProp_Portal* pPortal, CBaseEntity* 
 
 	return OBBHasFullyContainedIntersectionWithQuad(vForward, vRight, vUp, ptOBBCenter,
 		vPortalForward, vPortalForward.Dot(ptPortalCenter), ptPortalCenter,
-		vPortalRight, PORTAL_HALF_WIDTH + 1.0f, vPortalUp, PORTAL_HALF_HEIGHT + 1.0f);
+		vPortalRight, pPortal->GetWidth() + 1.0f, vPortalUp, pPortal->GetHeight() + 1.0f);
 }
 
 

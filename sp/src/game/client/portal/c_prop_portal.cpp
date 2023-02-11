@@ -204,6 +204,16 @@ C_Prop_Portal::~C_Prop_Portal( void )
 	m_GhostRenderables.RemoveAll();
 }
 
+Vector C_Prop_Portal::GetMins() const
+{
+	return Vector(0.0f, -GetWidth(), -GetHeight());
+}
+
+Vector C_Prop_Portal::GetMaxs() const
+{
+	return Vector(64.0f, GetWidth(), GetHeight());
+}
+
 void C_Prop_Portal::Spawn( void )
 {
 	SetThink( &C_Prop_Portal::ClientThink );

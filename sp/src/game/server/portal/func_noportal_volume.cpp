@@ -96,7 +96,7 @@ void CFuncNoPortalVolume::OnActivate( void )
 		{
 			CProp_Portal *pTempPortal = pPortals[i];
 			if( pTempPortal->m_bActivated && 
-				IsOBBIntersectingOBB( pTempPortal->GetAbsOrigin(), pTempPortal->GetAbsAngles(), CProp_Portal_Shared::vLocalMins, CProp_Portal_Shared::vLocalMaxs, 
+				IsOBBIntersectingOBB( pTempPortal->GetAbsOrigin(), pTempPortal->GetAbsAngles(), PortalShared::GetPortalDefaultMins(), PortalShared::GetPortalDefaultMaxs(), 
 									  GetAbsOrigin(), GetCollideable()->GetCollisionAngles(), GetCollideable()->OBBMins(), GetCollideable()->OBBMaxs() ) )
 			{
 				pTempPortal->DoFizzleEffect( PORTAL_FIZZLE_KILLED, false );

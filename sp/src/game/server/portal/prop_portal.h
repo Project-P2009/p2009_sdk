@@ -154,11 +154,11 @@ public:
 
 	CUtlVector<CProp_Portal*>* GetPortalLinkageGroups();
 
-	virtual Vector GetMins();
-	virtual Vector GetMaxs();
+	virtual Vector GetMins() const;
+	virtual Vector GetMaxs() const;
 
-	virtual float GetWidth();
-	virtual float GetHeight();
+	virtual float GetWidth() const;
+	virtual float GetHeight() const;
 };
 
 

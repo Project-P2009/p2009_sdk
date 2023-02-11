@@ -109,18 +109,14 @@ END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( prop_portal, CProp_Portal );
 
-
-
-
-
-
 CProp_Portal::CProp_Portal( void )
 {
 	m_vPrevForward = Vector( 0.0f, 0.0f, 0.0f );
 	m_PortalSimulator.SetPortalSimulatorCallbacks( this );
-	m_fWidth = portal_width.GetFloat();
-	m_fHeight = portal_height.GetFloat();
-
+	if (!IsWorldPortal()) {
+		m_fWidth = portal_width.GetFloat();
+		m_fHeight = portal_height.GetFloat();
+	}
 	m_PortalSimulator.SetWidth(m_fWidth);
 	m_PortalSimulator.SetHeight(m_fHeight);
 
@@ -420,14 +416,14 @@ void CProp_Portal::TestRestingSurfaceThink( void )
 		Vector vCorner = vOrigin;
 
 		if ( iCorner % 2 == 0 )
-			vCorner += vRight * ( portal_width.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += vRight * ( GetWidth() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 		else
-			vCorner += -vRight * ( portal_width.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += -vRight * (GetWidth() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 
 		if ( iCorner < 2 )
-			vCorner += vUp * ( portal_height.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += vUp * ( GetHeight() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 		else
-			vCorner += -vUp * ( portal_height.GetFloat() - PORTAL_BUMP_FORGIVENESS * 1.1f );
+			vCorner += -vUp * (GetHeight() - PORTAL_BUMP_FORGIVENESS * 1.1f );
 
 		Ray_t ray;
 		ray.Init( vCorner, vCorner - vForward );
@@ -2137,8 +2133,10 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 	Vector vOldForward;
 	GetVectors( &vOldForward, 0, 0 );
 
-	m_fHeight = portal_height.GetFloat();
-	m_fWidth = portal_width.GetFloat();
+	if (!IsWorldPortal()) {
+		m_fHeight = portal_height.GetFloat();
+		m_fWidth = portal_width.GetFloat();
+	}
 
 	m_PortalSimulator.SetHeight(m_fHeight);
 	m_PortalSimulator.SetWidth(m_fWidth);
@@ -2352,8 +2350,8 @@ void CProp_Portal::UpdateCorners()
 	{
 		Vector vAddPoint = vOrigin;
 
-		vAddPoint += vRight * ((i & (1<<0))?(portal_width.GetFloat()):(-portal_width.GetFloat()));
-		vAddPoint += vUp * ((i & (1<<1))?(portal_height.GetFloat()):(-portal_height.GetFloat()));
+		vAddPoint += vRight * ((i & (1<<0))?(GetWidth()):(-GetWidth()));
+		vAddPoint += vUp * ((i & (1<<1))?(GetHeight()):(-GetHeight()));
 
 		m_vPortalCorners[i] = vAddPoint;
 	}
@@ -2417,19 +2415,23 @@ CUtlVector<CProp_Portal*>* CProp_Portal::GetPortalLinkageGroups()
 	return s_PortalLinkageGroups;
 }
 
-Vector CProp_Portal::GetMins() {
+Vector CProp_Portal::GetMins() const
+{
 	return Vector(0.0f, -GetWidth(), -GetHeight());
 }
 
-Vector CProp_Portal::GetMaxs() {
+Vector CProp_Portal::GetMaxs() const
+{
 	return Vector(64.0f, GetWidth(), GetHeight());
 }
 
-float CProp_Portal::GetWidth() {
+float CProp_Portal::GetWidth() const
+{
 	return m_fWidth;//portal_width.GetFloat();
 }
 
-float CProp_Portal::GetHeight() {
+float CProp_Portal::GetHeight() const
+{
 	return m_fHeight;//portal_height.GetFloat();
 }
 

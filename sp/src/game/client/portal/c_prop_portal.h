@@ -31,6 +31,9 @@ public:
 							C_Prop_Portal( void );
 	virtual					~C_Prop_Portal( void );
 
+	virtual Vector GetMins() const;
+	virtual Vector GetMaxs() const;
+
 	// Handle recording for the SFM
 	virtual void GetToolRecordingState( KeyValues *msg );
 

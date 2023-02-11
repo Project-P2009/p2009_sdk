@@ -212,9 +212,9 @@ void CPortalGameMovement::FunnelIntoPortal( CProp_Portal *pPortal, Vector &wishd
 		return;
 
 	// Make sure we're in the 2D portal rectangle
-	if ( ( vPlayerToPortal.Dot( vPortalRight ) * vPortalRight ).Length() > PORTAL_HALF_WIDTH * 1.5f )
+	if ( ( vPlayerToPortal.Dot( vPortalRight ) * vPortalRight ).Length() > pPortal->GetWidth()/*PORTAL_HALF_WIDTH*/ * 1.5f )
 		return;
-	if ( ( vPlayerToPortal.Dot( vPortalUp ) * vPortalUp ).Length() > PORTAL_HALF_HEIGHT * 1.5f )
+	if ( ( vPlayerToPortal.Dot( vPortalUp ) * vPortalUp ).Length() > pPortal->GetHeight() * 1.5f )
 		return;
 
 	if ( vPlayerToPortal.z > -8.0f )

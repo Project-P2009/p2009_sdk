@@ -1560,8 +1560,8 @@ void C_Portal_Player::CalcPortalView( Vector &eyeOrigin, QAngle &eyeAngles )
 				Vector vPortalRight, vPortalUp;
 				pPortal->GetVectors( NULL, &vPortalRight, &vPortalUp );
 
-				if( (vIntersectionTest.Dot( vPortalRight ) <= PORTAL_HALF_WIDTH) &&
-					(vIntersectionTest.Dot( vPortalUp ) <= PORTAL_HALF_HEIGHT) )
+				if( (vIntersectionTest.Dot( vPortalRight ) <= pPortal->GetWidth()) &&
+					(vIntersectionTest.Dot( vPortalUp ) <= pPortal->GetHeight()) )
 				{
 					bTransformEye = true;
 				}
