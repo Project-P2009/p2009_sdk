@@ -423,7 +423,7 @@ private:
 
 	EHANDLE				m_hPlayerProxy;
 
-	bool				m_bFlashlightDisabled;
+	CNetworkVar(bool, m_bFlashlightDisabled);
 	bool				m_bUseCappedPhysicsDamageTable;
 	
 	float				m_flArmorReductionTime;

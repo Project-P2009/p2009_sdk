@@ -16,6 +16,7 @@
 #include "iinput.h"
 #include "clientmode.h"
 #include "in_buttons.h"
+#include "c_basehlplayer.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
 #include <KeyValues.h>
@@ -31,6 +32,8 @@
 #include "tier0/memdbgon.h"
 
 static 	CClassMemoryPool< CHudTexture >	 g_HudTextureMemoryPool( 128 );
+
+ConVar hide_flashlight_hud("cl_hide_flashlight_hud", "0", FCVAR_CLIENTDLL, "If set to '1', the flashlight HUD will be hidden.");
 
 //-----------------------------------------------------------------------------
 // Purpose: Parses the weapon txt files to get the sprites needed.
@@ -979,6 +982,10 @@ bool CHud::IsHidden( int iHudFlags )
 	// Need the HEV suit ( HL2 )
 	if ( ( iHudFlags & HIDEHUD_NEEDSUIT ) && ( !pPlayer->IsSuitEquipped() ) )
 		return true;
+
+	C_BaseHLPlayer* pHLPlayer = (C_BaseHLPlayer*)pPlayer;
+	if ( pHLPlayer && (iHudFlags & HIDEHUD_FLASHLIGHT) )
+		return pHLPlayer->FlashlightEnabled() == false || hide_flashlight_hud.GetBool();
 
 	// Hide all HUD elements during screenshot if the user's set hud_freezecamhide ( TF2 )
 #if defined( TF_CLIENT_DLL )

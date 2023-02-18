@@ -94,6 +94,8 @@ ConVar hl2_sprintspeed( "hl2_sprintspeed", "320" );
 
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 
+extern ConVar flashlight;
+
 #ifdef HL2MP
 	#define	HL2_WALK_SPEED 150
 	#define	HL2_NORM_SPEED 190
@@ -679,6 +681,7 @@ CSuitPowerDevice SuitDeviceCustom[] =
 IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
 	SendPropDataTable(SENDINFO_DT(m_HL2Local), &REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
 	SendPropBool( SENDINFO(m_fIsSprinting) ),
+	SendPropBool( SENDINFO(m_bFlashlightDisabled) ),
 #ifdef SP_ANIM_STATE
 	SendPropFloat( SENDINFO(m_flAnimRenderYaw), 0, SPROP_NOSCALE ),
 #endif
@@ -4301,6 +4304,8 @@ void CHL2_Player::ItemPostFrame()
 		m_bPlayUseDenySound = false;
 		EmitSound( "HL2Player.UseDeny" );
 	}
+	
+	m_bFlashlightDisabled = flashlight.GetBool() == false;
 }
 
 

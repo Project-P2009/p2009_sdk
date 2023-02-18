@@ -54,6 +54,7 @@ public:
 	LadderMove_t		*GetLadderMove() { return &m_HL2Local.m_LadderMove; }
 	virtual void		ExitLadder();
 	bool				IsSprinting() const { return m_fIsSprinting; }
+	bool				FlashlightEnabled() const { return m_bFlashlightDisabled == false; }
 	
 	// Input handling
 	virtual bool	CreateMove( float flInputSampleTime, CUserCmd *pCmd );
@@ -86,6 +87,8 @@ private:
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...
 	float				m_flSpeedMod;
 	float				m_flExitSpeedMod;
+
+	bool				m_bFlashlightDisabled;
 	
 #ifdef SP_ANIM_STATE
 	// At the moment, we network the render angles since almost none of the player anim stuff is done on the client in SP.
