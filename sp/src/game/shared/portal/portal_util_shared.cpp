@@ -1321,6 +1321,11 @@ float UTIL_Portal_ShortestDistanceSqr(const Vector& vPoint1, const Vector& vPoin
 
 void UTIL_Portal_AABB(const CProp_Portal* pPortal, Vector& vMin, Vector& vMax)
 {
+	if (pPortal) {
+		Warning("Attempt to check collision with non-existing portal!\n");
+		return;
+	}
+
 	Vector vOrigin = pPortal->GetAbsOrigin();
 	QAngle qAngles = pPortal->GetAbsAngles();
 

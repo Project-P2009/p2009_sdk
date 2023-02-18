@@ -137,7 +137,7 @@ void CEnvPortalLaser::LaserThink() {
 		HandlePlayerKnockback(traceDir, vecPortalOut);
 
 		m_pBeam->PointsInit(vecStart, vecPortalIn);
-		m_pBeamAfterPortal->PointsInit(vecPortalOut, vecEnd);
+		m_pBeamAfterPortal->PointsInit(vecPortalOut, tr.endpos);
 		m_pBeamAfterPortal->RemoveEffects(EF_NODRAW);
 
 		if (portal_laser_debug.GetBool()) {
