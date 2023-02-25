@@ -133,8 +133,8 @@ void CEnvPortalLaser::LaserThink() {
 
 		traceDir = (vecEnd - vecPortalOut).Normalized();
 		UTIL_TraceLine(vecPortalOut, vecPortalOut + (traceDir * MAX_TRACE_LENGTH), MASK_BLOCKLOS, NULL, &tr);
-		HandlePlayerKnockback(vecDir, vecStart);
-		HandlePlayerKnockback(traceDir, vecPortalOut);
+		HandlePlayerKnockback(vecDir, vecStart, vecPortalIn);
+		HandlePlayerKnockback(traceDir, vecPortalOut, tr.endpos);
 
 		m_pBeam->PointsInit(vecStart, vecPortalIn);
 		m_pBeamAfterPortal->PointsInit(vecPortalOut, tr.endpos);
@@ -147,7 +147,7 @@ void CEnvPortalLaser::LaserThink() {
 	} else {
 		traceDir = vecDir;
 		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + (traceDir * MAX_TRACE_LENGTH), MASK_BLOCKLOS, NULL, &tr);
-		HandlePlayerKnockback(vecDir, GetAbsOrigin());
+		HandlePlayerKnockback(vecDir, GetAbsOrigin(), tr.endpos);
 
 		m_pBeamAfterPortal->AddEffects(EF_NODRAW);
 		m_pBeam->PointsInit(GetAbsOrigin(), tr.endpos);
@@ -354,7 +354,7 @@ void CEnvPortalLaser::InputToggle(inputdata_t& data) {
 
 #define LASER_PLAYER_PUSHER_TRACE_COUNT 8
 
-void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart) {
+void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart, const Vector& vecEnd) {
 	QAngle angDir;
 	Vector vecForward, vecRight, vecUp;
 	trace_t tr;
@@ -376,6 +376,18 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Top-left
 		vecStart - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Bottom-left
 	};
+	// Precalculate trace end points
+	Vector vecEnds[LASER_PLAYER_PUSHER_TRACE_COUNT] = {
+		vecEnd + (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()), // Top-right
+		vecEnd + (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()), // Bottom-right
+		vecEnd - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * portal_laser_push_radius.GetFloat()), // Top-left
+		vecEnd - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * portal_laser_push_radius.GetFloat()), // Bottom-left
+
+		vecEnd + (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Top-right
+		vecEnd + (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Bottom-right
+		vecEnd - (vecRight * portal_laser_push_radius.GetFloat()) + (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Top-left
+		vecEnd - (vecRight * portal_laser_push_radius.GetFloat()) - (vecUp * (portal_laser_push_radius.GetFloat() + 4)), // Bottom-left
+	};
 	// Precalculate push directions
 	Vector vecPushDir[LASER_PLAYER_PUSHER_TRACE_COUNT] = {
 		vecRight + vecUp,
@@ -391,7 +403,7 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 
 	// Iterate though traces
 	for (int i = 0; i < LASER_PLAYER_PUSHER_TRACE_COUNT; i++) {
-		UTIL_TraceLine(vecOrigins[i], vecOrigins[i] + vecDir * MAX_TRACE_LENGTH, MASK_BLOCKLOS, NULL, &tr);
+		UTIL_TraceLine(vecOrigins[i], vecEnds[i]/*vecOrigins[i] + vecDir * MAX_TRACE_LENGTH*/, MASK_BLOCKLOS, NULL, &tr);
 		// Look for a player
 		if (tr.m_pEnt && tr.m_pEnt->IsPlayer()) {
 			// Apply the push direction to the player. Remove Z component to not send the player flying.
@@ -408,7 +420,8 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 		// Display traces if debuging is enabled.
 		if (portal_laser_debug.GetBool()) {
 			NDebugOverlay::Line(tr.startpos, tr.endpos, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
-			NDebugOverlay::Line(tr.startpos, tr.startpos + vecPushDir[i].RemoveZ() * 16, 0xFF, 0xFF, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+			NDebugOverlay::Box(vecOrigins[i], Vector(-2), Vector(2), 0xFF, 0x80, 0x00, 0x80, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+			NDebugOverlay::Box(vecEnds[i], Vector(-2), Vector(2), 0xFF, 0x80, 0x00, 0x80, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 		}
 	}
 }

@@ -297,11 +297,6 @@ CProp_Portal* UTIL_Portal_TraceRay_Beam(const Ray_t& ray, unsigned int fMask, IT
 	return pIntersectedPortal;
 }
 
-
-bool UTIL_Portal_Trace_Beam(const CBeam* pBeam, Vector& vecStart, Vector& vecEnd, Vector& vecIntersectionStart, Vector& vecIntersectionEnd, ITraceFilter* pTraceFilter)
-{
-	return UTIL_Portal_Trace_Beam(pBeam, vecStart, vecEnd, vecIntersectionStart, vecIntersectionEnd, MASK_SHOT, pTraceFilter);
-}
 bool UTIL_Portal_Trace_Beam(const CBeam* pBeam, Vector& vecStart, Vector& vecEnd, Vector& vecIntersectionStart, Vector& vecIntersectionEnd, int mask, ITraceFilter* pTraceFilter)
 {
 	vecStart = pBeam->GetAbsStartPos();

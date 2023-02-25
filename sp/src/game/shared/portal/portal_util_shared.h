@@ -35,7 +35,6 @@ CProp_Portal* UTIL_Portal_FirstAlongRay(const Ray_t& ray, float& fMustBeCloserTh
 bool UTIL_Portal_TraceRay_Bullets(const CProp_Portal* pPortal, const Ray_t& ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace, bool bTraceHolyWall = true);
 CProp_Portal* UTIL_Portal_TraceRay_Beam(const Ray_t& ray, unsigned int fMask, ITraceFilter* pTraceFilter, float* pfFraction);
 bool UTIL_Portal_Trace_Beam(const CBeam* pBeam, Vector& vecStart, Vector& vecEnd, Vector& vecIntersectionStart, Vector& vecIntersectionEnd, int mask, ITraceFilter* pTraceFilter);
-bool UTIL_Portal_Trace_Beam(const CBeam* pBeam, Vector& vecStart, Vector& vecEnd, Vector& vecIntersectionStart, Vector& vecIntersectionEnd, ITraceFilter* pTraceFilter);
 
 void UTIL_Portal_TraceRay_With(const CProp_Portal* pPortal, const Ray_t& ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace, bool bTraceHolyWall = true);
 CProp_Portal* UTIL_Portal_TraceRay(const Ray_t& ray, unsigned int fMask, ITraceFilter* pTraceFilter, trace_t* pTrace, bool bTraceHolyWall = true); //traces a ray normally, then sees if portals have anything to say about it

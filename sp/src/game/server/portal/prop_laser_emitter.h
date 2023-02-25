@@ -32,7 +32,7 @@ public:
 	void InputTurnOff(inputdata_t& data);
 	void InputToggle(inputdata_t& data);
 
-	void HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart);
+	void HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart, const Vector& vecEnd);
 
 	void SetPlayerDamage(float damage);
 private:
