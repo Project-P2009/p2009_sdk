@@ -21,7 +21,7 @@ IMPLEMENT_SERVERCLASS_ST(CLinkedPortalDoor, DT_LinkedPortalDoor)
 END_SEND_TABLE();
 
 BEGIN_DATADESC(CLinkedPortalDoor)
-END_DATADESC();
+END_DATADESC()
 
 CLinkedPortalDoor::CLinkedPortalDoor()
 	: BaseClass()
@@ -41,50 +41,17 @@ void CLinkedPortalDoor::Spawn()
 	m_PortalSimulator.SetWidth(m_fWidth);
 	m_PortalSimulator.SetHeight(m_fHeight);
 
-#ifdef DEBUG
-	Msg("---> World portal (%s) size -> (%f %f)\n", GetDebugName(), m_PortalSimulator.GetWidth(), m_PortalSimulator.GetHeight());
-#endif
+	DEBUG_MSG("%s ---> World portal (%s) size -> (%f %f), location -> (%f %f %f)\n", __FUNCTION__, GetDebugName(),
+		m_PortalSimulator.GetWidth(), m_PortalSimulator.GetHeight(),
+		GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z
+	);
+}
 
-	//create the collision shape.... TODO: consider having one shared collideable between all portals
-	float fPlanes[6 * 4];
-	fPlanes[(0 * 4) + 0] = 1.0f;
-	fPlanes[(0 * 4) + 1] = 0.0f;
-	fPlanes[(0 * 4) + 2] = 0.0f;
-	fPlanes[(0 * 4) + 3] = GetMaxs().x;
+void CLinkedPortalDoor::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
 
-	fPlanes[(1 * 4) + 0] = -1.0f;
-	fPlanes[(1 * 4) + 1] = 0.0f;
-	fPlanes[(1 * 4) + 2] = 0.0f;
-	fPlanes[(1 * 4) + 3] = -GetMins().x;
-
-	fPlanes[(2 * 4) + 0] = 0.0f;
-	fPlanes[(2 * 4) + 1] = 1.0f;
-	fPlanes[(2 * 4) + 2] = 0.0f;
-	fPlanes[(2 * 4) + 3] = GetMaxs().y;
-
-	fPlanes[(3 * 4) + 0] = 0.0f;
-	fPlanes[(3 * 4) + 1] = -1.0f;
-	fPlanes[(3 * 4) + 2] = 0.0f;
-	fPlanes[(3 * 4) + 3] = -GetMins().y;
-
-	fPlanes[(4 * 4) + 0] = 0.0f;
-	fPlanes[(4 * 4) + 1] = 0.0f;
-	fPlanes[(4 * 4) + 2] = 1.0f;
-	fPlanes[(4 * 4) + 3] = GetMaxs().z;
-
-	fPlanes[(5 * 4) + 0] = 0.0f;
-	fPlanes[(5 * 4) + 1] = 0.0f;
-	fPlanes[(5 * 4) + 2] = -1.0f;
-	fPlanes[(5 * 4) + 3] = -GetMins().z;
-
-	CPolyhedron* pPolyhedron = GeneratePolyhedronFromPlanes(fPlanes, 6, 0.00001f, true);
-	Assert(pPolyhedron != NULL);
-	CPhysConvex* pConvex = physcollision->ConvexFromConvexPolyhedron(*pPolyhedron);
-	pPolyhedron->Release();
-	Assert(pConvex != NULL);
-	m_pCollisionShape = physcollision->ConvertConvexToCollide(&pConvex, 1);
-
-	CProp_Portal_Shared::AllPortals.AddToTail(this);
+	DEBUG_MSG("!!! %s ---> Entity destroyed!\n");
 }
 
 bool CLinkedPortalDoor::TestCollision(const Ray_t &ray, unsigned int fContentsMask, trace_t &tr)
@@ -112,9 +79,10 @@ void CLinkedPortalDoor::NewLocation( const Vector &vOrigin, const QAngle &qAngle
 	m_PortalSimulator.SetWidth(m_fWidth);
 	m_PortalSimulator.SetHeight(m_fHeight);
 
-#ifdef DEBUG
-	Msg("World portal (%s) size -> (%f %f)\n", GetDebugName(), m_PortalSimulator.GetWidth(), m_PortalSimulator.GetHeight());
-#endif
+	DEBUG_MSG("%s ---> World portal (%s) size -> (%f %f), location -> (%f %f %f)\n", __FUNCTION__, GetDebugName(),
+		m_PortalSimulator.GetWidth(), m_PortalSimulator.GetHeight(),
+		GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z
+	);
 	Vector vOldForward;
 	GetVectors( &vOldForward, 0, 0 );
 
@@ -226,11 +194,15 @@ void CLinkedPortalDoor::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/
 
 void CLinkedPortalDoor::Activate()
 {
-	if(s_PortalLinkageGroups[m_iLinkageGroupID].Find( this ) == -1 )
-		s_PortalLinkageGroups[m_iLinkageGroupID].AddToTail( this );
+	if ( s_PortalLinkageGroups[m_iLinkageGroupID].Find(this) == -1 )
+	{
+		s_PortalLinkageGroups[m_iLinkageGroupID].AddToTail(this);
+	}
 
-	if( m_pAttachedCloningArea == NULL )
-		m_pAttachedCloningArea = CPhysicsCloneArea::CreatePhysicsCloneArea( this );
+	if ( m_pAttachedCloningArea == NULL )
+	{
+		m_pAttachedCloningArea = CPhysicsCloneArea::CreatePhysicsCloneArea(this);
+	}
 
 	UpdatePortalTeleportMatrix();
 	
@@ -292,6 +264,47 @@ void CLinkedPortalDoor::ResetModel()
 
 	SetSolid(SOLID_OBB);
 	SetSolidFlags(FSOLID_TRIGGER | FSOLID_NOT_SOLID | FSOLID_CUSTOMBOXTEST | FSOLID_CUSTOMRAYTEST);
+}
+
+void CLinkedPortalDoor::SetActiveState(bool active)
+{
+	m_hPlacedBy = NULL;
+
+	if (active)
+	{
+		Vector vOrigin;
+		vOrigin = GetAbsOrigin();
+
+		Vector vForward, vUp;
+		GetVectors(&vForward, 0, &vUp);
+
+		CTraceFilterSimpleClassnameList baseFilter(this, COLLISION_GROUP_NONE);
+		UTIL_Portal_Trace_Filter(&baseFilter);
+		CTraceFilterTranslateClones traceFilterPortalShot(&baseFilter);
+
+		trace_t tr;
+		UTIL_TraceLine(vOrigin + vForward, vOrigin + vForward * -8.0f, MASK_SHOT_PORTAL, &traceFilterPortalShot, &tr);
+
+		QAngle qAngles;
+		VectorAngles(tr.plane.normal, vUp, qAngles);
+
+		float fPlacementSuccess = VerifyPortalPlacement(this, tr.endpos, qAngles, PORTAL_PLACED_BY_FIXED);
+		PlacePortal(tr.endpos, qAngles, fPlacementSuccess);
+
+		// If the fixed portal is overlapping a portal that was placed before it... kill it!
+		if (fPlacementSuccess)
+		{
+			IsPortalOverlappingOtherPortals(this, vOrigin, GetAbsAngles(), true);
+		}
+	}
+	else
+	{
+		StopParticleEffects(this);
+	}
+
+	UpdatePortalTeleportMatrix();
+
+	UpdatePortalLinkage();
 }
 
 void CLinkedPortalDoor::SetPortalSize(float fWidth, float fHeight)

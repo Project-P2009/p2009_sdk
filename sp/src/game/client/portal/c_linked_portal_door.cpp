@@ -8,9 +8,6 @@ LINK_ENTITY_TO_CLASS(linked_portal_door, C_LinkedPortalDoor);
 IMPLEMENT_CLIENTCLASS_DT(C_LinkedPortalDoor, DT_LinkedPortalDoor, CLinkedPortalDoor)
 END_RECV_TABLE();
 
-BEGIN_DATADESC(C_LinkedPortalDoor)
-END_DATADESC();
-
 C_LinkedPortalDoor::C_LinkedPortalDoor()
 	: BaseClass()
 {

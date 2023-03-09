@@ -2981,6 +2981,10 @@ bool BGetLocalFormattedDateAndTime( time_t timeVal, char *pchDate, int cubDate, 
 	return false;
 }
 
+bool UtilStrIsNullOrEmtpy(const char* pString) {
+	return pString == nullptr || Q_strlen(pString) <= 0;
+}
+
 
 // And a couple of helpers so people don't have to remember the order of the parameters in the above function
 bool BGetLocalFormattedDate( time_t timeVal, char *pchDate, int cubDate )

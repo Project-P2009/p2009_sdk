@@ -87,7 +87,7 @@ public:
 	virtual void			TestRestingSurfaceThink ( void );
 	virtual void			FizzleThink( void );
 
-	void					UpdateCollision();
+	virtual void			UpdateCollision();
 
 	bool					IsActivedAndLinked( void ) const;
 

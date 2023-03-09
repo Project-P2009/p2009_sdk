@@ -1232,6 +1232,16 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameWithin( CBaseEntity *pStart
 	return NULL;
 }
 
+void CGlobalEntityList::FindAllEntitiesByName(const char* szName, CUtlVector<CBaseEntity*>& result)
+{
+	CBaseEntity* pEntity = gEntList.FindEntityByName(NULL, szName);
+	while (pEntity)
+	{
+		result.AddToTail(pEntity);
+		pEntity = gEntList.FindEntityByName(pEntity, szName);
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Finds an entity by target name or class name.

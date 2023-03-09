@@ -1192,6 +1192,8 @@ static ConCommand Command_Playgamesound( "playgamesound", Playgamesound_f, "Play
 //-----------------------------------------------------------------------------
 void CBaseEntity::EmitSound( const char *soundname, float soundtime /*= 0.0f*/, float *duration /*=NULL*/ )
 {
+	if (UtilStrIsNullOrEmtpy(soundname)) return; // Prevent playing sound if the sound name is null or empty
+
 	//VPROF( "CBaseEntity::EmitSound" );
 	VPROF_BUDGET( "CBaseEntity::EmitSound", _T( "CBaseEntity::EmitSound" ) );
 

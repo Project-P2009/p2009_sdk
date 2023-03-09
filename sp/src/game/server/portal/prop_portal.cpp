@@ -59,13 +59,13 @@ CUtlVector<CProp_Portal *> s_PortalLinkageGroups[256];
 
 BEGIN_DATADESC( CProp_Portal )
 	//saving
-	DEFINE_FIELD( m_hLinkedPortal,		FIELD_EHANDLE ),
 	DEFINE_KEYFIELD( m_iLinkageGroupID,	FIELD_CHARACTER,	"LinkageGroupID" ),
-	DEFINE_FIELD( m_matrixThisToLinked, FIELD_VMATRIX ),
 	DEFINE_KEYFIELD( m_bActivated,		FIELD_BOOLEAN,		"Activated" ),
 	DEFINE_KEYFIELD( m_bIsPortal2,		FIELD_BOOLEAN,		"PortalTwo" ),
 	DEFINE_KEYFIELD( m_fWidth,			FIELD_FLOAT,		"width" ),
 	DEFINE_KEYFIELD( m_fHeight,			FIELD_FLOAT,		"height" ),
+	DEFINE_FIELD( m_hLinkedPortal,		FIELD_EHANDLE ),
+	DEFINE_FIELD( m_matrixThisToLinked, FIELD_VMATRIX ),
 	DEFINE_FIELD( m_vPrevForward,		FIELD_VECTOR ),
 	DEFINE_FIELD( m_hMicrophone,		FIELD_EHANDLE ),
 	DEFINE_FIELD( m_hSpeaker,			FIELD_EHANDLE ),
