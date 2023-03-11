@@ -13,6 +13,7 @@
 #include "tier0/memdbgon.h"
 
 #define TESTCHAMBER_DOOR_MODEL_NAME "models/props/p1_door.mdl"
+#define LINKED_PORTAL_DOOR_MODEL_NAME "models/props/portaldoor.mdl"
 
 #define TESTCHAMBER_DOOR_AREA_PORTAL_NEVER_FADE_DISTANCE 10000.0f
 
@@ -487,9 +488,16 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS(prop_linked_portal_door, CPropLinkedPortalDoor);
 
+void CPropLinkedPortalDoor::Precache()
+{
+	BaseClass::Precache();
+	PrecacheModel(LINKED_PORTAL_DOOR_MODEL_NAME);
+}
+
 void CPropLinkedPortalDoor::Spawn()
 {
 	BaseClass::Spawn();
+	SetModel(LINKED_PORTAL_DOOR_MODEL_NAME);
 //	s_LinkedPortalDoors[m_iLinkageGroupID].AddToTail(this);
 
 	m_pLinkedPair = dynamic_cast<CPropLinkedPortalDoor*>(gEntList.FindEntityByName(nullptr, m_szLinkedPair));
