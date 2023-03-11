@@ -497,7 +497,7 @@ void CPropLinkedPortalDoor::Precache()
 void CPropLinkedPortalDoor::Spawn()
 {
 	BaseClass::Spawn();
-	SetModelName(MAKE_STRING(LINKED_PORTAL_DOOR_MODEL_NAME));
+	SetModel(LINKED_PORTAL_DOOR_MODEL_NAME);
 //	s_LinkedPortalDoors[m_iLinkageGroupID].AddToTail(this);
 
 	m_pLinkedPair = dynamic_cast<CPropLinkedPortalDoor*>(gEntList.FindEntityByName(nullptr, m_szLinkedPair));
