@@ -107,6 +107,7 @@ public:
 	DECLARE_CLASS(CPropLinkedPortalDoor, CPropTestChamberDoor);
 	DECLARE_DATADESC();
 
+	virtual void Precache() override;
 	virtual void Spawn() override;
 
 	virtual void UpdateOnRemove(void);
