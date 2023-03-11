@@ -55,7 +55,7 @@ void CHudDevtag::Paint()
     SetPaintBorderEnabled(false);
     surface()->DrawSetTexture( m_nImport );
     surface()->DrawTexturedRect( 0, 0, 139, 34 );
-    printText(L"WIP - Development Build", 0);
+    //printText(L"WIP - Development Build", 0);
     //printText(WStr(std::string("DEV BUILD: ") + __DATE__), 0);
 }
 void CHudDevtag::togglePrint()
