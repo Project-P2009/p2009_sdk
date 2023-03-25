@@ -985,7 +985,7 @@ bool CHud::IsHidden( int iHudFlags )
 
 	C_BaseHLPlayer* pHLPlayer = (C_BaseHLPlayer*)pPlayer;
 	if ( pHLPlayer && (iHudFlags & HIDEHUD_FLASHLIGHT) )
-		return pHLPlayer->FlashlightEnabled() == false || hide_flashlight_hud.GetBool();
+		return pPlayer->IsEffectActive(EF_DIMLIGHT)/*pHLPlayer->FlashlightEnabled()*/ == false || hide_flashlight_hud.GetBool();
 
 	// Hide all HUD elements during screenshot if the user's set hud_freezecamhide ( TF2 )
 #if defined( TF_CLIENT_DLL )

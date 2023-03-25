@@ -24,6 +24,8 @@
 #include "saverestore_utlvector.h"
 #endif
 
+#include "message_entity.h"
+
 #include "player.h"
 #include "entitylist.h"
 
@@ -32,40 +34,6 @@
 
 // Spawnflags
 #define SF_MESSAGE_DISABLED		1
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-class CMessageEntity : public CPointEntity
-{
-	DECLARE_CLASS( CMessageEntity, CPointEntity );
-
-public:
-	void	Spawn( void );
-	void	Activate( void );
-	void	Think( void );
-#ifdef MAPBASE
-	virtual
-#endif
-	void	DrawOverlays(void);
-
-	virtual void UpdateOnRemove();
-
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
-#ifdef MAPBASE
-	virtual void	InputSetMessage( inputdata_t &inputdata );
-#endif
-
-	DECLARE_DATADESC();
-
-protected:
-	int				m_radius;
-	string_t		m_messageText;
-	bool			m_drawText;
-	bool			m_bDeveloperOnly;
-	bool			m_bEnabled;
-};
 
 LINK_ENTITY_TO_CLASS( point_message, CMessageEntity );
 
@@ -199,6 +167,11 @@ void CMessageEntity::InputSetMessage( inputdata_t &inputdata )
 	m_messageText = AllocPooledString(newmessage);
 }
 #endif
+
+void CMessageEntity::SetMessageText(const string_t& message)
+{
+	m_messageText = message;
+}
 
 // This is a hack to make point_message stuff appear in developer 0 release builds
 //  for now

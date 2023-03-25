@@ -118,9 +118,10 @@ protected:
 	virtual void OnOpen() override;
 	virtual void OnClose() override;
 
+	void InputSetPartner(inputdata_t& data);
+
 private:
-	CLinkedPortalDoor* m_pLinkedPortalDoor1;
-	CLinkedPortalDoor* m_pLinkedPortalDoor2;
+	CLinkedPortalDoor* m_pLinkedPortalDoor;
 	CPropLinkedPortalDoor* m_pLinkedPair;
 
 	const char* m_szLinkedPair;

@@ -56,7 +56,6 @@ BEGIN_DATADESC(CPropTestChamberDoor)
 	DEFINE_EMBEDDED(m_BoneFollowerManager),
 
 END_DATADESC()
-
 LINK_ENTITY_TO_CLASS(prop_testchamber_door, CPropTestChamberDoor);
 
 //-----------------------------------------------------------------------------
@@ -76,19 +75,19 @@ void CPropTestChamberDoor::Precache(void)
 {
 	PrecacheModel(TESTCHAMBER_DOOR_MODEL_NAME);
 
-	if (!UtilStrIsNullOrEmtpy(m_szOpenSound))
+	if (!UTIL_StringIsNullOrEmtpy(m_szOpenSound))
 	{
 		PrecacheScriptSound(m_szOpenSound);
 	}
-	if (!UtilStrIsNullOrEmtpy(m_szOpenStopSound))
+	if (!UTIL_StringIsNullOrEmtpy(m_szOpenStopSound))
 	{
 		PrecacheScriptSound(m_szOpenStopSound);
 	}
-	if (!UtilStrIsNullOrEmtpy(m_szCloseSound))
+	if (!UTIL_StringIsNullOrEmtpy(m_szCloseSound))
 	{
 		PrecacheScriptSound(m_szCloseSound);
 	}
-	if (!UtilStrIsNullOrEmtpy(m_szCloseStopSound))
+	if (!UTIL_StringIsNullOrEmtpy(m_szCloseStopSound))
 	{
 		PrecacheScriptSound(m_szCloseStopSound);
 	}
@@ -117,6 +116,10 @@ void CPropTestChamberDoor::Spawn(void)
 	m_nSequenceOpenIdle = LookupSequence("idleopen");
 	m_nSequenceClose = LookupSequence("close");
 	m_nSequenceCloseIdle = LookupSequence("idleclose");
+	if (m_nSequenceCloseIdle < 0)
+	{
+		m_nSequenceCloseIdle = LookupSequence("idleclosed");
+	}
 
 	// Start closed
 	ResetSequence(m_nSequenceOpen);
@@ -187,6 +190,8 @@ void CPropTestChamberDoor::Open(CBaseEntity* pActivator)
 	m_bIsOpen = true;
 	m_bIsAnimating = true;
 
+	SetSequence(m_nSequenceOpen);
+
 	OnOpen();
 }
 
@@ -220,6 +225,8 @@ void CPropTestChamberDoor::Close(CBaseEntity* pActivator)
 
 	m_bIsOpen = false;
 	m_bIsAnimating = true;
+	
+	SetSequence(m_nSequenceClose);
 
 	OnClose();
 }
@@ -425,6 +432,7 @@ void CPropTestChamberDoor::OnFullyOpened(void)
 {
 	m_OnFullyOpen.FireOutput(this, this);
 
+	SetSequence(m_nSequenceOpenIdle);
 	EmitSound(m_szOpenStopSound);
 }
 
@@ -436,6 +444,7 @@ void CPropTestChamberDoor::OnFullyClosed(void)
 	m_OnFullyClosed.FireOutput(this, this);
 
 	AreaPortalClose();
+	SetSequence(m_nSequenceCloseIdle);
 	EmitSound(m_szCloseStopSound);
 }
 
@@ -473,131 +482,155 @@ void CPropTestChamberDoor::AreaPortalClose(void)
 }
 
 BEGIN_DATADESC(CPropLinkedPortalDoor)
+// Key fields
+	DEFINE_KEYFIELD(m_szLinkedPair	, FIELD_STRING, "LinkedPair"),
+	DEFINE_KEYFIELD(m_fWidth		, FIELD_FLOAT, "width"),
+	DEFINE_KEYFIELD(m_fHeight		, FIELD_FLOAT, "height"),
 // Fields
-	DEFINE_FIELD(m_pLinkedPortalDoor1,	FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pLinkedPortalDoor2,	FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pLinkedPair,			FIELD_CLASSPTR),
-	DEFINE_FIELD(m_eState,				FIELD_INTEGER),
-	DEFINE_FIELD(m_bSecondary,			FIELD_BOOLEAN),
-// Keyfields
-	DEFINE_KEYFIELD(m_fWidth,			FIELD_FLOAT,	 "width"),
-	DEFINE_KEYFIELD(m_fHeight,			FIELD_FLOAT,	 "height"),
-	DEFINE_KEYFIELD(m_iLinkageGroupID,	FIELD_CHARACTER, "LinkageGroupID"),
-	DEFINE_KEYFIELD(m_szLinkedPair,		FIELD_STRING,	 "LinkedPair"),
+	DEFINE_FIELD(m_pLinkedPortalDoor, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_pLinkedPair		, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_iLinkageGroupID	, FIELD_INTEGER),
+	DEFINE_FIELD(m_eState			, FIELD_INTEGER),
+	DEFINE_FIELD(m_bSecondary		, FIELD_BOOLEAN),
+// Inputs
+	DEFINE_INPUTFUNC(FIELD_STRING	, "SetPartner", InputSetPartner)
 END_DATADESC()
-
 LINK_ENTITY_TO_CLASS(prop_linked_portal_door, CPropLinkedPortalDoor);
 
 void CPropLinkedPortalDoor::Precache()
 {
 	BaseClass::Precache();
+
 	PrecacheModel(LINKED_PORTAL_DOOR_MODEL_NAME);
 }
-
 void CPropLinkedPortalDoor::Spawn()
 {
 	BaseClass::Spawn();
+
 	SetModel(LINKED_PORTAL_DOOR_MODEL_NAME);
-//	s_LinkedPortalDoors[m_iLinkageGroupID].AddToTail(this);
 
-	m_pLinkedPair = dynamic_cast<CPropLinkedPortalDoor*>(gEntList.FindEntityByName(nullptr, m_szLinkedPair));
-	m_bSecondary = m_pLinkedPair == nullptr;
-	if (!m_bSecondary)
+	if (UTIL_StringIsNullOrEmtpy(m_szLinkedPair) == false)
 	{
-		m_pLinkedPair->m_pLinkedPair = this; // Set pair to this, so both door will open and close at the same time.
-
-		if ((m_pLinkedPortalDoor1 = dynamic_cast<CLinkedPortalDoor*>(CreateEntityByName("linked_portal_door"))) != nullptr)
+		// Get door pair
+		CBaseEntity* pPair = gEntList.FindEntityByName(nullptr, MAKE_STRING(m_szLinkedPair));
+		// Check if the pair was found
+		if (pPair == nullptr)
 		{
-			if ((m_pLinkedPortalDoor2 = dynamic_cast<CLinkedPortalDoor*>(CreateEntityByName("linked_portal_door"))) != nullptr)
-			{
-				char szPortalName[512] = { 0 };
-				Q_snprintf(szPortalName, 512, "%s_linked_portal_door", GetDebugName());
-
-				Vector vecUp;
-				GetVectors(nullptr, nullptr, &vecUp);
-				vecUp *= m_fHeight;
-
-				m_pLinkedPortalDoor1->SetName(MAKE_STRING(szPortalName));
-				m_pLinkedPortalDoor1->SetAbsOrigin(GetAbsOrigin() + vecUp);
-				m_pLinkedPortalDoor1->SetAbsAngles(GetAbsAngles());
-				m_pLinkedPortalDoor1->SetLinkageGroup(m_iLinkageGroupID);
-				m_pLinkedPortalDoor1->SetIsPortal2(false);
-				m_pLinkedPortalDoor1->m_fWidth = m_fWidth;
-				m_pLinkedPortalDoor1->m_fHeight = m_fHeight;
-				DispatchSpawn(m_pLinkedPortalDoor1);
-
-				m_pLinkedPair->GetVectors(nullptr, nullptr, &vecUp);
-				vecUp *= m_fHeight;
-
-				Q_snprintf(szPortalName, 512, "%s_linked_portal_door", m_pLinkedPair->GetDebugName());
-				m_pLinkedPortalDoor2->SetName(MAKE_STRING(szPortalName));
-				m_pLinkedPortalDoor2->SetAbsOrigin(m_pLinkedPair->GetAbsOrigin() + vecUp);
-				m_pLinkedPortalDoor2->SetAbsAngles(m_pLinkedPair->GetAbsAngles());
-				m_pLinkedPortalDoor2->SetLinkageGroup(m_iLinkageGroupID);
-				m_pLinkedPortalDoor2->SetIsPortal2(true);
-				m_pLinkedPortalDoor2->m_fWidth = m_fWidth;
-				m_pLinkedPortalDoor2->m_fHeight = m_fHeight;
-				DispatchSpawn(m_pLinkedPortalDoor2);
-
-				inputdata_t inData;
-				inData.value.SetBool(false);
-
-				DEBUG_MSG("%s ---> Setting portal active state to '%s'\n", GetDebugName(), inData.value.Bool() ? "true" : "false");
-
-				m_pLinkedPortalDoor1->InputSetActivatedState(inData);
-				m_pLinkedPortalDoor2->InputSetActivatedState(inData);
-				m_pLinkedPortalDoor1->UpdatePortalLinkage();
-				m_pLinkedPortalDoor2->UpdatePortalLinkage();
-
-				m_pLinkedPortalDoor1->Activate();
-				m_pLinkedPortalDoor2->Activate();
-
-				DEBUG_MSG("%s + %s ---> Created 'linked_portal_door' enities!\n", GetDebugName(), m_pLinkedPair->GetDebugName());
-			}
-			else
-			{
-				Warning("Failed to create secondary 'linked_portal_door' entity!\n");
-			}
+			Warning("%s ==> Failed to get linked pair \"%s\"!\n", GetDebugName(), m_szLinkedPair);
 		}
 		else
 		{
-			Warning("Failed to create primary 'linked_portal_door' entity!\n");
+			// Try to cast the found entity to 'prop_linked_portal_door'
+			m_pLinkedPair = dynamic_cast<CPropLinkedPortalDoor*>(pPair);
+			// Check if the cast ha failed
+			if (m_pLinkedPair == nullptr)
+			{
+				Warning("%s ==> Failed to get linked pair \"%s\": Entity class is not 'linked_portal_door'!\n", GetDebugName(), m_szLinkedPair);
+			}
+			else if (m_pLinkedPair->m_pLinkedPair != this)
+			{
+				m_pLinkedPair->m_pLinkedPair = this;
+				if (IsOpen())
+				{
+					m_pLinkedPair->m_pLinkedPair->Open(this);
+				}
+				else if (m_pLinkedPair->m_pLinkedPair->IsOpen())
+				{
+					m_pLinkedPair->m_pLinkedPair->Close(this);
+				}
+			}
 		}
+	}
 
-		DEBUG_MSG("Set pair for door '%s' to '%s'\n", GetDebugName(), m_pLinkedPair->GetDebugName());
+	// Check if we need to create a portal
+	if (m_pLinkedPortalDoor == nullptr)
+	{
+		// Create portal and validate
+		CBaseEntity* pPortal = CreateEntityByName("linked_portal_door");
+		if (pPortal == nullptr)
+		{
+			Warning("%s ==> Failed to create 'linked_portal_door'!\n", GetDebugName());
+		}
+		// Cast to portal door and validate it
+		m_pLinkedPortalDoor = dynamic_cast<CLinkedPortalDoor*>(pPortal);
+		if (m_pLinkedPortalDoor == nullptr)
+		{
+			Warning("%s ==> Failed to create 'linked_portal_door'!\n", GetDebugName());
+			// Remove invalid entity.
+			UTIL_Remove(pPortal);
+		}
+		else
+		{
+			char name[256];
+			Q_snprintf(name, 256, "__%s_portal", STRING(GetEntityName()));
+			m_pLinkedPortalDoor->SetName(AllocPooledString(name));
+			m_pLinkedPortalDoor->SetPortalSize(m_fWidth, m_fHeight);
+
+			// Check if there is a pair assinged
+			if (m_pLinkedPair != nullptr)
+			{
+				// m_pLinkedPair->m_bSecondary = true;
+				if (m_pLinkedPortalDoor->IsLinkedTo(m_pLinkedPair->m_pLinkedPortalDoor) == false)
+				{
+					m_pLinkedPortalDoor->SetPartner(m_pLinkedPair->m_pLinkedPortalDoor);
+				}
+#if DEBUG
+				else
+				{
+					Msg("%s ==> Door portal is already linked! (%s ==> %s)\n",
+						GetDebugName(), m_pLinkedPortalDoor->GetDebugName(), m_pLinkedPortalDoor->GetPartner()->GetDebugName()
+					);
+				}
+#endif
+			}
+			else
+			{
+				Warning("%s ==> Failed to set pair for attached portal '%s'! No pair is assigned!\n",
+					GetDebugName(), m_pLinkedPortalDoor->GetDebugName()
+				);
+			}
+
+			// Set angles for the portal
+			m_pLinkedPortalDoor->SetAbsAngles(GetAbsAngles());
+			Vector vecUp;
+			GetVectors(nullptr, nullptr, &vecUp);
+
+			// Set position for the portal
+			m_pLinkedPortalDoor->SetAbsOrigin(GetAbsOrigin() + (vecUp * m_fHeight));
+			// Spawn portal
+			DispatchSpawn(m_pLinkedPortalDoor);
+			// Update linkage groups
+			m_pLinkedPortalDoor->UpdatePortalLinkage();
+		}
+	}
+	else
+	{
+		m_pLinkedPortalDoor->SetPortalSize(m_fWidth, m_fHeight);
+		if (m_pLinkedPortalDoor->IsLinkedTo(m_pLinkedPair->m_pLinkedPortalDoor) == false)
+		{
+			m_pLinkedPortalDoor->SetPartner(m_pLinkedPair->m_pLinkedPortalDoor);
+		}
 	}
 }
 
 void CPropLinkedPortalDoor::UpdateOnRemove(void)
 {
+	if (m_pLinkedPortalDoor != nullptr)
+	{
+		UTIL_Remove(m_pLinkedPortalDoor);
+	}
 	BaseClass::UpdateOnRemove();
-
-	if (m_pLinkedPortalDoor1 != nullptr) {
-		UTIL_Remove(m_pLinkedPortalDoor1);
-	}
-	if (m_pLinkedPortalDoor2 != nullptr) {
-		UTIL_Remove(m_pLinkedPortalDoor2);
-	}
 }
 
 void CPropLinkedPortalDoor::OnFullyClosed()
 {
 	BaseClass::OnFullyClosed();
-
-	if (m_pLinkedPortalDoor1 != nullptr && m_pLinkedPortalDoor2 != nullptr)
-	{
-		inputdata_t inData;
-		inData.value.SetBool(false);
-
-		DEBUG_MSG("%s ---> Setting portal active state to '%s'\n", GetDebugName(), inData.value.Bool() ? "true" : "false");
-
-		m_pLinkedPortalDoor1->InputSetActivatedState(inData);
-		m_pLinkedPortalDoor2->InputSetActivatedState(inData);
-	}
-
 	m_eState = ELinkedDoorState::Closed;
+	if (m_pLinkedPortalDoor)
+	{
+		m_pLinkedPortalDoor->Close();
+	}
 }
-
 void CPropLinkedPortalDoor::OnFullyOpened()
 {
 	BaseClass::OnFullyOpened();
@@ -608,33 +641,64 @@ void CPropLinkedPortalDoor::OnOpen()
 {
 	BaseClass::OnOpen();
 
-	if (m_pLinkedPair && m_pLinkedPair->m_eState != ELinkedDoorState::Opening)
+	if (m_eState != ELinkedDoorState::Opening)
 	{
-		m_pLinkedPair->Open(this);
+		m_eState = ELinkedDoorState::Opening;
+
+		if (m_pLinkedPair)
+		{
+			m_pLinkedPair->Open(this);
+		}
+		if (m_pLinkedPortalDoor)
+		{
+			m_pLinkedPortalDoor->Open();
+		}
 	}
-
-	if (m_pLinkedPortalDoor1 != nullptr && m_pLinkedPortalDoor2 != nullptr)
-	{
-		inputdata_t inData;
-		inData.value.SetBool(true);
-
-		DEBUG_MSG("%s ---> Setting portal active state to '%s'\n", GetDebugName(), inData.value.Bool() ? "true" : "false");
-
-		m_pLinkedPortalDoor1->InputSetActivatedState(inData);
-		m_pLinkedPortalDoor2->InputSetActivatedState(inData);
-	}
-
-	m_eState = ELinkedDoorState::Opening;
 }
-
 void CPropLinkedPortalDoor::OnClose()
 {
 	BaseClass::OnClose();
-
-	m_eState = ELinkedDoorState::Closing;
-
-	if (m_pLinkedPair && m_pLinkedPair->m_eState != ELinkedDoorState::Closing)
+	if (m_eState != ELinkedDoorState::Closing)
 	{
-		m_pLinkedPair->Close(this);
+		m_eState = ELinkedDoorState::Closing;
+
+		if (m_pLinkedPair)
+		{
+			m_pLinkedPair->Close(this);
+		}
+	}
+}
+
+void CPropLinkedPortalDoor::InputSetPartner(inputdata_t& data)
+{
+	CPropLinkedPortalDoor* pPair = dynamic_cast<CPropLinkedPortalDoor*>(gEntList.FindEntityByName(nullptr, MAKE_STRING(data.value.String())));
+	if (pPair != nullptr && pPair != m_pLinkedPair)
+	{
+		if (m_pLinkedPair)
+		{
+			// Unlink old door pair
+			if (m_pLinkedPair->m_pLinkedPair == this)
+			{
+				m_pLinkedPair->m_pLinkedPair = nullptr;
+			}
+			// Close door
+			if (m_pLinkedPair->IsOpen())
+			{
+				m_pLinkedPair->Close(this);
+			}
+		}
+
+		// Set new pair
+		m_pLinkedPair = pPair;
+		m_pLinkedPair->m_pLinkedPair = this;
+		m_pLinkedPortalDoor->SetPartner(m_pLinkedPair->m_pLinkedPortalDoor);
+		if (IsOpen())
+		{
+			m_pLinkedPair->Open(this);
+		}
+		else if (m_pLinkedPair->IsOpen())
+		{
+			m_pLinkedPair->Close(this);
+		}
 	}
 }

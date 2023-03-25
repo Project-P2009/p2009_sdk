@@ -433,6 +433,13 @@ inline void Error( ... ) {}
 		#define DEBUG_MSG(...)
 	#endif
 #endif
+#ifndef DEBUG_WARN
+	#ifdef DEBUG
+		#define DEBUG_WARN(...) Warning(__VA_ARGS__)
+	#else
+		#define DEBUG_WARN(...)
+	#endif
+#endif
 
 // You can use this macro like a runtime assert macro.
 // If the condition fails, then Error is called with the message. This macro is called

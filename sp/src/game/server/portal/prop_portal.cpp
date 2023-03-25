@@ -1935,7 +1935,6 @@ void CProp_Portal::UpdatePortalLinkage( void )
 
 		m_hLinkedPortal = pLink;
 
-
 		if( pLink != NULL )
 		{
 			CHandle<CProp_Portal> hThis = this;
