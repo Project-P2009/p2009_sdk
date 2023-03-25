@@ -38,10 +38,10 @@ CHudMaptag::CHudMaptag( const char *pElementName ) : CHudElement( pElementName )
 
 void CHudMaptag::printText(const wchar_t* text, const int lineNum)
 {
-    surface()->SetFontGlyphSet(2, "Tahoma", 13, 400, 0, 0, 0x080); // 0x200 is outline, use 0x080 for drop shadow
+    surface()->SetFontGlyphSet(2, "Tahoma", 16, 400, 0, 0, 0x080); // 0x200 is outline, use 0x080 for drop shadow
     surface()->DrawSetTextColor(255, 255, 255, 255);
     surface()->DrawSetTextFont(2);
-    surface()->DrawSetTextPos(0, (14 * lineNum) + 4);
+    surface()->DrawSetTextPos(0, (18 * lineNum) + 4);
     surface()->DrawPrintText(text, std::char_traits<wchar_t>::length(text)); // temp hardcode length
 }
 
@@ -61,8 +61,8 @@ void CHudMaptag::Paint()
 	std::time_t dateT = std::time(0);
 	std::tm* now = std::localtime(&dateT);
 	std::ostringstream ossDate;
-	ossDate << (now->tm_year + 1900) << '-'
-		<< (now->tm_mon + 1) << '-'
+	ossDate << (now->tm_year + 1900) << '/'
+		<< (now->tm_mon + 1) << '/'
 		<< now->tm_mday;
 	dateTime = ossDate.str();
 	std::ostringstream ossTime;
