@@ -1941,12 +1941,27 @@ void CPortal_Player::PickupObject(CBaseEntity* pObject, bool bLimitMassAndSize)
 	if (pObject->HasNPCsOnIt())
 		return;
 
+	IGameEvent* pEvent = gameeventmanager->CreateEvent("player_pickup");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", GetUserID());
+		gameeventmanager->FireEvent(pEvent);
+	}
+
 	PlayerPickupObject(this, pObject);
 }
 
 void CPortal_Player::ForceDropOfCarriedPhysObjects(CBaseEntity* pOnlyIfHoldingThis)
 {
 	m_bHeldObjectOnOppositeSideOfPortal = false;
+
+	IGameEvent* pEvent = gameeventmanager->CreateEvent("player_drop");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", GetUserID());
+		gameeventmanager->FireEvent(pEvent);
+	}
+
 	BaseClass::ForceDropOfCarriedPhysObjects(pOnlyIfHoldingThis);
 }
 

@@ -135,6 +135,7 @@ public:
 private:
 	CWeaponPortalgun( const CWeaponPortalgun & );
 
+	bool m_bShowUsageHint = false;
 };
 
 

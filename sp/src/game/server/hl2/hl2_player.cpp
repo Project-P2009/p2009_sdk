@@ -3492,6 +3492,16 @@ void CHL2_Player::PlayerUse ( void )
 	if ( ! ((m_nButtons | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
 		return;
 
+	if (0)
+	{
+		IGameEvent* pEvent = gameeventmanager->CreateEvent("player_drop");
+		if (pEvent)
+		{
+			pEvent->SetInt("userid", GetUserID());
+			gameeventmanager->FireEvent(pEvent);
+		}
+	}
+
 	if ( m_afButtonPressed & IN_USE )
 	{
 		// Currently using a latched entity?

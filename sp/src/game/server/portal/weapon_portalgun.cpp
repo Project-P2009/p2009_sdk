@@ -45,6 +45,7 @@ BEGIN_DATADESC( CWeaponPortalgun )
 
 	DEFINE_KEYFIELD( m_bCanFirePortal1, FIELD_BOOLEAN, "CanFirePortal1" ),
 	DEFINE_KEYFIELD( m_bCanFirePortal2, FIELD_BOOLEAN, "CanFirePortal2" ),
+	DEFINE_KEYFIELD(m_bShowUsageHint, FIELD_BOOLEAN, "ShowHint"),
 	DEFINE_FIELD( m_iLastFiredPortal, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bOpenProngs, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fCanPlacePortal1OnThisSurface, FIELD_FLOAT ),
@@ -129,10 +130,33 @@ void CWeaponPortalgun::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 		if( pNewOwner && pNewOwner->IsPlayer() )
 			m_iPortalLinkageGroupID = pNewOwner->entindex();
 
-		Assert( (m_iPortalLinkageGroupID >= 0) && (m_iPortalLinkageGroupID < 256) );
+		Assert( (m_iPortalLinkageGroupID >= 0) && (m_iPortalLinkageGroupID < 127) );
 	}
 
-	BaseClass::OnPickedUp( pNewOwner );		
+	if (m_bShowUsageHint)
+	{
+		CPortal_Player* pPlayer = ToPortalPlayer(GetOwner());
+		if (CanFirePortal1())
+		{
+			IGameEvent* pEvent = gameeventmanager->CreateEvent("instructor_fire_portal_1");
+			if (pEvent)
+			{
+				pEvent->SetInt("userid", pPlayer->GetUserID());
+				gameeventmanager->FireEvent(pEvent);
+			}
+		}
+		else if (CanFirePortal2())
+		{
+			IGameEvent* pEvent = gameeventmanager->CreateEvent("instructor_fire_portal_2");
+			if (pEvent)
+			{
+				pEvent->SetInt("userid", pPlayer->GetUserID());
+				gameeventmanager->FireEvent(pEvent);
+			}
+		}
+	}
+
+	BaseClass::OnPickedUp( pNewOwner );
 }
 
 void CWeaponPortalgun::CreateSounds()
@@ -499,7 +523,11 @@ float CWeaponPortalgun::TraceFirePortal( bool bPortal2, const Vector &vTraceStar
 	VectorAngles( tr.plane.normal, vUp, qFinalAngles );
 
 	vFinalPosition = tr.endpos;
-	return VerifyPortalPlacement( CProp_Portal::FindPortal( m_iPortalLinkageGroupID, bPortal2 ), vFinalPosition, qFinalAngles, iPlacedBy, bTest );
+	CProp_Portal* pPortal = CProp_Portal::FindPortal(m_iPortalLinkageGroupID, bPortal2);
+	if (pPortal->IsWorld()) {
+		return PORTAL_ANALOG_SUCCESS_INVALID_SURFACE;
+	}
+	return VerifyPortalPlacement(pPortal, vFinalPosition, qFinalAngles, iPlacedBy, bTest );
 }
 
 float CWeaponPortalgun::FirePortal( bool bPortal2, Vector *pVector /*= 0*/, bool bTest /*= false*/ )
@@ -593,6 +621,26 @@ float CWeaponPortalgun::FirePortal( bool bPortal2, Vector *pVector /*= 0*/, bool
 	if ( !bTest )
 	{
 		SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+		if (m_bShowUsageHint)
+		{
+			CPortal_Player* pPlayer = (CPortal_Player*)pOwner;
+			IGameEvent* pEvent = gameeventmanager->CreateEvent(bPortal2 ? "portal2_fired" : "portal1_fired");
+			if (pEvent && pPlayer)
+			{
+				pEvent->SetInt("userid", pPlayer->GetUserID());
+				gameeventmanager->FireEvent(pEvent);
+
+				if (!bPortal2 && CanFirePortal2())
+				{
+					pEvent = gameeventmanager->CreateEvent("instructor_fire_portal_2");
+					if (pEvent)
+					{
+						pEvent->SetInt("userid", pPlayer->GetUserID());
+						gameeventmanager->FireEvent(pEvent);
+					}
+				}
+			}
+		}
 	}
 
 	if ( pVector )
@@ -714,6 +762,47 @@ void CC_GivePortalGun( void )
 
 static ConCommand give_portalgun("give_portalgun", CC_GivePortalGun, "Gives a portalgun to the player.\n\tArguments:   	none ", FCVAR_CHEAT);
 
+void CC_TestPortalHints(void)
+{
+	CPortal_Player* pPlayer = ToPortalPlayer(UTIL_GetCommandClient());
+	if (pPlayer)
+	{
+		CWeaponPortalgun* pPortalgun = nullptr;
+		for (int i = 0; i < pPlayer->WeaponCount(); i++)
+		{
+			CBaseCombatWeapon* pWeapon = pPlayer->GetWeapon(i);
+			if (pWeapon && FClassnameIs(pWeapon, "weapon_portalgun"))
+			{
+				pPortalgun = dynamic_cast<CWeaponPortalgun*>(pWeapon);
+				break;
+			}
+		}
+
+		if (pPortalgun)
+		{
+			if (pPortalgun->CanFirePortal1())
+			{
+				IGameEvent* pEvent = gameeventmanager->CreateEvent("instructor_fire_portal_1");
+				if (pEvent)
+				{
+					pEvent->SetInt("userid", pPlayer->GetUserID());
+					gameeventmanager->FireEvent(pEvent);
+				}
+			}
+			else if (pPortalgun->CanFirePortal2())
+			{
+				IGameEvent* pEvent = gameeventmanager->CreateEvent("instructor_fire_portal_2");
+				if (pEvent)
+				{
+					pEvent->SetInt("userid", pPlayer->GetUserID());
+					gameeventmanager->FireEvent(pEvent);
+				}
+			}
+		}
+	}
+}
+
+static ConCommand test_portalgun_hints("test_portalgun_hints", CC_TestPortalHints, "Testing Portalgun usage hint", FCVAR_CHEAT);
 
 static void change_portalgun_linkage_id_f( const CCommand &args )
 {

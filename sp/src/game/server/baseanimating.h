@@ -428,6 +428,8 @@ public:
 	Vector	GetStepOrigin( void ) const;
 	QAngle	GetStepAngles( void ) const;
 
+	void FireDissloveOutput(CBaseEntity* activator);
+
 private:
 	bool				m_bSequenceFinished;// flag set when StudioAdvanceFrame moves across a frame boundry
 	bool				m_bSequenceLoops;	// true if the sequence loops
@@ -467,6 +469,7 @@ protected:
 
 public:
 	COutputEvent m_OnIgnite;
+	COutputEvent m_OnFizzled;
 #ifdef MAPBASE
 	COutputEHANDLE m_OnServerRagdoll;
 #endif

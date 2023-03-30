@@ -218,6 +218,7 @@ BEGIN_DATADESC( CBaseAnimating )
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOriginHack", InputSetLightingOriginRelative ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOrigin", InputSetLightingOrigin ),
 	DEFINE_OUTPUT( m_OnIgnite, "OnIgnite" ),
+	DEFINE_OUTPUT( m_OnFizzled, "OnFizzled" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnServerRagdoll, "OnServerRagdoll" ),
 #endif
@@ -1785,6 +1786,11 @@ QAngle CBaseAnimating::GetStepAngles( void ) const
 {
 	// TODO: Add in body lean
 	return GetLocalAngles();
+}
+
+void CBaseAnimating::FireDissloveOutput(CBaseEntity* activator)
+{
+	m_OnFizzled.FireOutput(activator, activator);
 }
 
 //-----------------------------------------------------------------------------

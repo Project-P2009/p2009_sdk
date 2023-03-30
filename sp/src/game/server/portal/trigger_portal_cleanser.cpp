@@ -210,6 +210,8 @@ void CTriggerPortalCleanser::Touch( CBaseEntity *pOther )
 			m_OnDissolveBox.FireOutput( pOther, this );
 		}
 
+		pBaseAnimating->FireDissloveOutput(this);
+
 		if ( FClassnameIs( pBaseAnimating, "updateitem2" ) )
 		{
 			pBaseAnimating->EmitSound( "UpdateItem.Fizzle" );
