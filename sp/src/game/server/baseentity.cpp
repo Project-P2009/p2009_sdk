@@ -5872,10 +5872,6 @@ void ConsoleFireTargets( CBasePlayer *pPlayer, const char *name)
 }
 
 #ifdef MAPBASE
-inline bool UtlStringLessFunc( const CUtlString &lhs, const CUtlString &rhs )
-{
-	return Q_stricmp( lhs.String(), rhs.String() ) < 0;
-}
 
 //------------------------------------------------------------------------------
 // Purpose : More concommands needed access to entities, so this has been moved to its own function.
@@ -6333,13 +6329,6 @@ void CC_Ent_FireTarget( const CCommand& args )
 	ConsoleFireTargets(UTIL_GetCommandClient(),args[1]);
 }
 static ConCommand firetarget("firetarget", CC_Ent_FireTarget, 0, FCVAR_CHEAT);
-
-#ifndef MAPBASE
-static bool UtlStringLessFunc( const CUtlString &lhs, const CUtlString &rhs )
-{
-	return Q_stricmp( lhs.String(), rhs.String() ) < 0;
-}
-#endif
 
 class CEntFireAutoCompletionFunctor : public ICommandCallback, public ICommandCompletionCallback
 {

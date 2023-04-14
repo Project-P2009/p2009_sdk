@@ -490,6 +490,9 @@ public:
 	bool GetBool() const { return !!GetInt(); }
 	const char *GetString( void ) const;
 
+	bool GetMin( float& minVal ) const;
+	bool GetMax( float& maxVal ) const;
+	
 	void SetValue( const char *pValue );
 	void SetValue( float flValue );
 	void SetValue( int nValue );
@@ -560,6 +563,15 @@ FORCEINLINE_CVAR const char *ConVarRef::GetString( void ) const
 	return m_pConVarState->m_pszString;
 }
 
+FORCEINLINE_CVAR bool ConVarRef::GetMin( float& minVal ) const
+{
+	return m_pConVarState->GetMin( minVal );
+}
+
+FORCEINLINE_CVAR bool ConVarRef::GetMax( float& maxVal ) const
+{
+	return m_pConVarState->GetMax( maxVal );
+}
 
 FORCEINLINE_CVAR void ConVarRef::SetValue( const char *pValue )
 {

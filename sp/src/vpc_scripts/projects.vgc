@@ -31,6 +31,11 @@ $Project "game_shader_dx9"
 	"materialsystem\stdshaders\game_shader_dx9_episodic.vpc"  [$EPISODIC]
 }
 
+$Project "GameUI"
+{
+	"gameui\GameUI.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "glview"
 {
 	"utils\glview\glview.vpc" [$WIN32]

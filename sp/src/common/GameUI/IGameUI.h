@@ -118,4 +118,6 @@ public:
 
 #define GAMEUI_INTERFACE_VERSION "GameUI011"
 
+#define GameUI_Log(...) ConColorMsg(Color( 3, 190, 252, 255 ), "[GameUI] " __VA_ARGS__)
+
 #endif // IGAMEUI_H

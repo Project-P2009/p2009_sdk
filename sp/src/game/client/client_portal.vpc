@@ -8,6 +8,9 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"portal" [!$SOURCESDK]
 $Macro GAMENAME 	"p2009" [$SOURCESDK]
 
+$Macro SDKDIR "C:\Program Files (x86)\Steam\steamapps\common\Source SDK Base 2013 Singleplayer"
+$Macro GAMEDIR "C:\Program Files (x86)\Steam\steamapps\sourcemods\p2009"
+
 $Include "$SRCDIR\game\client\client_base.vpc"
 
 $Configuration
@@ -16,6 +19,13 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;.\portal;.\portal\vgui;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\Multiplayer;$SRCDIR\gcsdk\steamextra;$SRCDIR\game\shared\portal;$BASE"
 		$PreprocessorDefinitions		"$BASE;PORTAL;HL2_EPISODIC;HL2_CLIENT_DLL"
+	}
+
+	$Debugging
+	{
+		$Command "$SDKDIR/hl2.exe"
+		$CommandArguments "-allowdebug -dev -sw -condebug -console -toconsole -game $QUOTE$GAMEDIR$QUOTE"
+		$WorkingDirectory "$SDKDIR"
 	}
 }
 

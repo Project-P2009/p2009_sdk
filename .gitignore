@@ -20,6 +20,9 @@ ipch
 *.vcxproj
 *.sln
 
+# JetBrains Specific
+.idea/
+
 # OSX/Linux build products
 *.mak
 *.mak.vpc_crc

@@ -1,6 +1,0 @@
-#!/bin/bash
-
-pushd `dirname $0`
-devtools/bin/vpc /hl2 /episodic /portal /mapbase +everything /mksln everything
-
-popd

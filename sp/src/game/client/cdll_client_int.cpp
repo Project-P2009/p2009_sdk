@@ -164,7 +164,6 @@ extern vgui::IInputInternal *g_InputInternal;
 // HPE_END
 //=============================================================================
 
-
 #ifdef PORTAL
 #include "PortalRender.h"
 #endif
@@ -177,6 +176,16 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "tier0/memdbgon.h"
 
 extern IClientMode *GetClientModeNormal();
+
+static class DllOverride {
+public:
+	DllOverride() {
+		Sys_LoadInterface("filesystem_stdio.dll", FILESYSTEM_INTERFACE_VERSION, nullptr, (void**)&g_pFullFileSystem);
+		const char* pGameDir = CommandLine()->ParmValue("-game", "hl2");
+		pGameDir = VarArgs("%s/bin", pGameDir);
+		g_pFullFileSystem->AddSearchPath(pGameDir, "EXECUTABLE_PATH", PATH_ADD_TO_HEAD);
+	}
+} g_DllOverride;
 
 // IF YOU ADD AN INTERFACE, EXTERN IT IN THE HEADER FILE.
 IVEngineClient	*engine = NULL;
