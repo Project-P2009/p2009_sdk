@@ -82,7 +82,7 @@ extern ConVar cam_idealpitch;
 extern ConVar thirdperson_platformer;
 
 static ConVar m_filter( "m_filter","0", FCVAR_ARCHIVE, "Ultra mouse filtering (set this to 1 to average the mouse using a low-pass filter)." );
-ConVar m_filter_time("m_filter_time", "0.01", FCVAR_ARCHIVE, "How much time to smooth for ultra mouse filtering (m_filter)", true, 1, true, 10000);
+ConVar m_filter_time("m_filter_time", "0.01", FCVAR_ARCHIVE, "How much time to smooth for ultra mouse filtering (m_filter)", true, 0.01f, true, 10000);
 
 ConVar sensitivity( "sensitivity","3", FCVAR_ARCHIVE, "Mouse sensitivity.", true, 0.0001f, true, 10000000 );
 
@@ -374,14 +374,13 @@ void CInput::GetAccumulatedMouseDeltasAndResetAccumulators( float *mx, float *my
 void CInput::GetMouseDelta( float inmousex, float inmousey, float *pOutMouseX, float *pOutMouseY )
 {
 	// Apply filtering?
+	float timeFactor = m_filter_time.GetFloat();
 	float currentTime = gpGlobals->curtime;
+	float deltaTime = currentTime - m_flPreviousTime;
+	float weight = 1.0f - powf(0.5f, deltaTime / timeFactor);
 	if ( m_filter.GetBool() )
 	{
-		float timeFactor = m_filter_time.GetFloat();
-		float deltaTime = currentTime - m_flPreviousTime;
-		float weight = 1.0f - powf(0.5f, deltaTime / timeFactor);
 		// Average low-pass filter
-		Msg("%.2f %.2f\n", m_flPreviousMouseXPosition, m_flPreviousMouseYPosition);
 		*pOutMouseX = (inmousex * weight) + (m_flPreviousMouseXPosition * (1.0f - weight));
 		*pOutMouseY = (inmousey * weight) + (m_flPreviousMouseYPosition * (1.0f - weight));
 	}

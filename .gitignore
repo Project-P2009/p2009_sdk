@@ -23,6 +23,9 @@ ipch
 # JetBrains Specific
 .idea/
 
+# Work In Progress
+vdbugreporter/
+
 # OSX/Linux build products
 *.mak
 *.mak.vpc_crc
