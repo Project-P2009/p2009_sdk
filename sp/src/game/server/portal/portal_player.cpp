@@ -2347,3 +2347,86 @@ CON_COMMAND(startneurotoxins, "Starts the nerve gas timer.")
 	if (pPlayer)
 		pPlayer->SetNeuroToxinDamageTime(fCoundownTime);
 }
+
+#ifdef MAPBASE
+int AutoCompleteWeapons(const char* cmdname, CUtlVector< CUtlString >& commands, CUtlRBTree< CUtlString >& symbols, char* substring, int checklen = 0)
+{
+	CBaseEntity* pos = NULL;
+	while ((pos = gEntList.NextEnt(pos)) != NULL)
+	{
+		const char* name = pos->GetClassname();
+		char weaponPrefix[7];
+		Q_strncpy(weaponPrefix, name, 5);
+		weaponPrefix[6] = '\n';
+
+		if (pos->GetEntityName() == NULL_STRING || Q_strnicmp(STRING(pos->GetEntityName()), substring, checklen))
+		{
+			if (Q_strnicmp(pos->GetClassname(), substring, checklen))
+				continue;
+		}
+		else
+			name = STRING(pos->GetEntityName());
+
+		CUtlString sym = name;
+		int idx = symbols.Find(sym);
+		if (idx == symbols.InvalidIndex())
+		{
+			symbols.Insert(sym);
+		}
+
+		// Too many
+		if (symbols.Count() >= COMMAND_COMPLETION_MAXITEMS)
+			break;
+	}
+
+	// Now fill in the results
+	for (int i = symbols.FirstInorder(); i != symbols.InvalidIndex(); i = symbols.NextInorder(i))
+	{
+		const char* name = symbols[i].String();
+
+		char buf[512];
+		Q_strncpy(buf, name, sizeof(buf));
+		Q_strlower(buf);
+
+		CUtlString command;
+		command = CFmtStr("%s %s", cmdname, buf);
+		commands.AddToTail(command);
+	}
+
+	return symbols.Count();
+}
+
+class CGiveWeaponAutoCompletionFunctor : public ICommandCallback, public ICommandCompletionCallback
+{
+public:
+	virtual void CommandCallback(const CCommand& command)
+	{
+		CPortal_Player* pPlayer = ToPortalPlayer(UTIL_GetCommandClient());
+		pPlayer->GiveNamedItem(command.Arg(1));
+	}
+
+	virtual int CommandCompletionCallback(const char* partial, CUtlVector< CUtlString >& commands)
+	{
+		if (!g_pGameRules)
+		{
+			return 0;
+		}
+
+		const char* cmdname = "give_weapon";
+
+		char* substring = (char*)partial;
+		if (Q_strstr(partial, cmdname))
+		{
+			substring = (char*)partial + strlen(cmdname) + 1;
+		}
+
+		int checklen = Q_strlen(substring);
+
+		CUtlRBTree< CUtlString > symbols(0, 0, UtlStringLessFunc);
+		return AutoCompleteWeapons(cmdname, commands, symbols, substring, checklen);
+	}
+};
+
+static CGiveWeaponAutoCompletionFunctor g_GiveWeaponAutoComplete;
+static ConCommand give_weapon("give_weapon", &g_GiveWeaponAutoComplete, "Give yourself a weapon.", FCVAR_CHEAT, &g_GiveWeaponAutoComplete);
+#endif

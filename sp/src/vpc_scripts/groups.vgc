@@ -23,6 +23,7 @@ $Group "game"
 	"tier1"
 	"vgui_controls"
 	"vscript"
+	//"vdbugreporter" WIP
 	"responserules"
 	"gameui"
 }
@@ -60,6 +61,7 @@ $Group "everything"
 	"vbsp"
 	"vgui_controls"
 	"vice"
+	//"vdbugreporter" WIP
 	"vrad_dll"
 	"vrad_launcher"
 	"vscript"

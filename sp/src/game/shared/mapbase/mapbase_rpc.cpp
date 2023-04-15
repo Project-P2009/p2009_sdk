@@ -248,9 +248,9 @@ END_DATADESC()
 
 // Changing the default value of the convars below will not work.
 // Use "scripts/mapbase_rpc.txt" instead.
-static ConVar cl_discord_appid("cl_discord_appid", "582595088719413250", FCVAR_NONE);
+static ConVar cl_discord_appid("cl_discord_appid", "1096500463161065564", FCVAR_NONE);
 static ConVar cl_discord_largeimage("cl_discord_largeimage", "mb_logo_episodic", FCVAR_NONE);
-static ConVar cl_discord_largeimage_text("cl_discord_largeimage_text", "Half-Life 2", FCVAR_NONE);
+static ConVar cl_discord_largeimage_text("cl_discord_largeimage_text", "Portal 2: Project 2009", FCVAR_NONE);
 static int64_t startTimestamp = time(0);
 
 //
@@ -312,22 +312,6 @@ void MapbaseRPC_Init()
 	// Only init if RPC is enabled
 	if (mapbase_rpc_enabled.GetInt() <= 0)
 		return;
-
-	// First, load the config
-	// (we need its values immediately)
-	KeyValues *pKV = new KeyValues( "MapbaseRPC" );
-	if (pKV->LoadFromFile( filesystem, "scripts/mapbase_rpc.txt" ))
-	{
-		const char *szAppID = pKV->GetString("discord_appid", cl_discord_appid.GetString());
-		cl_discord_appid.SetValue(szAppID);
-
-		const char *szLargeImage = pKV->GetString("discord_largeimage", cl_discord_largeimage.GetString());
-		cl_discord_largeimage.SetValue(szLargeImage);
-
-		const char *szLargeImageText = pKV->GetString("discord_largeimage_text", cl_discord_largeimage_text.GetString());
-		cl_discord_largeimage_text.SetValue( szLargeImageText );
-	}
-	pKV->deleteThis();
 
 	// Steam RPC
 	if (steamapicontext)

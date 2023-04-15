@@ -103,6 +103,11 @@ $Project "vbsp"
 	"utils\vbsp\vbsp.vpc" [$WIN32]
 }
 
+$Project "vdbugreporter"
+{
+	"vdbugreporter\vdbugreporter.vpc" [$WIN32]
+}
+
 $Project "vgui_controls"
 {
 	"vgui2\vgui_controls\vgui_controls.vpc" [$WIN32||$X360||$POSIX]

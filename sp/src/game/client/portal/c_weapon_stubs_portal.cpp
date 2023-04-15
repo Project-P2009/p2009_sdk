@@ -39,10 +39,9 @@ STUB_WEAPON_CLASS( weapon_crowbar, WeaponCrowbar, C_BaseHLBludgeonWeapon );
 STUB_WEAPON_CLASS( weapon_hopwire, WeaponHopwire, C_BaseHLCombatWeapon );
 STUB_WEAPON_CLASS( weapon_irifle, WeaponIrifle, C_BaseHLCombatWeapon )
 STUB_WEAPON_CLASS( weapon_ar1, WeaponAR1, C_HLMachineGun );
-// STUB_WEAPON_CLASS( weapon_smg2, WeaponSMG2, C_HLSelectFireMachineGun );
+STUB_WEAPON_CLASS( weapon_smg2, WeaponSMG2, C_HLSelectFireMachineGun );
 STUB_WEAPON_CLASS( weapon_sniperrifle, WeaponSniperRifle, C_BaseHLCombatWeapon );
-// STUB_WEAPON_CLASS( weapon_immolator, WeaponImmolator, C_BaseHLCombatWeapon );C_BaseCombatWeapon
+STUB_WEAPON_CLASS( weapon_immolator, WeaponImmolator, C_BaseHLCombatWeapon );
 STUB_WEAPON_CLASS( weapon_tripwire, WeaponTripwire, C_BaseHLCombatWeapon );
 STUB_WEAPON_CLASS( weapon_physgun, WeaponGravityGun, C_BaseHLCombatWeapon );
-
-
+STUB_WEAPON_CLASS(weapon_cguard, WeaponCGuard, C_BaseHLCombatWeapon);

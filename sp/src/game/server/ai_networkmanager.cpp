@@ -1148,7 +1148,7 @@ void CAI_NetworkManager::DelayedInit( void )
 			DevMsg( "Node Graph out of Date. Rebuilding... (%d, %d, %d)\n", (int)m_bDontSaveGraph, (int)!CAI_NetworkManager::NetworksLoaded(), (int) engine->IsInEditMode() );
 #ifdef MAPBASE
 			if (!g_ai_norebuildgraphmessage.GetBool())
-				UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding...\n" );
+				UTIL_CenterPrintAll( "Hey guys you forgot to rebuild the Node Graphs or they're out of date :)\n- GabrielV" );
 
 			// Do it much sooner after map load
 			g_pAINetworkManager->SetNextThink( gpGlobals->curtime + 0.5 );

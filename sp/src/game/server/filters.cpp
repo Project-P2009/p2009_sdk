@@ -981,6 +981,32 @@ BEGIN_DATADESC( CFilterEnemy )
 
 END_DATADESC()
 
+// ###################################################################
+//	> FilterPlayerHeld
+// ###################################################################
+
+class CFilterPlayerHeld : public CBaseFilter
+{
+	DECLARE_CLASS(CFilterPlayerHeld, CBaseFilter);
+	DECLARE_DATADESC();
+
+public:
+	bool PassesFilterImpl(CBaseEntity* pCaller, CBaseEntity* pEntity)
+	{
+		IPhysicsObject* pPhys = pEntity->VPhysicsGetObject();
+		if ((pPhys != NULL) && (pPhys->GetGameFlags() & FVPHYSICS_PLAYER_HELD))
+		{
+			return true;
+		}
+		return false;
+	}
+};
+
+LINK_ENTITY_TO_CLASS(filter_player_held, CFilterPlayerHeld);
+
+BEGIN_DATADESC(CFilterPlayerHeld)
+END_DATADESC()
+
 #ifdef MAPBASE
 // ###################################################################
 //	> CFilterModel
