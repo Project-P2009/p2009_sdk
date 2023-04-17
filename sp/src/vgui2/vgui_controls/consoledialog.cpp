@@ -698,14 +698,23 @@ void CConsolePanel::OnTextChanged(Panel *panel)
 	{
 		m_pCompletionList->SetVisible(true);
 		m_pCompletionList->DeleteAllItems();
+		const int MAX_MENU_ITEMS = 55;
 		m_pCompletionList->SetNumberOfVisibleItems(10);
 
-		// add the first MAX_MENU_ITEMS items to the list
-		for (int i = 0; i < m_CompletionList.Count(); i++)
+		// add the first ten items to the list
+		for (int i = 0; i < m_CompletionList.Count() && i < MAX_MENU_ITEMS; i++)
 		{
 			char text[256];
 			text[0] = 0;
-			Q_strncpy(text, m_CompletionList[i]->GetItemText(), sizeof(text));
+			if (i == MAX_MENU_ITEMS - 1)
+			{
+				Q_strncpy(text, "...", sizeof( text ) );
+			}
+			else
+			{
+				Assert( m_CompletionList[i] );
+				Q_strncpy(text, m_CompletionList[i]->GetItemText(), sizeof( text ) );
+			}
 			KeyValues *kv = new KeyValues("CompletionCommand");
 			kv->SetString("command",text);
 			m_pCompletionList->AddMenuItem(text, kv, this);
