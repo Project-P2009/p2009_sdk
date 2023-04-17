@@ -181,6 +181,7 @@ $Project
 		$File	"history_resource.cpp"
 		$File	"hud_weapon.cpp"
 		$File	"train.cpp"
+		$File	"CCursorClipManagement.cpp"
 		$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 		$File	"$SRCDIR\game\shared\achievement_saverestore.cpp"
 		$File	"$SRCDIR\game\shared\achievement_saverestore.h"
@@ -684,6 +685,7 @@ $Project
 	$Folder	"Header Files"
 	{
 		$File	"animationlayer.h"
+		$File	"CCursorClipManagement.h"
 		$File	"baseanimatedtextureproxy.h"
 		$File	"baseclientrendertargets.h"
 		$File	"beamdraw.h"

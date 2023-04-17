@@ -130,6 +130,8 @@ class IForceVirtualInheritancePanel
 #define PANEL_ROUND_CORNER_BOTTOM_LEFT	(1 << 2)
 #define PANEL_ROUND_CORNER_BOTTOM_RIGHT (1 << 3)
 #define PANEL_ROUND_CORNER_ALL			PANEL_ROUND_CORNER_TOP_LEFT | PANEL_ROUND_CORNER_TOP_RIGHT | PANEL_ROUND_CORNER_BOTTOM_LEFT | PANEL_ROUND_CORNER_BOTTOM_RIGHT
+#define PANEL_ROUND_CORNER_NONE 0
+
 //=============================================================================
 // HPE_END
 //=============================================================================//-----------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include "vgui_controls/Menu.h"
 #include "vgui_controls/TextEntry.h"
 #include "vgui_controls/RichText.h"
+#include "vgui_controls/ScrollBar.h"
 #include "tier1/convar.h"
 #include "tier1/convar_serverbounded.h"
 #include "icvar.h"
@@ -61,6 +62,11 @@ public:
 			return GetVPanel();
 
 		return m_pFocus->GetVPanel();
+	}
+
+	void SetVisible(bool state)
+	{
+		BaseClass::SetVisible(state);
 	}
 
 private:
@@ -692,22 +698,14 @@ void CConsolePanel::OnTextChanged(Panel *panel)
 	{
 		m_pCompletionList->SetVisible(true);
 		m_pCompletionList->DeleteAllItems();
-		const int MAX_MENU_ITEMS = 10;
+		m_pCompletionList->SetNumberOfVisibleItems(10);
 
-		// add the first ten items to the list
-		for (int i = 0; i < m_CompletionList.Count() && i < MAX_MENU_ITEMS; i++)
+		// add the first MAX_MENU_ITEMS items to the list
+		for (int i = 0; i < m_CompletionList.Count(); i++)
 		{
 			char text[256];
 			text[0] = 0;
-			if (i == MAX_MENU_ITEMS - 1)
-			{
-				Q_strncpy(text, "...", sizeof( text ) );
-			}
-			else
-			{
-				Assert( m_CompletionList[i] );
-				Q_strncpy(text, m_CompletionList[i]->GetItemText(), sizeof( text ) );
-			}
+			Q_strncpy(text, m_CompletionList[i]->GetItemText(), sizeof(text));
 			KeyValues *kv = new KeyValues("CompletionCommand");
 			kv->SetString("command",text);
 			m_pCompletionList->AddMenuItem(text, kv, this);

@@ -16,6 +16,8 @@
 #include "tier1/convar.h"
 #include "cdll_int.h"
 
+#include "IGameUI.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -508,7 +510,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 	if ( strcmp( token, "{" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 
@@ -539,7 +541,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 	if ( strcmp( token, "{" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 
@@ -555,7 +557,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 	}
 	if ( newType == O_BADTYPE )
 	{
-		Msg( "Type '%s' unknown", token );
+		GameUI_Err( "Type '%s' unknown", token );
 		return false;
 	}
 
@@ -568,7 +570,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 			return false;
 		if ( strcmp( token, "}" ) )
 		{
-			Msg( "Expecting '{', got '%s'", token );
+			GameUI_Err( "Expecting '{', got '%s'", token );
 			return false;
 		}
 
@@ -578,7 +580,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 			return false;
 		if ( strcmp( token, "}" ) )
 		{
-			Msg( "Expecting '{', got '%s'", token );
+			GameUI_Err( "Expecting '{', got '%s'", token );
 			return false;
 		}
 		return true;
@@ -595,7 +597,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 		if ( strcmp( token, "}" ) )
 		{
-			Msg( "Expecting '{', got '%s'", token );
+			GameUI_Err( "Expecting '{', got '%s'", token );
 			return false;
 		}
 		break;
@@ -628,7 +630,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 		if ( strcmp( token, "}" ) )
 		{
-			Msg( "Expecting '{', got '%s'", token );
+			GameUI_Err( "Expecting '{', got '%s'", token );
 			return false;
 		}
 		break;
@@ -640,7 +642,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 		if ( strcmp( token, "}" ) )
 		{
-			Msg( "Expecting '{', got '%s'", token );
+			GameUI_Err( "Expecting '{', got '%s'", token );
 			return false;
 		}
 		break;
@@ -693,7 +695,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 	if ( strcmp( token, "{" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 
@@ -720,7 +722,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 	if ( strcmp( token, "}" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 
@@ -740,7 +742,7 @@ bool CScriptObject::ReadFromBuffer( const char **pBuffer, bool isNewObject )
 
 	if ( strcmp( token, "}" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 	
@@ -824,7 +826,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 	// Read VERSION #
 	if ( stricmp ( token, "VERSION" ) )
 	{
-		Msg( "Expecting 'VERSION', got '%s'", token );
+		GameUI_Err( "Expecting 'VERSION', got '%s'", token );
 		return false;
 	}
 
@@ -833,7 +835,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 	*pBuffer = engine->ParseFile( *pBuffer, token, sizeof( token ) );
 	if ( strlen( token ) <= 0 )
 	{
-		Msg( "Expecting version #" );
+		GameUI_Err( "Expecting version #" );
 		return false;
 	}
 
@@ -842,7 +844,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 
 	if ( fVer != SCRIPT_VERSION )
 	{
-		Msg( "Version mismatch, expecting %f, got %f", SCRIPT_VERSION, fVer );
+		GameUI_Err( "Version mismatch, expecting %f, got %f", SCRIPT_VERSION, fVer );
 		return false;
 	}
 
@@ -854,7 +856,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 	// Read DESCRIPTION
 	if ( stricmp ( token, "DESCRIPTION" ) )
 	{
-		Msg( "Expecting 'DESCRIPTION', got '%s'", token );
+		GameUI_Err( "Expecting 'DESCRIPTION', got '%s'", token );
 		return false;
 	}
 
@@ -862,13 +864,13 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 	*pBuffer = engine->ParseFile( *pBuffer, token, sizeof( token ) );
 	if ( strlen( token ) <= 0 )
 	{
-		Msg( "Expecting '%s'", m_pszDescriptionType );
+		GameUI_Err( "Expecting '%s'", m_pszDescriptionType );
 		return false;
 	}
 
 	if ( stricmp ( token, m_pszDescriptionType ) )
 	{
-		Msg( "Expecting %s, got %s", m_pszDescriptionType, token );
+		GameUI_Err( "Expecting %s, got %s", m_pszDescriptionType, token );
 		return false;
 	}
 
@@ -879,7 +881,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 
 	if ( strcmp( token, "{" ) )
 	{
-		Msg( "Expecting '{', got '%s'", token );
+		GameUI_Err( "Expecting '{', got '%s'", token );
 		return false;
 	}
 
@@ -915,7 +917,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer, bool bAllowNewObject )
 			pObj = new CScriptObject();
 			if ( !pObj )
 			{
-				Msg( "Couldn't create script object" );
+				GameUI_Err( "Couldn't create script object" );
 				return false;
 			}
 
@@ -1040,7 +1042,7 @@ void CDescription::TransferCurrentValues( const char *pszConfigFile )
 		{
 			if ( pObj->type != O_CATEGORY )
 			{
-				DevMsg( "Could not find '%s'\n", pObj->cvarname );
+				GameUI_Err( "Could not find '%s'\n", pObj->cvarname );
 			}
 			pObj = pObj->pNext;
 			continue;

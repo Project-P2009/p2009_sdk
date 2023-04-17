@@ -100,6 +100,7 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent) : PropertyDialog(parent, "Op
 //	Msg("COptionsDialog::COptionsDialog(): %.3fms\n", (float)(s5 - s4) * 1000.0f);
 
 	SetApplyButtonVisible(true);
+
 	GetPropertySheet()->SetTabWidth(84);
 }
 

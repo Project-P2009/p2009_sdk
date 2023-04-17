@@ -10,7 +10,7 @@
 #pragma once
 
 #include "GameUI/IGameUI.h"
-
+#include "vdbugreporter/ivdbugreporter.h"
 #include <vgui_controls/Panel.h>
 #include <vgui_controls/PHandle.h>
 
@@ -112,6 +112,8 @@ public:
 	void HideLoadingBackgroundDialog();
 	bool HasLoadingBackgroundDialog();
 
+	IVDBugReporter* GetBugReporter() { return m_pVDBugReporter; }
+
 private:
 	void SendConnectedToGameMessage();
 
@@ -129,6 +131,8 @@ private:
 	void ValidateCDKey();
 
 	CreateInterfaceFn m_GameFactory;
+
+	IVDBugReporter* m_pVDBugReporter;
 
 	bool m_bPlayGameStartupSound : 1;
 	bool m_bTryingToLoadFriends : 1;

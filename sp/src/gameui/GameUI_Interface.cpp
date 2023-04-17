@@ -156,7 +156,6 @@ CGameUI::~CGameUI()
 	g_pGameUI = NULL;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Initialization
 //-----------------------------------------------------------------------------
@@ -367,10 +366,19 @@ void CGameUI::Connect( CreateInterfaceFn gameFactory )
 
 	achievementmgr = engine->GetAchievementMgr();
 
-	if (!g_pGameClientExports)
+	// Load VDBugReporter
+	CSysModule* bugrepModule = g_pFullFileSystem->LoadModule("vdbugreporter");
+	if (!bugrepModule) Error("Could not load VDBugReporter module\n");
+	CreateInterfaceFn pVDBugReporterFactory = Sys_GetFactory(bugrepModule);
+	if (!pVDBugReporterFactory) Error("Could not get factory for VDBugReporter module\n");
+	m_pVDBugReporter = (IVDBugReporter*)pVDBugReporterFactory(INTERFACEVERSION_VDBUGREPORTER, NULL);
+
+	if (!g_pGameClientExports || !m_pVDBugReporter)
 	{
 		Error("CGameUI::Initialize() failed to get necessary interfaces\n");
 	}
+
+	GameUI_Log("Connected with VDBugReporter module\n");
 
 	m_GameFactory = gameFactory;
 }
@@ -530,7 +538,7 @@ void CGameUI::Start()
 		Q_strncpy( szConfigDir, m_szPlatformDir, sizeof( szConfigDir ) );
 		Q_strncat( szConfigDir, "config", sizeof( szConfigDir ), COPY_ALL_CHARACTERS );
 
-		Msg( "Steam config directory: %s\n", szConfigDir );
+		GameUI_Log( "Steam config directory: %s\n", szConfigDir );
 
 		g_pFullFileSystem->AddSearchPath(szConfigDir, "CONFIG");
 		g_pFullFileSystem->CreateDirHierarchy("", "CONFIG");

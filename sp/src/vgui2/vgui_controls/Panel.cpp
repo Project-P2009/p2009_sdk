@@ -684,7 +684,7 @@ void Panel::Init( int x, int y, int wide, int tall )
 	// HPE_BEGIN:
 	// [tj] Default to rounding all corners (for draw style 2)
 	//=============================================================================
-	m_roundedCorners = PANEL_ROUND_CORNER_ALL;
+	m_roundedCorners = PANEL_ROUND_CORNER_NONE;
 	//=============================================================================
 	// HPE_END
 	//=============================================================================

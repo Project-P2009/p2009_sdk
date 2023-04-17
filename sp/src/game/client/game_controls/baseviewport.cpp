@@ -56,6 +56,8 @@
 #include "replay/ienginereplay.h"
 #endif
 
+#include "CCursorClipManagement.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -247,6 +249,8 @@ void CBaseViewport::OnScreenSizeChanged(int iOldWide, int iOldTall)
 	{
 		ShowPanel( PANEL_SPECGUI, true );
 	}
+
+	g_pCursorClipManager->SetLockAction(CURSOR_CLIPMANAGEMENT_RELOCKREQUIRED);
 }
 
 void CBaseViewport::CreateDefaultPanels( void )

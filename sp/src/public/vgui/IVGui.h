@@ -106,6 +106,8 @@ public:
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"
 
+#define VGUI2_Log(...) ConColorMsg(Color( 159, 33, 222, 255 ), "[VGUI2] " __VA_ARGS__)
+
 };
 
 

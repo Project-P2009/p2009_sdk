@@ -202,8 +202,6 @@ private:
 	// Accumulated mouse deltas
 	float		m_flAccumulatedMouseXMovement;
 	float		m_flAccumulatedMouseYMovement;
-	int			m_nXPosLast;
-	int			m_nYPosLast;
 	float		m_flPreviousTime;
 	float		m_flPreviousMouseXPosition;
 	float		m_flPreviousMouseYPosition;

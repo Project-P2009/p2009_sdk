@@ -8,6 +8,8 @@
 #include "CDKeyEntryDialog.h"
 #include "EngineInterface.h"
 
+#include "IGameUI.h"
+
 #include "steamcommon.h" // VALVE_AUTH cd key checking code
 #include "ValidateNewValveCDKeyClient.h"
 #include "ValveCDKeyGameAndTerritoryCodes.h"
@@ -22,9 +24,9 @@
 #include "vstdlib/random.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
+#include <ctype.h>
 #include "tier0/memdbgon.h"
 
-#include <ctype.h>
 
 using namespace vgui;
 
@@ -283,7 +285,7 @@ bool CCDKeyEntryDialog::IsEnteredKeyValid()
 	}
 #endif
 */
-	Msg("Key: %s\n", cdkey);
+	GameUI_Log("Key: %s\n", cdkey);
 	return true;
 }
 

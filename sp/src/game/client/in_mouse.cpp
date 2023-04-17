@@ -258,9 +258,6 @@ void CInput::Init_Mouse (void)
 	m_flPreviousMouseYPosition = 0.0f;
 	m_flPreviousTime = 0.0f;
 
-	m_nXPosLast = 1;
-	m_nYPosLast = 1;
-
 	m_fMouseInitialized = true;
 
 	m_fMouseParmsValid = false;

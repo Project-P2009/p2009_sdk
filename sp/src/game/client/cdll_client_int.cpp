@@ -172,6 +172,10 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "sixense/in_sixense.h"
 #endif
 
+#include "CCursorClipManagement.h"
+
+#include "ivdbugreporter.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -227,9 +231,11 @@ IEngineReplay *g_pEngineReplay = NULL;
 IEngineClientReplay *g_pEngineClientReplay = NULL;
 IReplaySystem *g_pReplay = NULL;
 #endif
+IVDBugReporter* g_pVDBugReporter = NULL;
 #ifdef MAPBASE
 IVEngineServer	*serverengine = NULL;
 #endif
+
 
 IScriptManager *scriptmanager = NULL;
 
@@ -1210,6 +1216,35 @@ void CHLClient::PostInit()
 		}
 	}
 #endif
+
+	CSysModule* pVDBugReporterModule = g_pFullFileSystem->LoadModule("vdbugreporter", "GAMEBIN", false);
+	if (pVDBugReporterModule != nullptr) {
+		VDBugRep_Log("Loaded VDBugReporter module\n");
+
+		CreateInterfaceFn pVDBugReporterFactory = Sys_GetFactory(pVDBugReporterModule);
+		if (pVDBugReporterFactory != nullptr) {
+			g_pVDBugReporter = (IVDBugReporter*)pVDBugReporterFactory(INTERFACEVERSION_VDBUGREPORTER, NULL);
+			if (g_pVDBugReporter != nullptr)
+			{
+				VDBugRep_Log("Initializing IVDBugReporter interface...\n");
+				factorylist_t factories;
+				FactoryList_Retrieve(factories);
+				if (!g_pVDBugReporter->Init(factories.appSystemFactory))
+					VDBugRep_Log("Failed to initialize IVDBugReporter interface\n");
+			}
+			else {
+				VDBugRep_Log("Unable to pull IVDBugReporter interface\n");
+			}
+		}
+		else {
+			VDBugRep_Log("Unable to get VDBugReporter factory\n");
+		}
+	}
+	else {
+		VDBugRep_Log("Failed to load VDBugReporter module\n");
+	}
+
+	CCursorClipManagement::Init();
 }
 
 //-----------------------------------------------------------------------------
@@ -1256,6 +1291,10 @@ void CHLClient::Shutdown( void )
 
 	IGameSystem::ShutdownAllSystems();
 	
+	if (g_pVDBugReporter != nullptr) {
+		g_pVDBugReporter->Shutdown();
+	}
+
 	gHUD.Shutdown();
 	VGui_Shutdown();
 	
@@ -2310,6 +2349,8 @@ void OnRenderEnd()
 	UpdatePVSNotifiers();
 
 	DisplayBoneSetupEnts();
+	
+	g_pCursorClipManager->Think();
 }
 
 

@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "utlvector.h"
+#include "utldict.h"
 #include "util_shared.h"
 #include "shareddefs.h"
 #include "networkvar.h"
@@ -90,6 +91,8 @@ T *_CreateEntity( T *newClass, const char *className )
 #define CREATE_ENTITY( newClass, className ) _CreateEntity( (newClass*)NULL, className )
 #define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className )
 
+class IEntityFactory;
+typedef CUtlDict<IEntityFactory*, unsigned short> EntityFactoryDict_t;
 
 // This is the glue that hooks .MAP entity class names to our CPP classes
 abstract_class IEntityFactoryDictionary
@@ -100,6 +103,7 @@ public:
 	virtual void Destroy( const char *pClassName, IServerNetworkable *pNetworkable ) = 0;
 	virtual IEntityFactory *FindFactory( const char *pClassName ) = 0;
 	virtual const char *GetCannonicalName( const char *pClassName ) = 0;
+	virtual const EntityFactoryDict_t& GetFactoryDictionary() = 0;
 };
 
 IEntityFactoryDictionary *EntityFactoryDictionary();

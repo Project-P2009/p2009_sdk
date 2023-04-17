@@ -58,6 +58,11 @@ $Project "responserules"
 	"responserules\runtime\response_rules.vpc" [($WINDOWS||$X360||$POSIX) && $NEW_RESPONSE_SYSTEM]
 }
 
+$Project "materialsystem"
+{
+	"materialsystem\materialsystem.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "mathlib"
 {
 	"mathlib\mathlib.vpc" [$WINDOWS||$X360||$POSIX]
@@ -66,6 +71,11 @@ $Project "mathlib"
 $Project "motionmapper"
 {
 	"utils\motionmapper\motionmapper.vpc" [$WIN32]
+}
+
+$Project "newdat"
+{
+	"utils\newdat\newdat.vpc" [$WIN32]
 }
 
 $Project "phonemeextractor"
@@ -98,6 +108,16 @@ $Project "tier1"
 	"tier1\tier1.vpc" 	[$WINDOWS || $X360||$POSIX]
 }
 
+$Project "launcher"
+{
+	"launcher\launcher.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
+$Project "launcher_main"
+{
+	"launcher_main\launcher_main.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "vbsp"
 {
 	"utils\vbsp\vbsp.vpc" [$WIN32]
@@ -113,9 +133,24 @@ $Project "vgui_controls"
 	"vgui2\vgui_controls\vgui_controls.vpc" [$WIN32||$X360||$POSIX]
 }
 
+$Project "vgui_dll"
+{
+	"vgui2\src\vgui_dll.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
+$Project "vgui_surfacelib"
+{
+	"vgui2\vgui_surfacelib\vgui_surfacelib.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "vice"
 {
 	"utils\vice\vice.vpc" [$WIN32]
+}
+
+$Project "vpccrccheck"
+{
+	"external\vpc\utils\vpccrccheck\vpccrccheck.vpc" [$WIN32]
 }
 
 $Project "vrad_dll"
@@ -131,6 +166,11 @@ $Project "vrad_launcher"
 $Project "vscript"
 {
 	"vscript\vscript.vpc"
+}
+
+$Project "vtf"
+{
+	"vtf\vtf.vpc" [$WINDOWS||$X360||$POSIX]
 }
 
 $Project "vtf2tga"

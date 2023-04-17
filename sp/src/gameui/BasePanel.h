@@ -138,6 +138,23 @@ private:
 	int m_nOffsetY;
 };
 
+class CMainMenuGrid : public vgui::EditablePanel
+{
+	DECLARE_CLASS_SIMPLE(CMainMenuGrid, vgui::EditablePanel);
+public:
+	CMainMenuGrid(vgui::Panel* pParent);
+
+	virtual void ApplySettings(KeyValues* inResourceData);
+	virtual void ApplySchemeSettings(vgui::IScheme* pScheme);
+
+	virtual void PaintBackground();
+
+	void SetupGridImage();
+
+private:
+	vgui::ImagePanel* m_pGridImage;
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: Transparent menu item designed to sit on the background ingame
 //-----------------------------------------------------------------------------
@@ -214,6 +231,7 @@ public:
 	void OnOpenNewGameDialog( const char *chapter = NULL );
 	void OnOpenBonusMapsDialog();
 	void OnOpenKeyEntryDialog();
+	void OnOpenReportBugDialog();
 	void OnOpenLoadGameDialog();
 	void OnOpenLoadGameDialog_Xbox();
 	void OnOpenSaveGameDialog();
@@ -327,6 +345,7 @@ private:
 	// menu manipulation
 	void CreatePlatformMenu();
 	void CreateGameMenu();
+	void CreateGameGrid();
 	void CreateGameLogo();
 	void CheckBonusBlinkState();
 	void UpdateGameMenus();
@@ -351,9 +370,11 @@ private:
 
 	// menu logo
 	CMainMenuGameLogo *m_pGameLogo;
+
+	// menu grid
+	CMainMenuGrid *m_pGameGrid;
 	
 	// menu buttons
-	CUtlVector< CBackgroundMenuButton * >m_pGameMenuButtons;
 	CGameMenu *m_pGameMenu;
 	bool m_bPlatformMenuInitialized;
 	int m_iGameMenuInset;
@@ -371,6 +392,7 @@ private:
 	vgui::DHANDLE<vgui::Frame> m_hNewGameDialog;
 	vgui::DHANDLE<vgui::Frame> m_hBonusMapsDialog;
 	vgui::DHANDLE<vgui::Frame> m_hKeyEntryDialog;
+	vgui::DHANDLE<vgui::Frame> m_hBugReportDialog;
 	vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog;
 	vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog_Xbox;
 	vgui::DHANDLE<vgui::Frame> m_hSaveGameDialog;

@@ -23,8 +23,9 @@ ipch
 # JetBrains Specific
 .idea/
 
-# Work In Progress
+# VDelta Project Borrowed :)
 vdbugreporter/
+external/
 
 # OSX/Linux build products
 *.mak

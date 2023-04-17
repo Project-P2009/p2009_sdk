@@ -55,6 +55,7 @@ using namespace vgui;
 #include "SaveGameDialog.h"
 #include "OptionsDialog.h"
 #include "CreateMultiplayerGameDialog.h"
+#include "vdbugreporter/VDBugReporterBugReportDialog.h"
 #include "ChangeGameDialog.h"
 #include "BackgroundMenuButton.h"
 #include "PlayerListDialog.h"
@@ -719,8 +720,6 @@ CBasePanel::CBasePanel() : Panel(NULL, "BaseGameUIPanel")
 #endif
 	}
 
-	m_pGameMenuButtons.AddToTail( CreateMenuButton( this, "GameMenuButton", ModInfo().GetGameTitle() ) );
-	m_pGameMenuButtons.AddToTail( CreateMenuButton( this, "GameMenuButton2", ModInfo().GetGameTitle2() ) );
 #ifdef CS_BETA
 	if ( !ModInfo().NoCrosshair() ) // hack to not show the BETA for HL2 or HL1Port
 	{
@@ -730,6 +729,7 @@ CBasePanel::CBasePanel() : Panel(NULL, "BaseGameUIPanel")
 
 	m_pGameMenu = NULL;
 	m_pGameLogo = NULL;
+	m_pGameGrid = NULL;
 	m_hMainMenuOverridePanel = NULL;
 
 	if ( SteamClient() )
@@ -746,6 +746,7 @@ CBasePanel::CBasePanel() : Panel(NULL, "BaseGameUIPanel")
 
 	CreateGameMenu();
 	CreateGameLogo();
+	CreateGameGrid();
 
 	// Bonus maps menu blinks if something has been unlocked since the player last opened the menu
 	// This is saved as persistant data, and here is where we check for that
@@ -1112,11 +1113,11 @@ void CBasePanel::UpdateBackgroundState()
 			vgui::GetAnimationController()->RunAnimationCommand( m_pGameLogo, "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR );
 		}
 
-		// Msg( "animating title (%d => %d at time %.2f)\n", m_pGameMenuButton->GetAlpha(), (int)targetTitleAlpha, engine->Time());
-		for ( i=0; i<m_pGameMenuButtons.Count(); ++i )
+		if (m_pGameGrid)
 		{
-			vgui::GetAnimationController()->RunAnimationCommand( m_pGameMenuButtons[i], "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR );
+			vgui::GetAnimationController()->RunAnimationCommand(m_pGameGrid, "alpha", targetTitleAlpha, 0.0f, duration, AnimationController::INTERPOLATOR_LINEAR);
 		}
+
 		m_bHaveDarkenedTitleText = bNeedDarkenedTitleText;
 		m_bForceTitleTextUpdate = false;
 	}
@@ -1408,6 +1409,23 @@ void CBasePanel::CreateGameMenu()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+void CBasePanel::CreateGameGrid()
+{
+	m_pGameGrid = new CMainMenuGrid(this);
+
+	if (m_pGameGrid)
+	{
+		SETUP_PANEL(m_pGameGrid);
+		m_pGameGrid->InvalidateLayout(true, true);
+
+		// start invisible
+		m_pGameGrid->SetAlpha(0);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CBasePanel::CreateGameLogo()
 {
 	if ( ModInfo().UseGameLogo() )
@@ -1620,24 +1638,19 @@ void CBasePanel::PerformLayout()
 		idealMenuY = tall - menuTall - m_iGameMenuInset;
 	}
 
-	int yDiff = idealMenuY - m_iGameMenuPos.y;
-
-	for ( int i=0; i<m_pGameMenuButtons.Count(); ++i )
-	{
-		// Get the size of the logo text
-		//int textWide, textTall;
-		m_pGameMenuButtons[i]->SizeToContents();
-		//vgui::surface()->GetTextSize( m_pGameMenuButtons[i]->GetFont(), ModInfo().GetGameTitle(), textWide, textTall );
-
-		// place menu buttons above middle of screen
-		m_pGameMenuButtons[i]->SetPos(m_iGameTitlePos[i].x, m_iGameTitlePos[i].y + yDiff);
-		//m_pGameMenuButtons[i]->SetSize(textWide + 4, textTall + 4);
-	}
-
 	if ( m_pGameLogo )
 	{
 		// move the logo to sit right on top of the menu
 		m_pGameLogo->SetPos( m_iGameMenuPos.x + m_pGameLogo->GetOffsetX(), idealMenuY - m_pGameLogo->GetTall() + m_pGameLogo->GetOffsetY() );
+	}
+
+	if (m_pGameGrid)
+	{
+		// move the logo to sit right on top of the menu
+		m_pGameGrid->SetPos(0, 0);
+		m_pGameGrid->SetTall(tall);
+		m_pGameGrid->SetWide(wide);
+		m_pGameGrid->SetupGridImage();
 	}
 
 	// position self along middle of screen
@@ -1657,7 +1670,6 @@ void CBasePanel::PerformLayout()
 //-----------------------------------------------------------------------------
 void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 {
-	int i;
 	BaseClass::ApplySchemeSettings(pScheme);
 
 	m_iGameMenuInset = atoi(pScheme->GetResourceString("MainMenu.Inset"));
@@ -1668,20 +1680,6 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	if ( pClientScheme )
 	{
 		m_iGameTitlePos.RemoveAll();
-		for ( i=0; i<m_pGameMenuButtons.Count(); ++i )
-		{
-			m_pGameMenuButtons[i]->SetFont(pClientScheme->GetFont("ClientTitleFont", true));
-			m_iGameTitlePos.AddToTail( coord() );
-			m_iGameTitlePos[i].x = atoi(pClientScheme->GetResourceString( CFmtStr( "Main.Title%d.X", i+1 ) ) );
-			m_iGameTitlePos[i].x = scheme()->GetProportionalScaledValue( m_iGameTitlePos[i].x );
-			m_iGameTitlePos[i].y = atoi(pClientScheme->GetResourceString( CFmtStr( "Main.Title%d.Y", i+1 ) ) );
-			m_iGameTitlePos[i].y = scheme()->GetProportionalScaledValue( m_iGameTitlePos[i].y );
-
-			if ( GameUI().IsConsoleUI() )
-				m_iGameTitlePos[i].x += MAIN_MENU_INDENT_X360;
-
-			buttonColor.AddToTail( pClientScheme->GetColor( CFmtStr( "Main.Title%d.Color", i+1 ), Color(255, 255, 255, 255)) );
-		}
 #ifdef CS_BETA
 		if ( !ModInfo().NoCrosshair() ) // hack to not show the BETA for HL2 or HL1Port
 		{
@@ -1696,21 +1694,6 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 
 		m_iGameMenuInset = atoi(pClientScheme->GetResourceString("Main.BottomBorder"));
 		m_iGameMenuInset = scheme()->GetProportionalScaledValue( m_iGameMenuInset );
-	}
-	else
-	{
-		for ( i=0; i<m_pGameMenuButtons.Count(); ++i )
-		{
-			m_pGameMenuButtons[i]->SetFont(pScheme->GetFont("TitleFont"));
-			buttonColor.AddToTail( Color( 255, 255, 255, 255 ) );
-		}
-	}
-
-	for ( i=0; i<m_pGameMenuButtons.Count(); ++i )
-	{
-		m_pGameMenuButtons[i]->SetDefaultColor(buttonColor[i], Color(0, 0, 0, 0));
-		m_pGameMenuButtons[i]->SetArmedColor(buttonColor[i], Color(0, 0, 0, 0));
-		m_pGameMenuButtons[i]->SetDepressedColor(buttonColor[i], Color(0, 0, 0, 0));
 	}
 
 	m_flFrameFadeInTime = atof(pScheme->GetResourceString("Frame.TransitionEffectTime"));
@@ -1910,6 +1893,10 @@ void CBasePanel::RunMenuCommand(const char *command)
 		{
 			OnOpenLoadGameDialog_Xbox();
 		}
+	}
+	else if (!Q_stricmp(command, "OpenBugReportDialog"))
+	{
+		OnOpenReportBugDialog();
 	}
 	else if ( !Q_stricmp( command, "OpenSaveGameDialog" ) )
 	{
@@ -3029,6 +3016,16 @@ void CBasePanel::OnOpenLoadGameDialog()
 	m_hLoadGameDialog->Activate();
 }
 
+void CBasePanel::OnOpenReportBugDialog()
+{
+	if (!m_hBugReportDialog.Get())
+	{
+		m_hBugReportDialog = new CVDBugRepBugReportDialog(this);
+		PositionDialog(m_hBugReportDialog);
+	}
+	m_hBugReportDialog->Activate();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3312,10 +3309,9 @@ void CBasePanel::OnOpenMatchmakingBasePanel()
 		m_pGameLogo->SetVisible( false );
 	}
 
-	// Hide the standard game menu
-	for ( int i = 0; i < m_pGameMenuButtons.Count(); ++i ) 
+	if (m_pGameGrid)
 	{
-		m_pGameMenuButtons[i]->SetVisible( false );
+		m_pGameGrid->SetVisible(false);
 	}
 
 	// Hide the BasePanel's button footer
@@ -3443,10 +3439,9 @@ void CBasePanel::SystemNotification( const int notification )
 				m_pGameLogo->SetVisible( false );
 			}
 
-			// Hide the standard game menu
-			for ( int i = 0; i < m_pGameMenuButtons.Count(); ++i )
+			if (m_pGameGrid)
 			{
-				m_pGameMenuButtons[i]->SetVisible( false );
+				m_pGameGrid->SetVisible(false);
 			}
 
 			// Hide the BasePanel's button footer
@@ -3658,10 +3653,9 @@ void CBasePanel::SetMenuAlpha(int alpha)
 	{
 		m_pGameLogo->SetAlpha( alpha );
 	}
-
-	for ( int i=0; i<m_pGameMenuButtons.Count(); ++i )
+	if (m_pGameGrid)
 	{
-		m_pGameMenuButtons[i]->SetAlpha(alpha);
+		m_pGameGrid->SetAlpha(alpha);
 	}
 	m_bForceTitleTextUpdate = true;
 }
@@ -4713,6 +4707,64 @@ void CMessageDialogHandler::PositionDialog( vgui::PHandle dlg, int wide, int tal
 	dlg->GetSize(w, t);
 	dlg->SetPos( (wide - w) / 2, (tall - t) / 2 );
 }			
+
+CMainMenuGrid::CMainMenuGrid(vgui::Panel* pParent) : vgui::EditablePanel(pParent, "GameGrid")
+{
+	m_pGridImage = new vgui::ImagePanel(this, "GameGridImage");
+}
+
+void CMainMenuGrid::SetupGridImage()
+{
+	int wide, tall;
+	vgui::surface()->GetScreenSize(wide, tall);
+	m_pGridImage->SetTall(tall);
+	m_pGridImage->SetWide(wide);
+	m_pGridImage->SetTileImage(true);
+	m_pGridImage->SetTileImageVert(true);
+	m_pGridImage->SetTileImageHor(true);
+	m_pGridImage->SetImage("grid");
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CMainMenuGrid::ApplySettings(KeyValues* inResourceData)
+{
+	BaseClass::ApplySettings(inResourceData);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CMainMenuGrid::ApplySchemeSettings(vgui::IScheme* pScheme)
+{
+	BaseClass::ApplySchemeSettings(pScheme);
+
+	KeyValues* pConditions = new KeyValues("conditions");
+	if (pConditions)
+	{
+		char background[MAX_PATH];
+		engine->GetMainMenuBackgroundName(background, sizeof(background));
+
+		KeyValues* pSubKey = new KeyValues(background);
+		if (pSubKey)
+		{
+			pConditions->AddSubKey(pSubKey);
+		}
+	}
+
+	LoadControlSettings("Resource/GameGrid.res", NULL, NULL, pConditions);
+
+	if (pConditions)
+	{
+		pConditions->deleteThis();
+	}
+}
+
+void CMainMenuGrid::PaintBackground()
+{
+	BaseClass::PaintBackground();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Editable panel that can replace the GameMenuButtons in CBasePanel

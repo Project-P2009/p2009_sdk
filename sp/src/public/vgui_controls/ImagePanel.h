@@ -37,6 +37,8 @@ public:
 
 	void SetShouldCenterImage( bool state ) { m_bCenterImage = state; }
 	bool GetShouldCenterImage() const { return m_bCenterImage; }
+	void SetShouldPositionImage( bool state ) { m_bPositionImage = state; }
+	bool GetShouldPositionImage() const { return m_bPositionImage; }
 
 	// sets whether or not the image should scale to fit the size of the ImagePanel (defaults to false)
 	void SetShouldScaleImage( bool state );
@@ -45,6 +47,8 @@ public:
 	float GetScaleAmount( void );
 
 	void SetTileImage( bool bTile )	{ m_bTileImage = bTile; }
+	void SetTileImageVert( bool bTile )	{ m_bTileVertically = bTile; }
+	void SetTileImageHor( bool bTile )	{ m_bTileHorizontally = bTile; }
 
 	// set the color to fill with, if no image is specified
 	void SetFillColor( Color col );

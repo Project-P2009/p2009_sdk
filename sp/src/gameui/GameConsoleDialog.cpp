@@ -27,7 +27,6 @@ CGameConsoleDialog::CGameConsoleDialog() : BaseClass( NULL, "GameConsole", false
 	AddActionSignalTarget( this );
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: generic vgui command handler
 //-----------------------------------------------------------------------------
