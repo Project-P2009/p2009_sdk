@@ -24,7 +24,7 @@ ipch
 .idea/
 
 # VDelta Project Borrowed :)
-vdbugreporter/
+sp/src/vdbugreporter/
 external/
 
 # OSX/Linux build products
@@ -104,7 +104,7 @@ sp/src/materialsystem/*.pdb
 sp/src/vgui2/*.dll
 sp/src/vgui2/*.pdb
 
-tools/
+/tools/
 
 Debug/
 Debug_*
