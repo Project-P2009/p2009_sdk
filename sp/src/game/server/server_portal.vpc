@@ -8,7 +8,7 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"portal" [!$SOURCESDK]
 $Macro GAMENAME 	"p2009" [$SOURCESDK]
 
-$Include "$SRCDIR\game\server\server_base.vpc"
+$Include "$SRCDIR\game\server\server_paint.vpc"
 
 $Configuration
 {

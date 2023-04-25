@@ -1,0 +1,18 @@
+//-----------------------------------------------------------------------------
+//	SERVER_PAINT.VPC
+//
+//	Paint... that's all
+//-----------------------------------------------------------------------------
+
+$Include "$SRCDIR\game\server\server_base.vpc"
+
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder "Paint"
+		{
+		}
+	}
+}

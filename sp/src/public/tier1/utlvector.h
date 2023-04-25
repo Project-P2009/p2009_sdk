@@ -116,6 +116,8 @@ public:
 	// Calls SetSize and copies each element.
 	void CopyArray( const T *pArray, int size );
 
+	void ToBasicArray(T* pArray);
+
 	// Fast swap
 	void Swap( CUtlVector< T, A > &vec );
 	
@@ -918,6 +920,21 @@ void CUtlVector<T, A>::CopyArray( const T *pArray, int size )
 	for( int i=0; i < size; i++ )
 	{
 		(*this)[i] = pArray[i];
+	}
+}
+
+template< typename T, class A >
+void CUtlVector<T, A>::ToBasicArray(T* pArray)
+{
+	// Can't insert something that's in the list... reallocation may hose us
+	Assert((Base() == NULL) || !pArray || (Base() >= (pArray + size)) || (pArray >= (Base() + Count())));
+
+	delete[] pArray;
+	pArray = new T[count()];
+
+	for (int i = 0; i < size; i++)
+	{
+		*pArray[i] = (*this)[i];
 	}
 }
 
