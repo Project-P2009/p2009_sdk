@@ -23,6 +23,10 @@ ipch
 # JetBrains Specific
 .idea/
 
+# GabrielV's stuff
+sp/src/game/server/protoshot
+sp/src/game/client/protoshot
+
 # VDelta Project Borrowed :)
 sp/src/vdbugreporter/
 sp/src/external/
