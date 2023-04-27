@@ -27,6 +27,10 @@
 #include "tier0/threadtools.h"
 #include "datacache/idatacache.h"
 
+#ifdef GLOWS_ENABLE
+#include "glow_outline_effect.h"
+#endif // GLOWS_ENABLE
+
 #define LIPSYNC_POSEPARAM_NAME "mouth"
 #define NUM_HITBOX_FIRES	10
 
@@ -175,6 +179,29 @@ public:
 																		// allows the multiplayer world weapon models to declare the muzzleflashes, and other effects like sp
 																		// without the need to script it and add extra parsing code.
 #endif
+
+#ifdef GLOWS_ENABLE
+	CGlowObject* GetGlowObject(void) { return m_pGlowEffect; }
+	virtual void		GetGlowEffectColor(float* r, float* g, float* b);
+#endif // GLOWS_ENABLE
+
+protected:
+#ifdef GLOWS_ENABLE	
+	virtual void		UpdateGlowEffect(void);
+	virtual void		DestroyGlowEffect(void);
+#endif // GLOWS_ENABLE
+
+private:
+#ifdef GLOWS_ENABLE
+	float				m_flGlowR;
+	float				m_flGlowG;
+	float				m_flGlowB;
+	bool				m_bGlowEnabled;
+	bool				m_bOldGlowEnabled;
+	CGlowObject* m_pGlowEffect;
+#endif // GLOWS_ENABLE
+
+public:
 
 	// Parses and distributes muzzle flash events
 	virtual bool DispatchMuzzleEffect( const char *options, bool isFirstPerson );

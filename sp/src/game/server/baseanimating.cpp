@@ -215,6 +215,15 @@ BEGIN_DATADESC( CBaseAnimating )
 	DEFINE_INPUTFUNC( FIELD_VOID, "CreateSeparateRagdollClient", InputCreateSeparateRagdollClient ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetPoseParameter", InputSetPoseParameter ),
 #endif
+#ifdef GLOWS_ENABLE
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetGlowEnabled", InputSetGlowEnabled),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetGlowDisabled", InputSetGlowDisabled),
+	DEFINE_INPUTFUNC(FIELD_VOID, "ResetGlow", InputReloadGlow),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetGlowColorRed", InputSetGlowColorRed),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetGlowColorGreen", InputSetGlowColorGreen),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetGlowColorBlue", InputSetGlowColorBlue),
+	DEFINE_INPUTFUNC(FIELD_COLOR32, "SetGlowColor", InputSetGlowColor),
+#endif
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOriginHack", InputSetLightingOriginRelative ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetLightingOrigin", InputSetLightingOrigin ),
 	DEFINE_OUTPUT( m_OnIgnite, "OnIgnite" ),
@@ -259,6 +268,13 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 	SendPropInt		( SENDINFO(m_nHitboxSet),ANIMATION_HITBOXSET_BITS, SPROP_UNSIGNED ),
 
 	SendPropFloat	( SENDINFO(m_flModelScale) ),
+
+#ifdef GLOWS_ENABLE
+	SendPropBool(SENDINFO(m_bGlowEnabled)),
+	SendPropFloat(SENDINFO(m_flGlowR)),
+	SendPropFloat(SENDINFO(m_flGlowG)),
+	SendPropFloat(SENDINFO(m_flGlowB)),
+#endif // GLOWS_ENABLE
 
 	SendPropArray3  ( SENDINFO_ARRAY3(m_flPoseParameter), SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), ANIMATION_POSEPARAMETER_BITS, 0, 0.0f, 1.0f ) ),
 	
@@ -380,6 +396,13 @@ CBaseAnimating::CBaseAnimating()
 	m_fadeMaxDist = 0;
 	m_flFadeScale = 0.0f;
 	m_fBoneCacheFlags = 0;
+
+#ifdef GLOWS_ENABLE
+	m_bGlowEnabled.Set(false);
+	m_flGlowR.Set(0.76f);
+	m_flGlowG.Set(0.76f);
+	m_flGlowB.Set(0.76f);
+#endif // GLOWS_ENABLE
 }
 
 CBaseAnimating::~CBaseAnimating()
@@ -399,6 +422,74 @@ void CBaseAnimating::Precache()
 
 	BaseClass::Precache();
 }
+
+#ifdef GLOWS_ENABLE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CBaseAnimating::SetGlowEffectColor(float r, float g, float b)
+{
+	m_flGlowR.Set(r);
+	m_flGlowG.Set(g);
+	m_flGlowB.Set(b);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CBaseAnimating::AddGlowEffect(void)
+{
+	SetTransmitState(FL_EDICT_ALWAYS);
+	m_bGlowEnabled.Set(true);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CBaseAnimating::RemoveGlowEffect(void)
+{
+	m_bGlowEnabled.Set(false);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CBaseAnimating::IsGlowEffectActive(void)
+{
+	return m_bGlowEnabled;
+}
+
+void CBaseAnimating::InputSetGlowEnabled(inputdata_t& inputdata)
+{
+	m_bGlowEnabled.Set(true);
+}
+void CBaseAnimating::InputSetGlowDisabled(inputdata_t& inputdata)
+{
+	m_bGlowEnabled.Set(false);
+}
+void CBaseAnimating::InputSetGlowColorRed(inputdata_t& inputdata)
+{
+	m_flGlowR.Set(inputdata.value.Float());
+}
+void CBaseAnimating::InputSetGlowColorGreen(inputdata_t& inputdata)
+{
+	m_flGlowG.Set(inputdata.value.Float());
+}
+void CBaseAnimating::InputSetGlowColorBlue(inputdata_t& inputdata)
+{
+	m_flGlowB.Set(inputdata.value.Float());
+}
+void CBaseAnimating::InputSetGlowColor(inputdata_t& inputdata)
+{
+	color32 color = inputdata.value.Color32();
+	SetGlowEffectColor(color.r / 255, color.g / 255, color.b / 255);
+}
+void CBaseAnimating::InputReloadGlow(inputdata_t& inputdata)
+{
+	m_bGlowEnabled.Set(false);
+	m_bGlowEnabled.Set(true);
+}
+#endif // GLOWS_ENABLE
 
 //-----------------------------------------------------------------------------
 // Activate!

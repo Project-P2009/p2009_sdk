@@ -170,8 +170,15 @@ protected:
 	// save off your pose parameters in member variables in your derivation of this function:
 	virtual void	PopulatePoseParameters( void );
 
-
 public:
+
+#ifdef GLOWS_ENABLE
+	// Glows
+	void				SetGlowEffectColor(float r, float g, float b);
+	void				AddGlowEffect(void);
+	void				RemoveGlowEffect(void);
+	bool				IsGlowEffectActive(void);
+#endif // GLOWS_ENABLE
 
 	int  LookupBone( const char *szName );
 	void GetBonePosition( const char *szName, Vector &origin, QAngle &angles );
@@ -328,6 +335,17 @@ public:
 	void InputIgniteNumHitboxFires( inputdata_t &inputdata );
 	void InputIgniteHitboxFireScale( inputdata_t &inputdata );
 	void InputBecomeRagdoll( inputdata_t &inputdata );
+
+#ifdef GLOWS_ENABLE
+	void InputReloadGlow(inputdata_t& inputdata);
+	void InputSetGlowEnabled(inputdata_t& inputdata);
+	void InputSetGlowDisabled(inputdata_t& inputdata);
+	void InputSetGlowColorRed(inputdata_t& inputdata);
+	void InputSetGlowColorGreen(inputdata_t& inputdata);
+	void InputSetGlowColorBlue(inputdata_t& inputdata);
+	void InputSetGlowColor(inputdata_t& inputdata);
+#endif
+
 #ifdef MAPBASE
 	void InputCreateSeparateRagdoll( inputdata_t &inputdata );
 	void InputCreateSeparateRagdollClient( inputdata_t &inputdata );
@@ -407,6 +425,18 @@ public:
 
 	// was pev->framerate
 	CNetworkVar( float, m_flPlaybackRate );
+
+#ifdef GLOWS_ENABLE
+protected:
+	CNetworkVar(bool, m_bGlowEnabled);
+	CNetworkVar(float, m_flGlowR);
+	CNetworkVar(float, m_flGlowG);
+	CNetworkVar(float, m_flGlowB);
+#endif // GLOWS_ENABLE
+
+private:
+	void				UpdateGlowEffect(void);
+	void				DestroyGlowEffect(void);
 
 public:
 	void InitStepHeightAdjust( void );

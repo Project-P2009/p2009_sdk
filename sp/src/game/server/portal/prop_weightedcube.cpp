@@ -5,7 +5,7 @@
 //=====================================================================================//
 #include "cbase.h"					// for pch
 #include "prop_weightedcube.h"
-#include "prop_laser_catcher.h"
+#include "prop_laser_emitter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -68,6 +68,8 @@ DEFINE_KEYFIELD(m_skinType, FIELD_INTEGER, "SkinType"),
 DEFINE_KEYFIELD(m_paintPower, FIELD_INTEGER, "PaintPower"),
 DEFINE_KEYFIELD(m_useNewSkins, FIELD_BOOLEAN, "NewSkins"),
 DEFINE_KEYFIELD(m_allowFunnel, FIELD_BOOLEAN, "allowfunnel"),
+
+DEFINE_FIELD(m_hLaser, FIELD_EHANDLE),
 
 DEFINE_INPUTFUNC(FIELD_VOID, "Dissolve", InputDissolve),
 DEFINE_INPUTFUNC(FIELD_VOID, "SilentDissolve", InputSilentDissolve),
@@ -223,35 +225,60 @@ void CPropWeightedCube::Spawn()
 
 }
 
+void CPropWeightedCube::AddEmitter(CBaseEntity* emitter) {
+	// Store previous list count
+	int oldCount = m_LaserList.Count();
+
+	// Check if the emitter has not been added already.
+	if (!m_LaserList.HasElement(emitter)) {
+		// Add laser emitter
+		m_LaserList.AddToTail(emitter);
+	}
+
+	// Check if we added any laser emitters
+	if (oldCount == 0 && m_LaserList.Count() > 0) {
+		ToggleLaser(true);
+	}
+}
+
+void CPropWeightedCube::RemoveEmitter(CBaseEntity* emitter) {
+	// Check if the emitter is on the list, then remove it.
+	if (m_LaserList.HasElement(emitter)) {
+		m_LaserList.FindAndRemove(emitter);
+	}
+
+	if (m_LaserList.Count() == 0) {
+		ToggleLaser(false);
+	}
+}
+
 void CPropWeightedCube::ToggleLaser(bool state)
 {
-	//if (m_cubeType != Reflective) return;
+	CEnvPortalLaser* pLaser = dynamic_cast<CEnvPortalLaser*>(m_hLaser.Get());
 
-	//if (m_pLaser == nullptr) {
-	//	m_pLaser = dynamic_cast<CEnvPortalLaser*>(CreateEntityByName("env_portal_laser"));
-	//	m_pLaser->KeyValue("damage", "100");
-	//	m_pLaser->KeyValue("width", "2");
-	//	m_pLaser->KeyValue("texture", "sprites/laserbeam.spr");
-	//	m_pLaser->KeyValue("renderamt", "100");
-	//	m_pLaser->KeyValue("TextureScroll", "35");
-	//	m_pLaser->SetParent(this);
-	//	m_pLaser->SetParentAttachment("SetLaserAttachmentParent", "focus", false);
-	//	DispatchSpawn(m_pLaser);
-	//	m_pLaser->Activate();
-	//	m_pLaser->TurnOff();
-	//}
-
-	//if (state == true) {
-	//	m_pLaser->TurnOn();
-	//}
-	//else if (state == false) {
-	//	m_pLaser->TurnOff();
-	//	if (dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject) != nullptr) {
-	//		CEnvLaserTarget* pTarget = dynamic_cast<CEnvLaserTarget*>(m_pLaser->m_pHitObject);
-	//		CPropLaserCatcher* pCatcher = dynamic_cast<CPropLaserCatcher*>(pTarget->GetParent());
-	//		pCatcher->TurnOff(m_pLaser);
-	//	}
-	//}
+	if (!pLaser) {
+		pLaser = (CEnvPortalLaser*)CreateEntityByName("env_portal_laser");
+		if (!pLaser) {
+			Vector vecOrigin;
+			QAngle angOrigin;
+			GetAttachment("focus", vecOrigin, angOrigin);
+			pLaser->Activate();
+			pLaser->SetAbsOrigin(vecOrigin);
+			pLaser->SetAbsAngles(angOrigin);
+			pLaser->SetParent(this, 0);
+			pLaser->TurnOff();
+			DispatchSpawn(pLaser);
+			m_hLaser = pLaser;
+		}
+	}
+	else {
+		if (state) {
+			pLaser->TurnOn();
+		}
+		else {
+			pLaser->TurnOff();
+		}
+	}
 }
 
 void CPropWeightedCube::InputPreDissolveJoke(inputdata_t& data)

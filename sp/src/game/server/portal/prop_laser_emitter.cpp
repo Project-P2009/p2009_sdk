@@ -10,7 +10,6 @@
 #include "npc_turret_floor.h"
 
 #include "prop_laser_emitter.h"
-#include "prop_laser_catcher.h"
 
 #define LASER_BEAM_SPRITE "sprites/purplelaser1.vmt"//"sprites/xbeam2.vmt"
 #define LASER_BEAM_COLOUR_CVAR "255 128 128"
@@ -62,6 +61,7 @@ BEGIN_DATADESC(CEnvPortalLaser)
 	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pBeamAfterPortal, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pCatcher, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_pCube, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_iSprite, FIELD_INTEGER),
 // Key fields
 	DEFINE_KEYFIELD(m_bStartActive, FIELD_BOOLEAN, "startactive"),
@@ -85,7 +85,7 @@ CEnvPortalLaser::~CEnvPortalLaser() {
 	DestroySounds();
 }
 
-CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_pCatcher(NULL), m_fPlayerDamage(1), BaseClass() { }
+CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_pCatcher(NULL), m_pCube(NULL), m_fPlayerDamage(1), BaseClass() { }
 
 void CEnvPortalLaser::Precache() {
 	PrecacheScriptSound(LASER_ACTIVATION_SOUND);
@@ -182,11 +182,38 @@ void CEnvPortalLaser::LaserThink() {
 			}
 			// Don't display impact sparks on catchers.
 			bSparks = false;
+		} else if (FClassnameIs(tr.m_pEnt, "prop_weighted_cube")) {
+			if (portal_laser_debug.GetBool()) {
+				NDebugOverlay::Cross3D(tr.endpos, 16, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+			}
+
+			CPropWeightedCube* pCube = dynamic_cast<CPropWeightedCube*>(tr.m_pEnt);
+			// Check if casting to catcher successed
+			if (pCube) {
+				// Check if the catcher is different
+				if (m_pCube != pCube) {
+					// Remove this emitter from the old catcher
+					if (m_pCube != NULL) {
+						m_pCube->ToggleLaser(false);
+					}
+					// Add this emitter to the new catcher
+					pCube->ToggleLaser(true);
+					// Keep track of the new catcher
+					m_pCube = pCube;
+				}
+			}
+			// Don't display impact sparks on catchers.
+			bSparks = false;
 		} else {
 			// If we did not hit a laser detector, check if we did in the past and remove this emitter.
 			if (m_pCatcher != NULL) {
 				m_pCatcher->RemoveEmitter(this);
 				m_pCatcher = NULL;
+			}
+
+			if (m_pCube != NULL) {
+				m_pCube->ToggleLaser(false);
+				m_pCube = NULL;
 			}
 
 			// Check if we hit a turret

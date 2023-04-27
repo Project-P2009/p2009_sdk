@@ -10,7 +10,6 @@
 #include "particle_parse.h"
 #include "particle_system.h"
 #include "player_pickup.h"
-//#include "env_portal_laser.h"
 
 // resource file names
 #define IMPACT_DECAL_NAME	"decals/smscorch1model"
@@ -51,6 +50,8 @@ public:
 	void OnPhysGunDrop(CBasePlayer* pPhysGunUser, PhysGunDrop_t reason);
 	//virtual void Activate(void);
 
+	virtual void AddEmitter(CBaseEntity* emitter);
+	virtual void RemoveEmitter(CBaseEntity* emitter);
 	void ToggleLaser(bool state);
 
 	int GetCubeType() { return m_cubeType; }
@@ -69,9 +70,11 @@ private:
 	bool m_useNewSkins;
 	bool m_allowFunnel;
 
-	//CEnvPortalLaser* m_pLaser;
+	CHandle<CBaseEntity> m_hLaser;
 
 	CHandle<CBasePlayer> m_hPhysicsAttacker;
+
+	CUtlVector<CBaseEntity*> m_LaserList;
 
 	COutputEvent m_OnOrangePickup;
 	COutputEvent m_OnBluePickup;

@@ -25,7 +25,7 @@ ipch
 
 # VDelta Project Borrowed :)
 sp/src/vdbugreporter/
-external/
+sp/src/external/
 
 # OSX/Linux build products
 *.mak

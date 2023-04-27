@@ -5,6 +5,7 @@
 #include "Sprite.h"
 
 #include "prop_laser_catcher.h"
+#include "prop_weightedcube.h"
 
 /**
  * @brief Thermal Discouragement Beam Entity
@@ -44,6 +45,7 @@ private:
 	CSoundPatch* m_pLaserSound;
 
 	CFuncLaserDetector* m_pCatcher;
+	CPropWeightedCube* m_pCube;
 
 	float m_fHurnSoundTime, m_fPlayerDamage;
 	int m_iSprite;
