@@ -18,40 +18,6 @@
 
 #define FIZZLE_SOUND		"Prop.Fizzled"
 
-enum CubeType
-{
-	Standard = 0,
-	Companion = 1,
-	Reflective,
-	Sphere,
-	Antique,
-};
-
-enum SkinOld
-{
-	OLDStandard = 0,
-	OLDCompanion = 1,
-	OLDStandardActivated,
-	OLDReflective,
-	OLDSphere,
-	OLDAntique
-};
-
-enum SkinType
-{
-	Clean = 0,
-	Rusted = 1,
-};
-
-enum PaintPower
-{
-	Bounce = 0,
-	Stick = 1,
-	Speed,
-	Portal,
-	None,
-};
-
 
 LINK_ENTITY_TO_CLASS(prop_weighted_cube, CPropWeightedCube);
 
@@ -254,11 +220,13 @@ void CPropWeightedCube::RemoveEmitter(CBaseEntity* emitter) {
 
 void CPropWeightedCube::ToggleLaser(bool state)
 {
+	if (m_cubeType != Reflective) return;
+
 	CEnvPortalLaser* pLaser = dynamic_cast<CEnvPortalLaser*>(m_hLaser.Get());
 
 	if (!pLaser) {
 		pLaser = (CEnvPortalLaser*)CreateEntityByName("env_portal_laser");
-		if (!pLaser) {
+		if (pLaser) {
 			Vector vecOrigin;
 			QAngle angOrigin;
 			GetAttachment("focus", vecOrigin, angOrigin);
@@ -271,13 +239,12 @@ void CPropWeightedCube::ToggleLaser(bool state)
 			m_hLaser = pLaser;
 		}
 	}
+
+	if (state) {
+		pLaser->TurnOn();
+	}
 	else {
-		if (state) {
-			pLaser->TurnOn();
-		}
-		else {
-			pLaser->TurnOff();
-		}
+		pLaser->TurnOff();
 	}
 }
 

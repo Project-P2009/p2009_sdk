@@ -30,6 +30,7 @@ sp/src/game/client/protoshot
 # VDelta Project Borrowed :)
 sp/src/vdbugreporter/
 sp/src/external/
+sp/src/vgui2/
 
 # OSX/Linux build products
 *.mak
@@ -68,7 +69,6 @@ config.cfg
 *.vcs
 
 # Unnecessary files
-*.lib
 *.filters
 *.vpc_crc
 *.sentinel
@@ -118,6 +118,7 @@ sp/src/devtools/gcc9+support.o
 sp/src/lib/public/mathlib.lib
 sp/src/lib/public/raytrace.lib
 sp/src/lib/public/tier1.lib
+sp/src/lib/public/vtf.lib
 sp/src/lib/public/vgui_controls.lib
 sp/src/utils/sapi51/Bin/aoesapi.exe
 sp/src/utils/sapi51/Bin/audioapp.exe

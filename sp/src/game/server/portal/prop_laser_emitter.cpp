@@ -60,8 +60,8 @@ BEGIN_DATADESC(CEnvPortalLaser)
 	DEFINE_FIELD(m_bStatus, FIELD_BOOLEAN),
 	DEFINE_FIELD(m_pBeam, FIELD_CLASSPTR),
 	DEFINE_FIELD(m_pBeamAfterPortal, FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pCatcher, FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pCube, FIELD_CLASSPTR),
+	DEFINE_FIELD(m_hCatcher, FIELD_EHANDLE),
+	DEFINE_FIELD(m_hCube, FIELD_EHANDLE),
 	DEFINE_FIELD(m_iSprite, FIELD_INTEGER),
 // Key fields
 	DEFINE_KEYFIELD(m_bStartActive, FIELD_BOOLEAN, "startactive"),
@@ -85,7 +85,7 @@ CEnvPortalLaser::~CEnvPortalLaser() {
 	DestroySounds();
 }
 
-CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_pCatcher(NULL), m_pCube(NULL), m_fPlayerDamage(1), BaseClass() { }
+CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_hCatcher(NULL), m_hCube(NULL), m_fPlayerDamage(1), BaseClass() { }
 
 void CEnvPortalLaser::Precache() {
 	PrecacheScriptSound(LASER_ACTIVATION_SOUND);
@@ -169,15 +169,15 @@ void CEnvPortalLaser::LaserThink() {
 			// Check if casting to catcher successed
 			if (pCatcher) {
 				// Check if the catcher is different
-				if (m_pCatcher != pCatcher) {
+				if (m_hCatcher.Get() != pCatcher) {
 					// Remove this emitter from the old catcher
-					if (m_pCatcher != NULL) {
-						m_pCatcher->RemoveEmitter(this);
+					if (m_hCatcher.Get() != NULL) {
+						m_hCatcher.Get()->RemoveEmitter(this);
 					}
 					// Add this emitter to the new catcher
 					pCatcher->AddEmitter(this);
 					// Keep track of the new catcher
-					m_pCatcher = pCatcher;
+					m_hCatcher = pCatcher;
 				}
 			}
 			// Don't display impact sparks on catchers.
@@ -188,32 +188,34 @@ void CEnvPortalLaser::LaserThink() {
 			}
 
 			CPropWeightedCube* pCube = dynamic_cast<CPropWeightedCube*>(tr.m_pEnt);
-			// Check if casting to catcher successed
+			// Check if casting to cube successed
 			if (pCube) {
-				// Check if the catcher is different
-				if (m_pCube != pCube) {
-					// Remove this emitter from the old catcher
-					if (m_pCube != NULL) {
-						m_pCube->ToggleLaser(false);
+				if (pCube->GetCubeType() == Reflective) {
+					// Check if the cube is different
+					if (m_hCube.Get() != pCube) {
+						// Remove this emitter from the old catcher
+						if (m_hCube.Get() != NULL) {
+							m_hCube.Get()->RemoveEmitter(this);
+						}
+						// Add this emitter to the new catcher
+						pCube->AddEmitter(this);
+						// Keep track of the new catcher
+						m_hCube = pCube;
 					}
-					// Add this emitter to the new catcher
-					pCube->ToggleLaser(true);
-					// Keep track of the new catcher
-					m_pCube = pCube;
 				}
 			}
-			// Don't display impact sparks on catchers.
-			bSparks = false;
+			// Don't display impact sparks on reflection cube.
+			bSparks = pCube->GetCubeType() != Reflective;
 		} else {
 			// If we did not hit a laser detector, check if we did in the past and remove this emitter.
-			if (m_pCatcher != NULL) {
-				m_pCatcher->RemoveEmitter(this);
-				m_pCatcher = NULL;
+			if (m_hCatcher.Get() != NULL) {
+				m_hCatcher.Get()->RemoveEmitter(this);
+				m_hCatcher = NULL;
 			}
 
-			if (m_pCube != NULL) {
-				m_pCube->ToggleLaser(false);
-				m_pCube = NULL;
+			if (m_hCube != NULL) {
+				m_hCube.Get()->RemoveEmitter(this);
+				m_hCube = NULL;
 			}
 
 			// Check if we hit a turret
@@ -328,9 +330,14 @@ void CEnvPortalLaser::TurnOff() {
 			m_pBeamAfterPortal->AddEffects(EF_NODRAW);
 		}
 
-		if (m_pCatcher) {
-			m_pCatcher->RemoveEmitter(this);
-			m_pCatcher = NULL;
+		if (m_hCatcher) {
+			m_hCatcher.Get()->RemoveEmitter(this);
+			m_hCatcher = NULL;
+		}
+
+		if (m_hCube) {
+			m_hCube.Get()->RemoveEmitter(this);
+			m_hCube = NULL;
 		}
 
 		m_bStatus = false;

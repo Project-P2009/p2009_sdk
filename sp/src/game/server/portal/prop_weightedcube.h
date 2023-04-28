@@ -16,7 +16,41 @@
 
 // context think
 #define UPDATE_THINK_CONTEXT	"UpdateThinkContext"
-;
+
+enum CubeType
+{
+	Standard = 0,
+	Companion = 1,
+	Reflective,
+	Sphere,
+	Antique,
+};
+
+enum SkinOld
+{
+	OLDStandard = 0,
+	OLDCompanion = 1,
+	OLDStandardActivated,
+	OLDReflective,
+	OLDSphere,
+	OLDAntique
+};
+
+enum SkinType
+{
+	Clean = 0,
+	Rusted = 1,
+};
+
+enum PaintPower
+{
+	Bounce = 0,
+	Stick = 1,
+	Speed,
+	Portal,
+	None,
+};
+
 class CPropWeightedCube : public CPhysicsProp
 {
 public:

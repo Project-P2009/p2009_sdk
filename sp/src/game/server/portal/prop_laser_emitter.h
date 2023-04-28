@@ -44,8 +44,8 @@ private:
 
 	CSoundPatch* m_pLaserSound;
 
-	CFuncLaserDetector* m_pCatcher;
-	CPropWeightedCube* m_pCube;
+	CHandle<CFuncLaserDetector> m_hCatcher;
+	CHandle<CPropWeightedCube> m_hCube;
 
 	float m_fHurnSoundTime, m_fPlayerDamage;
 	int m_iSprite;
