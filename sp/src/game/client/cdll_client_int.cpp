@@ -172,8 +172,6 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "sixense/in_sixense.h"
 #endif
 
-#include "CCursorClipManagement.h"
-
 #include "ivdbugreporter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1243,8 +1241,6 @@ void CHLClient::PostInit()
 	else {
 		VDBugRep_Log("Failed to load VDBugReporter module\n");
 	}
-
-	CCursorClipManagement::Init();
 }
 
 //-----------------------------------------------------------------------------
@@ -2349,8 +2345,6 @@ void OnRenderEnd()
 	UpdatePVSNotifiers();
 
 	DisplayBoneSetupEnts();
-	
-	g_pCursorClipManager->Think();
 }
 
 
