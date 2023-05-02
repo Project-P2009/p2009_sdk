@@ -22,6 +22,7 @@ LINK_ENTITY_TO_CLASS(func_laser_detect, CFuncLaserDetector)
 BEGIN_DATADESC(CFuncLaserDetector)
 // Fields
 	DEFINE_FIELD(m_pProp, FIELD_EHANDLE),
+	DEFINE_SOUNDPATCH(m_pActiveSound),
 // Key fields
 	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
 	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
@@ -39,7 +40,7 @@ extern ConVar portal_laser_debug;
 void CFuncLaserDetector::Spawn() {
 	BaseClass::Spawn();
 
-	SetSolid(SOLID_OBB);
+	SetSolid(SOLID_VPHYSICS);
 
 	if (m_szPropEntity != NULL) {
 		m_pProp = gEntList.FindEntityByName(NULL, m_szPropEntity);
@@ -47,6 +48,8 @@ void CFuncLaserDetector::Spawn() {
 
 	SetThink(&CFuncLaserDetector::DebugThink);
 	SetNextThink(gpGlobals->curtime);
+
+	CreateVPhysics();
 }
 
 CFuncLaserDetector::~CFuncLaserDetector() {
@@ -154,6 +157,25 @@ CFuncLaserDetector* CFuncLaserDetector::Create(const Vector& origin, const QAngl
 	pEnt->SetAbsAngles(angles);
 
 	return pEnt;
+}
+
+bool CFuncLaserDetector::CreateVPhysics()
+{
+	// NOTE: Don't init this static.  It's pretty common for these to be constrained
+	// and dynamically parented.  Initing shadow avoids having to destroy the physics
+	// object later and lose the constraints.
+	IPhysicsObject *pPhys = VPhysicsInitShadow(false, false);
+	if ( pPhys )
+	{
+		int contents = modelinfo->GetModelContents( GetModelIndex() );
+		if ( ! (contents & (MASK_SOLID|MASK_PLAYERSOLID|MASK_NPCSOLID)) )
+		{
+			// leave the physics shadow there in case it has crap constrained to it
+			// but disable collisions with it
+			pPhys->EnableCollisions( false );
+		}
+	}
+	return true;
 }
 
 void CFuncLaserDetector::DebugThink() {

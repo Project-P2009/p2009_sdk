@@ -23,6 +23,8 @@ public:
 
 	static CFuncLaserDetector* Create(const Vector& origin, const QAngle& angles, const Vector& mins, const Vector& maxs, CBaseEntity* owner);
 
+	bool CreateVPhysics() override;
+
 	void DebugThink();
 private:
 	COutputEvent m_OnPowered;

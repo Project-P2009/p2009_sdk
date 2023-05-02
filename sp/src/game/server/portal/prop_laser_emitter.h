@@ -3,8 +3,24 @@
 #include "cbase.h"
 #include "props.h"
 #include "Sprite.h"
+#include "debug_ent.h"
 
 #include "prop_laser_catcher.h"
+
+class CTriggerPortalLaserRelaySensor : public CTriggerMultiple {
+public:
+	DECLARE_DATADESC()
+	DECLARE_CLASS(CTriggerPortalLaserRelaySensor, CTriggerMultiple)
+	
+	void Spawn() override;
+	bool PassesTriggerFilters(CBaseEntity *pOther) override;
+	void StartTouch(CBaseEntity *pOther) override;
+	void EndTouch(CBaseEntity *pOther) override;
+
+	void SetLength(float len);
+
+	void DebugThink();
+};
 
 /**
  * @brief Thermal Discouragement Beam Entity
@@ -18,6 +34,7 @@ public:
 
 	virtual void Precache();
 	virtual void Spawn();
+	void UpdateOnRemove() override;
 
 	void LaserThink();
 
@@ -40,6 +57,8 @@ private:
 	CBeam* m_pBeamAfterPortal;
 	bool m_bStartActive;
 	bool m_bStatus;
+
+	CUtlVector<CFuncLaserRelayTarget*> m_vFoundRelays;
 
 	CSoundPatch* m_pLaserSound;
 

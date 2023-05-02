@@ -7,10 +7,17 @@
 #include "portal_player.h"
 #include "soundenvelope.h"
 
+#include "prop_laser_relay.h"
+
 #include "npc_turret_floor.h"
 
 #include "prop_laser_emitter.h"
 #include "prop_laser_catcher.h"
+#include "vgui/VGUI.h"
+
+#ifdef DEBUG
+#include "message_entity.h"
+#endif
 
 #define LASER_BEAM_SPRITE "sprites/purplelaser1.vmt"//"sprites/xbeam2.vmt"
 #define LASER_BEAM_COLOUR_CVAR "255 128 128"
@@ -28,6 +35,8 @@
 #define LASER_AMBIENCE_SOUND "vfx/laser_beam_lp_01.wav"
 
 #define LASER_AMBIENCE_SOUND_VOLUME 0.1f
+
+#define LASER_MAX_ENTITY_DETECTED 512 
 
 #define LASER_PUSHBACK_FORCE_CVAR "50"
 #define LASER_PUSHBACK_FORCE 50
@@ -50,11 +59,83 @@ ConVar portal_laser_glow_sprite_scale("portal_laser_glow_sprite_scale", LASER_SP
 ConVar portal_laser_push_force("portal_laser_push_force", "50", FCVAR_CHEAT, "Set the push force of the laser.");
 ConVar portal_laser_push_radius("portal_laser_push_radius", "4", FCVAR_CHEAT, "Radius of the pusher box.");
 
-// CVar controling debug mode for lasers.
-ConVar portal_laser_debug("portal_laser_debug", "0", FCVAR_CHEAT, "Show laser debug informations.");
+// CVar controlling debug mode for lasers.
+ConVar portal_laser_debug("portal_laser_debug", "0", FCVAR_CHEAT,
+	"Show laser debug informations.\n"
+	"Values:\n0 - None\n1 - Show laser traces\n2 - Show relay detector only\n3 - Show all"
+);
+
+BEGIN_DATADESC(CTriggerPortalLaserRelaySensor)
+	DEFINE_THINKFUNC(DebugThink)
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS(trigger_portal_laser_relay_sensor, CTriggerPortalLaserRelaySensor)
+void CTriggerPortalLaserRelaySensor::Spawn()
+{
+	BaseClass::Spawn();
+
+	InitTrigger();
+
+	if (m_flWait == 0)
+	{
+		m_flWait = 0.2;
+	}
+
+	SetTouch(&CTriggerMultiple::MultiTouch);
+
+	SetThink(&CTriggerPortalLaserRelaySensor::DebugThink);
+	SetNextThink(gpGlobals->curtime);
+}
+
+bool CTriggerPortalLaserRelaySensor::PassesTriggerFilters(CBaseEntity* pOther)
+{
+	bool bPass = FClassnameIs(pOther, "func_laser_relay_target");
+	return bPass;
+}
+
+void CTriggerPortalLaserRelaySensor::StartTouch(CBaseEntity* pOther)
+{
+	BaseClass::StartTouch(pOther);
+	if (FClassnameIs(pOther, "func_laser_relay_target"))
+	{
+		CFuncLaserRelayTarget* pRelay = dynamic_cast<CFuncLaserRelayTarget*>(pOther);
+		if (pRelay)
+		{
+			pRelay->SetActivated(true);
+		}
+	}
+}
+
+void CTriggerPortalLaserRelaySensor::EndTouch(CBaseEntity* pOther)
+{
+	BaseClass::EndTouch(pOther);
+	if (FClassnameIs(pOther, "func_laser_relay_target"))
+	{
+		CFuncLaserRelayTarget* pRelay = dynamic_cast<CFuncLaserRelayTarget*>(pOther);
+		if (pRelay)
+		{
+			pRelay->SetActivated(false);
+		}
+	}
+}
+
+void CTriggerPortalLaserRelaySensor::SetLength(float len)
+{
+	Vector vecDir;
+	GetVectors(&vecDir, nullptr, nullptr);
+	Vector vecSize = { 4, 4, 4 };
+	vecDir *= len;
+	vecSize += vecDir;
+	SetSize(-vecSize, vecSize);
+}
+
+void CTriggerPortalLaserRelaySensor::DebugThink()
+{
+	NDebugOverlay::EntityBounds(this, 0xFF, 0x00, 0x00, 0x20, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+	SetNextThink(gpGlobals->curtime);
+}
 
 LINK_ENTITY_TO_CLASS(env_portal_laser, CEnvPortalLaser)
-
 BEGIN_DATADESC(CEnvPortalLaser)
 // Fields
 	DEFINE_SOUNDPATCH(m_pLaserSound),
@@ -85,7 +166,10 @@ CEnvPortalLaser::~CEnvPortalLaser() {
 	DestroySounds();
 }
 
-CEnvPortalLaser::CEnvPortalLaser() : m_pBeam(NULL), m_pBeamAfterPortal(NULL), m_pCatcher(NULL), m_fPlayerDamage(1), BaseClass() { }
+CEnvPortalLaser::CEnvPortalLaser() : BaseClass(),
+	m_pBeam(nullptr), m_pBeamAfterPortal(nullptr), m_pCatcher(nullptr),
+	m_fPlayerDamage(1.0f)
+{ }
 
 void CEnvPortalLaser::Precache() {
 	PrecacheScriptSound(LASER_ACTIVATION_SOUND);
@@ -105,7 +189,14 @@ void CEnvPortalLaser::Spawn() {
 	}
 }
 
+void CEnvPortalLaser::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+}
+
 void CEnvPortalLaser::LaserThink() {
+	static CUtlVector<CBaseEntity*> vEntityList;
+
 	if (!m_bStatus) {
 		TurnOff();
 		return;
@@ -118,7 +209,7 @@ void CEnvPortalLaser::LaserThink() {
 	trace_t tr;
 	AngleVectors(GetAbsAngles(), &vecDir);
 
-	if (portal_laser_debug.GetBool()) {
+	if (portal_laser_debug.GetInt() == 1 || portal_laser_debug.GetInt() == 3) {
 		NDebugOverlay::Axis(GetAbsOrigin(), angDir, 16, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 	}
 
@@ -127,6 +218,7 @@ void CEnvPortalLaser::LaserThink() {
 		TurnOn();
 	}
 
+	vEntityList.RemoveAll();
 	m_pBeam->PointsInit(GetAbsOrigin(), GetAbsOrigin() + vecDir * MAX_TRACE_LENGTH);
 	if (UTIL_Portal_Trace_Beam(m_pBeam, vecStart, vecEnd, vecPortalIn, vecPortalOut, MASK_BLOCKLOS, NULL)) {
 		m_pBeam->PointsInit(vecStart, vecStart + vecDir * MAX_TRACE_LENGTH);
@@ -136,11 +228,30 @@ void CEnvPortalLaser::LaserThink() {
 		HandlePlayerKnockback(vecDir, vecStart, vecPortalIn);
 		HandlePlayerKnockback(traceDir, vecPortalOut, tr.endpos);
 
+		Ray_t ray;
+		ray.m_Start = vecStart;
+		ray.m_Delta = vecPortalIn - vecStart;
+
+		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		if (portal_laser_debug.GetInt() == 2)
+		{
+			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+		}
+
+		ray.m_Start = vecPortalOut;
+		ray.m_Delta = vecEnd - vecPortalOut;
+
+		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		if (portal_laser_debug.GetInt() == 2)
+		{
+			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+		}
+
 		m_pBeam->PointsInit(vecStart, vecPortalIn);
 		m_pBeamAfterPortal->PointsInit(vecPortalOut, tr.endpos);
 		m_pBeamAfterPortal->RemoveEffects(EF_NODRAW);
 
-		if (portal_laser_debug.GetBool()) {
+		if (portal_laser_debug.GetInt() == 1 || portal_laser_debug.GetInt() == 3) {
 			NDebugOverlay::Line(vecStart, vecPortalIn, 0xFF, 0xFF, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 			NDebugOverlay::Line(vecPortalOut, vecEnd, 0xFF, 0xFF, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 		}
@@ -149,6 +260,16 @@ void CEnvPortalLaser::LaserThink() {
 		UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + (traceDir * MAX_TRACE_LENGTH), MASK_BLOCKLOS, NULL, &tr);
 		HandlePlayerKnockback(vecDir, GetAbsOrigin(), tr.endpos);
 
+		Ray_t ray;
+		ray.m_Start = tr.startpos;
+		ray.m_Delta = tr.endpos - tr.startpos;
+
+		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		if (portal_laser_debug.GetInt() == 2)
+		{
+			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+		}
+
 		m_pBeamAfterPortal->AddEffects(EF_NODRAW);
 		m_pBeam->PointsInit(GetAbsOrigin(), tr.endpos);
 		if (portal_laser_debug.GetBool()) {
@@ -156,12 +277,39 @@ void CEnvPortalLaser::LaserThink() {
 		}
 	}
 
+	for (CBaseEntity* ent : vEntityList)
+	{
+		if (FClassnameIs(ent, "func_laser_relay_target"))
+		{
+			CFuncLaserRelayTarget* pTarget = dynamic_cast<CFuncLaserRelayTarget*>(ent);
+			if (pTarget != nullptr && m_vFoundRelays.Find(pTarget) < 0)
+			{
+				pTarget->SetActivated(true);
+				m_vFoundRelays.AddToTail(pTarget);
+			}
+		}
+	}
+
+	CUtlVector<CFuncLaserRelayTarget*> vToRemove;
+	for (CFuncLaserRelayTarget* target : m_vFoundRelays)
+	{
+		if (vEntityList.Find(target) == -1)
+		{
+			target->SetActivated(false);
+			vToRemove.AddToTail(target);
+		}
+	}
+	for (CFuncLaserRelayTarget* pToRemove : vToRemove)
+	{
+		m_vFoundRelays.FindAndRemove(pToRemove);
+	}
+
 	bool bSparks = true;
 
 	if (tr.m_pEnt) {
 		// Check if we hit a laser detector
 		if (FClassnameIs(tr.m_pEnt, "func_laser_detect")) {
-			if (portal_laser_debug.GetBool()) {
+			if (portal_laser_debug.GetInt() == 1 || portal_laser_debug.GetInt() == 3) {
 				NDebugOverlay::Cross3D(tr.endpos, 16, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 			}
 
@@ -202,7 +350,7 @@ void CEnvPortalLaser::LaserThink() {
 		}
 
 		// Display cross at hit position.
-		if (portal_laser_debug.GetBool()) {
+		if (portal_laser_debug.GetInt() == 1 || portal_laser_debug.GetInt() == 3) {
 			NDebugOverlay::Cross3D(tr.endpos, 16, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 		}
 	}
@@ -221,7 +369,7 @@ void CEnvPortalLaser::TurnOn() {
 
 		// Create laser beam
 		if (m_pBeam == NULL) {
-			m_pBeam = (CBeam*)CreateEntityByName("beam");
+			m_pBeam = dynamic_cast<CBeam*>(CreateEntityByName("beam"));
 			if (m_pBeam) {
 				m_pBeam->SetBeamTraceMask(MASK_BLOCKLOS);
 
@@ -253,7 +401,7 @@ void CEnvPortalLaser::TurnOn() {
 		// Create a secondary beam that shows after the laser goes through a portal.
 		// This wouldn't be nessecary, but if a laser goes through glass, the beam won't render beyond the portal.
 		if (m_pBeamAfterPortal == NULL) {
-			m_pBeamAfterPortal = (CBeam*)CreateEntityByName("beam");
+			m_pBeamAfterPortal = dynamic_cast<CBeam*>(CreateEntityByName("beam"));
 			if (m_pBeamAfterPortal) {
 				m_pBeamAfterPortal->SetBeamTraceMask(MASK_BLOCKLOS);
 
@@ -418,7 +566,7 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 		}
 
 		// Display traces if debuging is enabled.
-		if (portal_laser_debug.GetBool()) {
+		if (portal_laser_debug.GetInt() == 1 || portal_laser_debug.GetInt() == 3) {
 			NDebugOverlay::Line(tr.startpos, tr.endpos, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 			NDebugOverlay::Box(vecOrigins[i], Vector(-2), Vector(2), 0xFF, 0x80, 0x00, 0x80, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 			NDebugOverlay::Box(vecEnds[i], Vector(-2), Vector(2), 0xFF, 0x80, 0x00, 0x80, NDEBUG_PERSIST_TILL_NEXT_SERVER);

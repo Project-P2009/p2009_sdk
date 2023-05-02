@@ -319,6 +319,23 @@ inline int UTIL_EntitiesAlongRay( CBaseEntity **pList, int listMax, const Ray_t 
 	CFlaggedEntitiesEnum rayEnum( pList, listMax, flagMask );
 	return UTIL_EntitiesAlongRay( ray, &rayEnum );
 }
+inline int UTIL_EntitiesAlongRayIntoVector( CUtlVector<CBaseEntity*>& vList, int listMax, const Ray_t &ray, int flagMask, bool allow_duplicate = false )
+{
+	CBaseEntity** pList = new CBaseEntity*[listMax];
+	CFlaggedEntitiesEnum rayEnum( pList, listMax, flagMask );
+	int nCount = UTIL_EntitiesAlongRay( ray, &rayEnum );
+
+	for (int i = 0; i < nCount; i++)
+	{
+		if (allow_duplicate || (!allow_duplicate && vList.Find(pList[i]) == -1))
+		{
+			vList.AddToTail(pList[i]);
+		}
+	}
+	
+	delete[] pList;
+	return nCount;
+}
 
 inline int UTIL_EntitiesInSphere( CBaseEntity **pList, int listMax, const Vector &center, float radius, int flagMask )
 {
