@@ -30,7 +30,6 @@ sp/src/game/client/protoshot
 # VDelta Project Borrowed :)
 sp/src/vdbugreporter/
 sp/src/external/
-sp/src/vgui2/
 
 # OSX/Linux build products
 *.mak
