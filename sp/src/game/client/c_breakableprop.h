@@ -25,6 +25,9 @@ public:
 
 	// Copy fade from another breakable prop
 	void CopyFadeFrom( C_BreakableProp *pSource );
+
+protected:
+	QAngle m_qPreferredPlayerCarryAngles;
 };
 
 #endif // C_BREAKABLEPROP_H

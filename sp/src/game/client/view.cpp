@@ -26,6 +26,8 @@
 #include "igameevents.h"
 #include "smoke_fog_overlay.h"
 #include "bitmap/tgawriter.h"
+#include "bitmap/tgaloader.h"
+#include "bitmap/jpegwriter.h"
 #include "hltvcamera.h"
 #if defined( REPLAY_ENABLED )
 #include "replay/replaycamera.h"
@@ -285,6 +287,17 @@ static void StartPitchDrift( void )
 }
 
 static ConCommand centerview( "centerview", StartPitchDrift );
+
+static void CC_TakeSnapshot(void)
+{
+	char szPath[MAX_PATH];
+	Q_snprintf(szPath, MAX_PATH, "screenshots\\bugrep");
+	V_SetExtension(szPath, ".jpg", sizeof(szPath));
+	V_FixSlashes(szPath);
+	view->WriteSnapshotToFile(szPath, view->GetPlayerViewSetup()->width, view->GetPlayerViewSetup()->height);
+}
+
+static ConCommand takesnapshot("takesnapshot", CC_TakeSnapshot);
 
 extern ConVar default_fov;
 
@@ -845,8 +858,139 @@ void CViewRender::SetUpViews()
 #endif
 }
 
+void CViewRender::WriteSnapshotToBuffer(int width, int height, CUtlBuffer& buf)
+{
+#ifndef _X360
+	CMatRenderContextPtr pRenderContext(materials);
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PushMatrix();
 
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PushMatrix();
 
+	g_bRenderingScreenshot = true;
+
+	// Push back buffer on the stack with small viewport
+	pRenderContext->PushRenderTargetAndViewport(NULL, 0, 0, width, height);
+
+	// render out to the backbuffer
+	CViewSetup viewSetup = GetView(STEREO_EYE_MONO);
+	viewSetup.x = 0;
+	viewSetup.y = 0;
+	viewSetup.width = width;
+	viewSetup.height = height;
+	viewSetup.fov = ScaleFOVByWidthRatio(viewSetup.fov, ((float)width / (float)height) / (4.0f / 3.0f));
+	viewSetup.m_bRenderToSubrectOfLargerScreen = true;
+
+	// draw out the scene
+	// Don't draw the HUD or the viewmodel
+	RenderView(viewSetup, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, 0);
+
+	// get the data from the backbuffer and save to disk
+	// bitmap bits
+	unsigned char* pImage = (unsigned char*)malloc(width * height * 3);
+
+	// Get Bits from the material system
+	pRenderContext->ReadPixels(0, 0, width, height, pImage, IMAGE_FORMAT_RGB888);
+
+	// Some stuff to be setup dependent on padded vs. not padded
+	int nSrcWidth, nSrcHeight;
+	unsigned char* pSrcImage;
+
+	// Create a padded version if necessary
+	unsigned char* pPaddedImage = NULL;
+	// Use non-padded info
+	nSrcWidth = width;
+	nSrcHeight = height;
+	pSrcImage = pImage;
+
+	if (!JPEGWriter::WriteToBuffer(buf, nSrcWidth, nSrcHeight, pSrcImage))
+	{
+		Error("Couldn't write bitmap data snapshot.\n");
+	}
+
+	free(pImage);
+	free(pPaddedImage);
+
+	// restore our previous state
+	pRenderContext->PopRenderTargetAndViewport();
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PopMatrix();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PopMatrix();
+
+	g_bRenderingScreenshot = false;
+#endif
+}
+
+void CViewRender::WriteSnapshotToFile(const char* path, int width, int height)
+{
+#ifndef _X360
+	CMatRenderContextPtr pRenderContext(materials);
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PushMatrix();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PushMatrix();
+
+	g_bRenderingScreenshot = true;
+
+	// Push back buffer on the stack with small viewport
+	pRenderContext->PushRenderTargetAndViewport(NULL, 0, 0, width, height);
+
+	// render out to the backbuffer
+	CViewSetup viewSetup = GetView(STEREO_EYE_MONO);
+	viewSetup.x = 0;
+	viewSetup.y = 0;
+	viewSetup.width = width;
+	viewSetup.height = height;
+	viewSetup.fov = ScaleFOVByWidthRatio(viewSetup.fov, ((float)width / (float)height) / (4.0f / 3.0f));
+	viewSetup.m_bRenderToSubrectOfLargerScreen = true;
+
+	// draw out the scene
+	// Don't draw the HUD or the viewmodel
+	RenderView(viewSetup, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, 0);
+
+	// get the data from the backbuffer and save to disk
+	// bitmap bits
+	unsigned char* pImage = (unsigned char*)malloc(width * height * 3);
+
+	// Get Bits from the material system
+	pRenderContext->ReadPixels(0, 0, width, height, pImage, IMAGE_FORMAT_RGB888);
+
+	// Some stuff to be setup dependent on padded vs. not padded
+	int nSrcWidth, nSrcHeight;
+	unsigned char* pSrcImage;
+
+	// Create a padded version if necessary
+	unsigned char* pPaddedImage = NULL;
+	// Use non-padded info
+	nSrcWidth = width;
+	nSrcHeight = height;
+	pSrcImage = pImage;
+
+	if (!JPEGWriter::WriteToFile(path, nSrcWidth, nSrcHeight, pSrcImage))
+	{
+		Error("Couldn't write bitmap data snapshot.\n");
+	}
+
+	free(pImage);
+	free(pPaddedImage);
+
+	// restore our previous state
+	pRenderContext->PopRenderTargetAndViewport();
+
+	pRenderContext->MatrixMode(MATERIAL_PROJECTION);
+	pRenderContext->PopMatrix();
+
+	pRenderContext->MatrixMode(MATERIAL_VIEW);
+	pRenderContext->PopMatrix();
+
+	g_bRenderingScreenshot = false;
+#endif
+}
 
 void CViewRender::WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height, bool bCreatePowerOf2Padded/*=false*/,
 												 bool bWriteVTF/*=false*/ )

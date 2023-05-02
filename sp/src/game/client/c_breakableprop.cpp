@@ -18,6 +18,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_BreakableProp, DT_BreakableProp, CBreakableProp)
+RecvPropQAngles(RECVINFO(m_qPreferredPlayerCarryAngles)),
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------

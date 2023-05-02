@@ -24,6 +24,11 @@ enum CubeType
 	Reflective,
 	Sphere,
 	Antique,
+	// MSVC Suprisingly has no problem compiling Schrödinger as enum value.
+	// But in case of a linux port I do not want to have problems.
+	// Also I should not make the code be a pain to code for some people...
+	// ~GabrielV
+	Schrodinger,
 };
 
 enum SkinOld
@@ -61,9 +66,16 @@ public:
 	virtual void Precache();
 	virtual void Spawn();
 
+	virtual void	UpdateOnRemove(void);
+
 	//Use
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 	int ObjectCaps();
+
+	virtual QAngle PreferredCarryAngles(void);
+	virtual bool HasPreferredCarryAnglesForPlayer(CBasePlayer* pPlayer) { return true; }
+
+	virtual int	UpdateTransmitState();
 
 	bool CreateVPhysics()
 	{
@@ -91,6 +103,9 @@ public:
 	int GetCubeType() { return m_cubeType; }
 	void SetCubeType(int type) { m_cubeType = type; }
 
+	CPropWeightedCube* GetSchrodingerTwin() { return m_hSchrodingerTwin; }
+	void SchrodingerThink(void);
+
 	void SetActivated(bool active);
 
 	int m_nLensAttachment;
@@ -98,6 +113,10 @@ public:
 	QAngle m_aLensAng;
 
 private:
+	void	UpdatePreferredAngles(CBasePlayer* pPlayer);
+
+	QAngle					m_vecCarryAngles;
+
 	int	m_cubeType;
 	int m_skinType;
 	int m_paintPower;
@@ -105,10 +124,14 @@ private:
 	bool m_allowFunnel;
 
 	CHandle<CBaseEntity> m_hLaser;
+	CUtlVector<CBaseEntity*> m_LaserList;
+
+	// Schrodiner's cube
+	CHandle<CPropWeightedCube> m_hSchrodingerTwin;
+	static CHandle<CPropWeightedCube> m_hSchrodingerDangling;
 
 	CHandle<CBasePlayer> m_hPhysicsAttacker;
 
-	CUtlVector<CBaseEntity*> m_LaserList;
 
 	COutputEvent m_OnOrangePickup;
 	COutputEvent m_OnBluePickup;
@@ -121,4 +144,11 @@ private:
 	COutputEvent m_OnFizzled;
 
 };
-#endif // TRIGGERS_H
+
+bool UTIL_IsWeightedCube(CBaseEntity* pEntity);
+bool UTIL_IsReflectiveCube(CBaseEntity* pEntity);
+
+bool UTIL_IsSchrodinger(CBaseEntity* pEntity);
+CPropWeightedCube* UTIL_GetSchrodingerTwin(CBaseEntity* pEntity);
+
+#endif // PROP_WEIGHTEDCUBE_H

@@ -16,11 +16,13 @@ $Group "gamedlls"
 
 $Group "game"
 {
+	"bitmap"
 	"client"
 	"gameui"
 	"mathlib"
 	"newdat"
 	"raytrace"
+	"responserules"
 	"server"
 	"tier1"
 	"vgui_controls"
@@ -29,7 +31,6 @@ $Group "game"
 	"vscript"
 	"vtf"
 	"vdbugreporter" //WIP
-	"responserules"
 }
 
 $Group "shaderdlls"
@@ -45,9 +46,11 @@ $Group "shaders"
 
 $Group "everything"
 {
+	"bitmap"
 	"captioncompiler"
 	"client"
 	"fgdlib"
+	"jpeglib"
 	"gameui"
 	"game_shader_dx9"
 	"glview"
@@ -81,7 +84,9 @@ $Group "everything"
 
 $Group "dedicated"
 {
+	"bitmap"
 	"mathlib"
+	"jpeglib"
 	"server"
 	"tier1"
 	"vtf"

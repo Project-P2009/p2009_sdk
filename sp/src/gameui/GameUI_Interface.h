@@ -10,6 +10,7 @@
 #pragma once
 
 #include "GameUI/IGameUI.h"
+
 #include "vdbugreporter/ivdbugreporter.h"
 #include <vgui_controls/Panel.h>
 #include <vgui_controls/PHandle.h>

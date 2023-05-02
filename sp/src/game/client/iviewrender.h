@@ -123,6 +123,8 @@ public:
 #endif
 
 	virtual void		WriteSaveGameScreenshot( const char *pFilename ) = 0;
+	virtual void		WriteSnapshotToBuffer(int width, int height, CUtlBuffer& buf) = 0;
+	virtual void		WriteSnapshotToFile(const char* path, int width, int height) = 0;
 	virtual void		WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height, bool bCreatePowerOf2Padded = false, bool bWriteVTF = false ) = 0;
 
 	virtual void		WriteReplayScreenshot( WriteReplayScreenshotParams_t &params ) = 0;

@@ -16,6 +16,8 @@ public:
 	virtual void AddEmitter(CBaseEntity* emitter);
 	virtual void RemoveEmitter(CBaseEntity* emitter);
 
+	bool CreateVPhysics() override;
+
 	virtual void CreateSounds();
 	void DestroySounds();
 
@@ -59,6 +61,7 @@ private:
 	CFuncLaserDetector* m_pLaserDetector;
 	CSprite* m_pActivatedSprite;
 
+	bool m_bUseAnimations;
 	const char* m_szIdleAnimation;
 	const char* m_szActiveAnimation;
 

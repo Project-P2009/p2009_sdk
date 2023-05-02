@@ -14,6 +14,10 @@
 
 #include "appframework/IAppSystem.h"
 #include "tier1/convar.h"
+#include "tier0/dbg.h"
+#include "Color.h"
+
+#define PRINT_STACK(...) ConColorMsg(Color( 252, 3, 32, 255 ), "[Stack] " __VA_ARGS__)
 
 
 //-----------------------------------------------------------------------------

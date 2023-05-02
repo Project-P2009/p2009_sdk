@@ -176,6 +176,7 @@ void CEnvPortalLaser::LaserThink() {
 					}
 					// Add this emitter to the new catcher
 					pCatcher->AddEmitter(this);
+					Msg("Adding this emitter to catcher\n");
 					// Keep track of the new catcher
 					m_hCatcher = pCatcher;
 				}
@@ -388,7 +389,10 @@ void CEnvPortalLaser::InputToggle(inputdata_t& data) {
 
 #define LASER_PLAYER_PUSHER_TRACE_COUNT 8
 
-void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart, const Vector& vecEnd) {
+void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& vecStart, const Vector& vecEnd) 
+{
+	// FIXME: Player is not knocked back if the jump onto the laser. Not Good!
+#if 1
 	QAngle angDir;
 	Vector vecForward, vecRight, vecUp;
 	trace_t tr;
@@ -458,6 +462,7 @@ void CEnvPortalLaser::HandlePlayerKnockback(const Vector& vecDir, const Vector& 
 			NDebugOverlay::Box(vecEnds[i], Vector(-2), Vector(2), 0xFF, 0x80, 0x00, 0x80, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 		}
 	}
+#endif
 }
 void CEnvPortalLaser::SetPlayerDamage(float damage) {
 	m_fPlayerDamage = damage;

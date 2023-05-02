@@ -166,6 +166,7 @@ Color UTIL_Portal_Color(int iPortal)
 void UTIL_Portal_Trace_Filter(CTraceFilterSimpleClassnameList* traceFilterPortalShot)
 {
 	traceFilterPortalShot->AddClassnameToIgnore("prop_physics");
+	traceFilterPortalShot->AddClassnameToIgnore("prop_weighted_cube");
 	traceFilterPortalShot->AddClassnameToIgnore("func_physbox");
 	traceFilterPortalShot->AddClassnameToIgnore("npc_portal_turret_floor");
 	traceFilterPortalShot->AddClassnameToIgnore("prop_energy_ball");

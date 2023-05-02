@@ -8,6 +8,11 @@
 // Project definitions //
 /////////////////////////
 
+$Project "bitmap"
+{
+	"bitmap\bitmap.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "captioncompiler"
 {
 	"utils\captioncompiler\captioncompiler.vpc" [$WIN32]
@@ -44,6 +49,11 @@ $Project "glview"
 $Project "height2normal"
 {
 	"utils\height2normal\height2normal.vpc" [$WIN32]
+}
+
+$Project "jpeglib"
+{
+	"utils\jpeglib\jpeglib.vpc" [$WINDOWS||$POSIX]
 }
 
 $Project "server"

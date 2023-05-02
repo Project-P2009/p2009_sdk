@@ -25,7 +25,6 @@ namespace TGAWriter
 	bool WriteToBuffer( unsigned char *pImageData, CUtlBuffer &buffer, int width, int height, 
 						ImageFormat srcFormat, ImageFormat dstFormat );
 
-
 	// write out a simple tga file from a memory buffer.
 	bool WriteTGAFile( const char *fileName, int width, int height, enum ImageFormat srcFormat, uint8 const *srcData, int nStride );
 

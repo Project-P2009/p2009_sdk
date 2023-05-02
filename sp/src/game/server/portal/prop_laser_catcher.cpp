@@ -53,6 +53,25 @@ CFuncLaserDetector::~CFuncLaserDetector() {
 	m_LaserList.Purge();
 }
 
+bool CFuncLaserDetector::CreateVPhysics()
+{
+	// NOTE: Don't init this static.  It's pretty common for these to be constrained
+	// and dynamically parented.  Initing shadow avoids having to destroy the physics
+	// object later and lose the constraints.
+	IPhysicsObject* pPhys = VPhysicsInitShadow(false, false);
+	if (pPhys)
+	{
+		int contents = modelinfo->GetModelContents(GetModelIndex());
+		if (!(contents & (MASK_SOLID | MASK_PLAYERSOLID | MASK_NPCSOLID)))
+		{
+			// leave the physics shadow there in case it has crap constrained to it
+			// but disable collisions with it
+			pPhys->EnableCollisions(false);
+		}
+	}
+	return true;
+}
+
 void CFuncLaserDetector::Precache() {
 	PrecacheScriptSound(CATCHER_ACTIVATE_SOUND);
 	PrecacheScriptSound(CATCHER_DEACTIVATE_SOUND);
@@ -177,6 +196,7 @@ BEGIN_DATADESC(CPropLaserCatcher)
 // Key fields
 	DEFINE_KEYFIELD(m_szIdleAnimation, FIELD_STRING, "idle_anim"),
 	DEFINE_KEYFIELD(m_szActiveAnimation, FIELD_STRING, "active_anim"),
+	DEFINE_KEYFIELD(m_bUseAnimations, FIELD_BOOLEAN, "useanims"),
 // Outputs
 	DEFINE_OUTPUT(m_OnPowered, "OnPowered"),
 	DEFINE_OUTPUT(m_OnUnpowered, "OnUnpowered"),

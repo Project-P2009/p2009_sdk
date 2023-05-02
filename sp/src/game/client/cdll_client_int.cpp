@@ -1687,6 +1687,8 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	hudlcd->SetGlobalStat( "(mapname)", pMapName );
 
+	g_pVDBugReporter->SetMapname(pMapName);
+
 	C_BaseTempEntity::ClearDynamicTempEnts();
 	clienteffects->Flush();
 	view->LevelInit();
@@ -2346,8 +2348,6 @@ void OnRenderEnd()
 
 	DisplayBoneSetupEnts();
 }
-
-
 
 void CHLClient::FrameStageNotify( ClientFrameStage_t curStage )
 {

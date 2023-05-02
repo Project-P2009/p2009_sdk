@@ -189,6 +189,8 @@ protected:
 
 protected:
 
+	CNetworkQAngle(m_qPreferredPlayerCarryAngles);
+
 	unsigned int	m_createTick;
 	float			m_flPressureDelay;
 	EHANDLE			m_hBreaker;

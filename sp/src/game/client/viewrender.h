@@ -339,6 +339,8 @@ protected:
 	void			SetUpOverView();
 
 	// generates a low-res screenshot for save games
+	virtual void		WriteSnapshotToBuffer(int width, int height, CUtlBuffer& buf);
+	virtual void		WriteSnapshotToFile(const char* path, int width, int height);
 	virtual void	WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height, bool bCreatePowerOf2Padded = false, bool bWriteVTF = false );
 	void			WriteSaveGameScreenshot( const char *filename );
 

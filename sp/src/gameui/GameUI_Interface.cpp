@@ -87,16 +87,16 @@
 
 bool g_bUsingCustomHudAnimations = false;
 
-IGameUIFuncs *gameuifuncs = NULL;
-IEngineVGui *enginevguifuncs = NULL;
-IMatchmaking *matchmaking = NULL;
-IXboxSystem *xboxsystem = NULL;		// 360 only
-vgui::ISurface *enginesurfacefuncs = NULL;
-IVEngineClient *engine = NULL;
-IEngineSound *enginesound = NULL;
-IAchievementMgr *achievementmgr = NULL;
-IEngineClientReplay *g_pEngineClientReplay = NULL;
-ISourceVirtualReality *g_pSourceVR = NULL;
+IGameUIFuncs* gameuifuncs = NULL;
+IEngineVGui* enginevguifuncs = NULL;
+IMatchmaking* matchmaking = NULL;
+IXboxSystem* xboxsystem = NULL;		// 360 only
+vgui::ISurface* enginesurfacefuncs = NULL;
+IVEngineClient* engine = NULL;
+IEngineSound* enginesound = NULL;
+IAchievementMgr* achievementmgr = NULL;
+IEngineClientReplay* g_pEngineClientReplay = NULL;
+ISourceVirtualReality* g_pSourceVR = NULL;
 
 static CSteamAPIContext g_SteamAPIContext;
 CSteamAPIContext *steamapicontext = &g_SteamAPIContext;

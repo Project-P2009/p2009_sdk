@@ -63,17 +63,13 @@ extern void longjmp( jmp_buf, int ) __attribute__((noreturn));
 
 // use the JPEGLIB_USE_STDIO define so that we can read in jpeg's from outside the game directory tree.
 #define JPEGLIB_USE_STDIO
-#if ANDROID
-#include "android/jpeglib/jpeglib.h"
-#else
 #include "jpeglib/jpeglib.h"
-#endif
 #undef JPEGLIB_USE_STDIO
 
 
 #if HAVE_PNG
 
-#if ANDROID || WIN32
+#if WIN32
 #include "libpng/png.h"
 #else
 #include <png.h>
