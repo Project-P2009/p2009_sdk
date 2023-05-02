@@ -195,7 +195,8 @@ void CEnvPortalLaser::UpdateOnRemove()
 }
 
 void CEnvPortalLaser::LaserThink() {
-	static CUtlVector<CBaseEntity*> vEntityList;
+	CBaseEntity* pEntityList[LASER_MAX_ENTITY_DETECTED];
+	int nEntityListCount = 0;
 
 	if (!m_bStatus) {
 		TurnOff();
@@ -218,7 +219,6 @@ void CEnvPortalLaser::LaserThink() {
 		TurnOn();
 	}
 
-	vEntityList.RemoveAll();
 	m_pBeam->PointsInit(GetAbsOrigin(), GetAbsOrigin() + vecDir * MAX_TRACE_LENGTH);
 	if (UTIL_Portal_Trace_Beam(m_pBeam, vecStart, vecEnd, vecPortalIn, vecPortalOut, MASK_BLOCKLOS, NULL)) {
 		m_pBeam->PointsInit(vecStart, vecStart + vecDir * MAX_TRACE_LENGTH);
@@ -232,7 +232,7 @@ void CEnvPortalLaser::LaserThink() {
 		ray.m_Start = vecStart;
 		ray.m_Delta = vecPortalIn - vecStart;
 
-		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		nEntityListCount = UTIL_EntitiesAlongRay(pEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_ALL);
 		if (portal_laser_debug.GetInt() == 2)
 		{
 			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
@@ -241,7 +241,7 @@ void CEnvPortalLaser::LaserThink() {
 		ray.m_Start = vecPortalOut;
 		ray.m_Delta = vecEnd - vecPortalOut;
 
-		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		nEntityListCount += UTIL_EntitiesAlongRay(pEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_ALL);
 		if (portal_laser_debug.GetInt() == 2)
 		{
 			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
@@ -264,7 +264,7 @@ void CEnvPortalLaser::LaserThink() {
 		ray.m_Start = tr.startpos;
 		ray.m_Delta = tr.endpos - tr.startpos;
 
-		UTIL_EntitiesAlongRayIntoVector(vEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_SOLID);
+		nEntityListCount = UTIL_EntitiesAlongRay(pEntityList, LASER_MAX_ENTITY_DETECTED, ray, MASK_ALL);
 		if (portal_laser_debug.GetInt() == 2)
 		{
 			NDebugOverlay::Line(ray.m_Start, ray.m_Start + ray.m_Delta, 0xFF, 0x00, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
@@ -272,16 +272,25 @@ void CEnvPortalLaser::LaserThink() {
 
 		m_pBeamAfterPortal->AddEffects(EF_NODRAW);
 		m_pBeam->PointsInit(GetAbsOrigin(), tr.endpos);
-		if (portal_laser_debug.GetBool()) {
+		if (portal_laser_debug.GetBool())
+{
 			NDebugOverlay::Line(tr.startpos, tr.endpos, 0xFF, 0xFF, 0x00, false, NDEBUG_PERSIST_TILL_NEXT_SERVER);
 		}
 	}
 
-	for (CBaseEntity* ent : vEntityList)
+#if DEBUG
+	char szDebugMessage[1025] = { 0 };
+	int nDebugMessageCounter = Q_snprintf(szDebugMessage, 1024, "Detected entities (%d):\n", nEntityListCount);
+#endif
+
+	for (int i = 0; i < nEntityListCount; i++)
 	{
-		if (FClassnameIs(ent, "func_laser_relay_target"))
+#if DEBUG
+		nDebugMessageCounter += Q_snprintf(szDebugMessage + nDebugMessageCounter, 1024 - nDebugMessageCounter, "%s\n", pEntityList[i]->GetDebugName());
+#endif
+		if (FClassnameIs(pEntityList[i], "func_laser_relay_target"))
 		{
-			CFuncLaserRelayTarget* pTarget = dynamic_cast<CFuncLaserRelayTarget*>(ent);
+			CFuncLaserRelayTarget* pTarget = dynamic_cast<CFuncLaserRelayTarget*>(pEntityList[i]);
 			if (pTarget != nullptr && m_vFoundRelays.Find(pTarget) < 0)
 			{
 				pTarget->SetActivated(true);
@@ -289,16 +298,21 @@ void CEnvPortalLaser::LaserThink() {
 			}
 		}
 	}
+#if DEBUG
+	NDebugOverlay::ScreenText(0.01f, 0.1f, szDebugMessage, 0xFF, 0xFF, 0xFF, 0xFF, NDEBUG_PERSIST_TILL_NEXT_SERVER);
+#endif
 
 	CUtlVector<CFuncLaserRelayTarget*> vToRemove;
-	for (CFuncLaserRelayTarget* target : m_vFoundRelays)
+	for (CFuncLaserRelayTarget* pTarget : m_vFoundRelays)
 	{
-		if (vEntityList.Find(target) == -1)
+		CBaseEntity* pTargetEnt = dynamic_cast<CBaseEntity*>(pTarget);
+		if (pTargetEnt && UTIL_FindItemInArray<CBaseEntity*>(pEntityList, nEntityListCount, pTargetEnt) == -1)
 		{
-			target->SetActivated(false);
-			vToRemove.AddToTail(target);
+			pTarget->SetActivated(false);
+			vToRemove.AddToTail(pTarget);
 		}
 	}
+
 	for (CFuncLaserRelayTarget* pToRemove : vToRemove)
 	{
 		m_vFoundRelays.FindAndRemove(pToRemove);
