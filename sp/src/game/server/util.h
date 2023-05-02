@@ -360,6 +360,20 @@ void UTIL_DisableRemoveImmediate();
 void UTIL_EnableRemoveImmediate();
 void UTIL_RemoveImmediate( CBaseEntity *oldObj );
 
+template<typename T>
+inline int UTIL_FindItemInArray(const T* array, int array_size, const T& item)
+{
+	for (int i = 0; i < array_size; i++)
+	{
+		if (array[i] == item)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 // make this a fixed size so it just sits on the stack
 #define MAX_SPHERE_QUERY	512
 class CEntitySphereQuery
