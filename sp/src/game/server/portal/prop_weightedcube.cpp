@@ -136,7 +136,7 @@ static void ComputePlayerMatrix( CBasePlayer *pPlayer, matrix3x4_t &out )
 // a good Source Programmer makes you a good Sphagetti cook...
 // ~GabrielV
 //-------------------------------------------------------------------------------------
-QAngle CPropWeightedCube::PreferredCarryAngles(void)
+/*QAngle CPropWeightedCube::PreferredCarryAngles(void)
 {
 	if (m_cubeType != Reflective) return BaseClass::PreferredCarryAngles();
 
@@ -166,6 +166,7 @@ QAngle CPropWeightedCube::PreferredCarryAngles(void)
 
 	return ang_PrefAngels;
 }
+*/
 
 int CPropWeightedCube::UpdateTransmitState()
 {
