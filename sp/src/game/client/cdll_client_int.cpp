@@ -172,7 +172,7 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "sixense/in_sixense.h"
 #endif
 
-#include "ivdbugreporter.h"
+//#include "ivdbugreporter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -229,7 +229,7 @@ IEngineReplay *g_pEngineReplay = NULL;
 IEngineClientReplay *g_pEngineClientReplay = NULL;
 IReplaySystem *g_pReplay = NULL;
 #endif
-IVDBugReporter* g_pVDBugReporter = NULL;
+//IVDBugReporter* g_pVDBugReporter = NULL;
 #ifdef MAPBASE
 IVEngineServer	*serverengine = NULL;
 #endif
@@ -1215,7 +1215,7 @@ void CHLClient::PostInit()
 	}
 #endif
 
-	CSysModule* pVDBugReporterModule = g_pFullFileSystem->LoadModule("vdbugreporter", "GAMEBIN", false);
+	/*CSysModule* pVDBugReporterModule = g_pFullFileSystem->LoadModule("vdbugreporter", "GAMEBIN", false);
 	if (pVDBugReporterModule != nullptr) {
 		VDBugRep_Log("Loaded VDBugReporter module\n");
 
@@ -1241,6 +1241,7 @@ void CHLClient::PostInit()
 	else {
 		VDBugRep_Log("Failed to load VDBugReporter module\n");
 	}
+*/
 }
 
 //-----------------------------------------------------------------------------
@@ -1287,9 +1288,10 @@ void CHLClient::Shutdown( void )
 
 	IGameSystem::ShutdownAllSystems();
 	
-	if (g_pVDBugReporter != nullptr) {
+	/*if (g_pVDBugReporter != nullptr) {
 		g_pVDBugReporter->Shutdown();
 	}
+	*/
 
 	gHUD.Shutdown();
 	VGui_Shutdown();
@@ -1687,7 +1689,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	hudlcd->SetGlobalStat( "(mapname)", pMapName );
 
-	g_pVDBugReporter->SetMapname(pMapName);
+	//g_pVDBugReporter->SetMapname(pMapName);
 
 	C_BaseTempEntity::ClearDynamicTempEnts();
 	clienteffects->Flush();
